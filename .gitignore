@@ -1,0 +1,44 @@
+# === Secrets (NEVER commit) ===
+.env
+**/.env
+host/.env
+
+# === macOS ===
+.DS_Store
+**/.DS_Store
+
+# === Python ===
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# === xv6 build artifacts ===
+*.o
+*.d
+*.asm
+*.sym
+*.out
+
+# xv6 kernel build outputs
+xv6-riscv/kernel/kernel
+xv6-riscv/fs.img
+
+# xv6 mkfs binary
+xv6-riscv/mkfs/mkfs
+
+# xv6 generated user files
+xv6-riscv/user/usys.S
+xv6-riscv/user/initcode
+xv6-riscv/user/initcode.out
+
+# Built user programs (_<name>)
+xv6-riscv/user/_*
+
+# === Editor / IDE ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
