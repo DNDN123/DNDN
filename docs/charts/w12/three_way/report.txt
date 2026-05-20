@@ -1,0 +1,28 @@
+
+====================================================================================
+Smart-MLFQ 3-way Evaluation Report
+====================================================================================
+  Baseline:  3 exits, 1308 traces
+  Heuristic: 3 exits, 1296 traces
+  LLM:       3 exits, 1310 traces
+
+  Metric                     Baseline    Heuristic          LLM    Δheur%     Δllm%
+  --------------------------------------------------------------------------------
+  avg_turnaround                82.33           82        80.67    -0.40%    -2.02%
+  median_turnaround                84           87           82     3.57%    -2.38%
+  max_turnaround                  119          118          119    -0.84%     0.00%
+  p95_turnaround                115.5        114.9        115.3    -0.52%    -0.17%
+  p99_turnaround                118.3       117.38       118.26    -0.78%    -0.03%
+  avg_response                   0.67         1.33            0    98.51%  -100.00%
+  p95_response                    1.8          3.6          0.0   100.00%  -100.00%
+  throughput_per_tick          0.0252       0.0254       0.0252     0.79%     0.00%
+  fairness_jain                0.8783       0.8705       0.8651    -0.89%    -1.50%
+  starved_pids                      0            0            0     0.00%     0.00%
+  longest_low_gap                   1            1            1     0.00%     0.00%
+
+  Program               Base TT    Heur TT     LLM TT    Δheur%     Δllm%
+  ---------------------------------------------------------------------------
+  cpu_burner                119        118        119    -0.84%      0.0%
+  io_burner                  44         41         41    -6.82%    -6.82%
+  mixed_burner               84         87         82     3.57%    -2.38%
+
