@@ -1,0 +1,58 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Environment files (contain secrets)
+.env
+.env.local
+*.env
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Claude Code local settings
+.claude/
+.sixth/
+
+# xv6 build artefacts
+*.o
+*.d
+*.asm
+*.sym
+fs.img
+mkfs/mkfs
+kernel/kernel
+user/_*
+!user/_*.c
+.backup-pre-mlfq-*/
+.backup-before-*/
+
+# QEMU runtime
+*.cast
+.gdbinit
+
+# Trace logs / generated experiment artefacts (regenerable, keep small)
+*.log
+charts*/
+!charts_w11/
+
+# Python distribution
+build/
+dist/
+*.egg-info/

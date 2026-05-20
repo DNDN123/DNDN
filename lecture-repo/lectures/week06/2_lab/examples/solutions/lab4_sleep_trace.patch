@@ -1,0 +1,17 @@
+diff --git a/kernel/proc.c b/kernel/proc.c
+index 22a5401..d2f57f5 100644
+--- a/kernel/proc.c
++++ b/kernel/proc.c
+@@ -556,9 +556,12 @@ sleep(void *chan, struct spinlock *lk)
+
+   // Go to sleep.
+   p->chan = chan;
++  printf("[sleep]  pid=%d name=%s chan=%p\n", p->pid, p->name, chan);
+   p->state = SLEEPING;
+
+   sched();
+
++  printf("[wakeup] pid=%d name=%s\n", p->pid, p->name);
++
+   // Tidy up.
+   p->chan = 0;

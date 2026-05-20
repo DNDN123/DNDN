@@ -1,0 +1,129 @@
+diff --git a/kernel/proc.c b/kernel/proc.c
+index 22a5401..5959e74 100644
+--- a/kernel/proc.c
++++ b/kernel/proc.c
+@@ -169,6 +169,7 @@ freeproc(struct proc *p)
+   p->killed = 0;
+   p->xstate = 0;
+   p->state = UNUSED;
++  // TODO: Reset trace_mask to 0 here
+ }
+ 
+ // Create a user page table for a given process, with no user memory,
+@@ -282,6 +283,9 @@ kfork(void)
+   // Cause fork to return 0 in the child.
+   np->trapframe->a0 = 0;
+ 
++  // TODO: Copy trace_mask from parent to child
++  // Hint: np->trace_mask = p->trace_mask;
++
+   // increment reference counts on open file descriptors.
+   for(i = 0; i < NOFILE; i++)
+     if(p->ofile[i])
+diff --git a/kernel/proc.h b/kernel/proc.h
+index d021857..60559ee 100644
+--- a/kernel/proc.h
++++ b/kernel/proc.h
+@@ -104,4 +104,5 @@ struct proc {
+   struct file *ofile[NOFILE];  // Open files
+   struct inode *cwd;           // Current directory
+   char name[16];               // Process name (debugging)
++  int trace_mask;              // Trace syscall mask
+ };
+diff --git a/kernel/syscall.c b/kernel/syscall.c
+index 076d965..cb8c2f4 100644
+--- a/kernel/syscall.c
++++ b/kernel/syscall.c
+@@ -101,6 +101,7 @@ extern uint64 sys_unlink(void);
+ extern uint64 sys_link(void);
+ extern uint64 sys_mkdir(void);
+ extern uint64 sys_close(void);
++extern uint64 sys_trace(void);
+ 
+ // An array mapping syscall numbers from syscall.h
+ // to the function that handles the system call.
+@@ -126,8 +127,18 @@ static uint64 (*syscalls[])(void) = {
+ [SYS_link]    sys_link,
+ [SYS_mkdir]   sys_mkdir,
+ [SYS_close]   sys_close,
++[SYS_trace]   sys_trace,
+ };
+ 
++// TODO: Add a syscall_names[] array that maps syscall numbers to name strings.
++// This is needed for the trace output.
++// Example:
++// static char *syscall_names[] = {
++//   [SYS_fork]    "fork",
++//   [SYS_exit]    "exit",
++//   ... (all 22 syscalls)
++// };
++
+ void
+ syscall(void)
+ {
+@@ -139,6 +150,13 @@ syscall(void)
+     // Use num to lookup the system call function for num, call it,
+     // and store its return value in p->trapframe->a0
+     p->trapframe->a0 = syscalls[num]();
++
++    // TODO: Add trace logic here
++    // If the bit (1 << num) is set in p->trace_mask, print:
++    //   printf("%d: syscall %s -> %d\n", p->pid, syscall_names[num], (int)p->trapframe->a0);
++    // Note: cast to (int) because trapframe->a0 is uint64 and %d expects int
++    // Hint: use bitwise AND to check: (p->trace_mask & (1 << num))
++
+   } else {
+     printf("%d %s: unknown sys call %d\n",
+             p->pid, p->name, num);
+diff --git a/kernel/syscall.h b/kernel/syscall.h
+index 3dd926d..8e13c0e 100644
+--- a/kernel/syscall.h
++++ b/kernel/syscall.h
+@@ -20,3 +20,4 @@
+ #define SYS_link   19
+ #define SYS_mkdir  20
+ #define SYS_close  21
++#define SYS_trace  22
+diff --git a/kernel/sysproc.c b/kernel/sysproc.c
+index 419e727..35da885 100644
+--- a/kernel/sysproc.c
++++ b/kernel/sysproc.c
+@@ -107,3 +107,17 @@ sys_uptime(void)
+   release(&tickslock);
+   return xticks;
+ }
++
++uint64
++sys_trace(void)
++{
++  // TODO: Implement sys_trace
++  // 1. Use argint() to read the first argument (mask) into a local variable
++  //    Hint: argint(0, &mask);
++  //
++  // 2. Store the mask in the current process's trace_mask field
++  //    Hint: myproc()->trace_mask = mask;
++  //
++  // 3. Return 0 on success
++  return 0;
++}
+diff --git a/user/user.h b/user/user.h
+index ac84de9..6d9e0e3 100644
+--- a/user/user.h
++++ b/user/user.h
+@@ -24,6 +24,7 @@ int getpid(void);
+ char* sys_sbrk(int,int);
+ int pause(int);
+ int uptime(void);
++int trace(int);
+ 
+ // ulib.c
+ int stat(const char*, struct stat*);
+diff --git a/user/usys.pl b/user/usys.pl
+index c5d4c3a..579e1c5 100755
+--- a/user/usys.pl
++++ b/user/usys.pl
+@@ -42,3 +42,4 @@ entry("getpid");
+ entry("sbrk");
+ entry("pause");
+ entry("uptime");
++entry("trace");
