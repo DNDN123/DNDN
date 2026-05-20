@@ -100,7 +100,6 @@
   - C3: scheduler가 락 잡은 채로 printf → `swtch` 후로 이동
   - I2: 무조건 trace ON → `settrace()` syscall로 토글
   - I4: fork→setpri race → `forkpri()` syscall로 원자화
-- W11 데모 runbook 완성 (`smart-mlfq-host/DEMO_W11.md`)
 - ✅ **Hello World 시연 통과** — 약한 팀의 가장 큰 분기점 돌파
 
 ### Week 12 — 정량적 평가 (현재) 🟡
@@ -135,16 +134,13 @@
 │   ├── llm_hint.py                 ← W10 통계 → hints.txt
 │   ├── evaluator.py                ← turnaround / fairness 메트릭
 │   ├── viz.py                      ← Gantt + 막대 차트
-│   ├── DEMO_W11.md                 ← W11 데모 runbook
-│   ├── WORKFLOW.md                 ← W10 8단계 가이드
-│   └── README.md                   ← 호스트 도구 상세 설명
+│   └── requirements.txt
 ├── smart-mlfq-xv6-patches/         ← xv6 커널/유저 패치 묶음
 │   ├── apply_patches.sh            ← 깨끗한 xv6-riscv 트리에 적용
 │   ├── kernel/                     ← proc.c, trap.c, sysproc.c, ...
 │   ├── user/                       ← nlrun.c, wrunner.c, *_burner.c
 │   ├── workloads/                  ← 워크로드 spec 6종
 │   └── README.md                   ← 패치 적용/검증 가이드
-├── lecture-repo/                   ← 외부 강의 자료 (수정 안 함)
 └── docs/
     ├── repo-policy.md              ← canonical source 정책
     └── charts/                     ← 실험 결과 차트
@@ -182,8 +178,6 @@ TRACE tick=... pid=... pri=2 slice=...     # MLFQ가 LLM 힌트 받아들임
 EXIT  pid=... name=cpu_burner ... final_pri=2
 ```
 
-상세 runbook: [`smart-mlfq-host/DEMO_W11.md`](smart-mlfq-host/DEMO_W11.md)
-
 ---
 
 ## 7. 설계 메모
@@ -206,7 +200,7 @@ Solar Pro 3는 JSON을 반환합니다. 그 JSON에서 우리가 추출하는 �
 |---|---|
 | OS 개념의 **substantive** 구현 | MLFQ, syscall path, spinlock, sleep/wakeup 모두 실제 xv6 커널 C |
 | LLM thin-wrapper **금지** | LLM 출력은 syscall 경계에서 2비트 정수로 축약 |
-| Public GitHub repo + 셋업/실행/데모 | 본 저장소 + `DEMO_W11.md` |
+| Public GitHub repo + 셋업/실행/데모 | 본 저장소 README (위 §6) |
 | 최종 산출물 영문 | W14 슬라이드/보고서 (작성 중) |
 | Solar Pro 3 backend | `.env.example` 의 `UPSTAGE_MODEL=solar-pro3` 기본값 |
 
