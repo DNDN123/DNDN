@@ -1,0 +1,12 @@
+--- a/kernel/sysproc.c
++++ b/kernel/sysproc.c
+@@ -25,6 +25,9 @@
+ uint64
+ sys_fork(void)
+ {
++  struct proc *p = myproc();
++  printf("[TRACE] sys_fork() called by process %d (%s)\n", p->pid, p->name);
++
+   return kfork();
+ }
+

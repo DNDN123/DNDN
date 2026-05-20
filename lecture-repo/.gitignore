@@ -1,0 +1,43 @@
+.env
+
+# Materials
+materials/
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Assignment solutions (private)
+**/3_assignment/solution/
+
+# Quiz (private)
+quiz/
+
+# Slidev
+.slidev/
+dist/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Python
+__pycache__/
+*.pyc
+
+# Archives
+*.zip
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Internal plans
+plans/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo

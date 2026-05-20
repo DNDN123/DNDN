@@ -1,0 +1,11 @@
+--- a/kernel/sysproc.c
++++ b/kernel/sysproc.c
+@@ -25,6 +25,8 @@
+ uint64
+ sys_fork(void)
+ {
++  // TODO: Add a printf here to trace when sys_fork() is called.
++  // Print the current process's PID and name using myproc().
+   return kfork();
+ }
+

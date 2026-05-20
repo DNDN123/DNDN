@@ -1,0 +1,502 @@
+Only in /mnt/user-data/outputs/smart-mlfq-xv6-patches: CHANGES.diff
+Only in /mnt/user-data/outputs/smart-mlfq-xv6-patches: REVIEW_AND_PATCHES.md
+diff -u --recursive --label original --label patched original patched
+--- original
++++ patched
+@@ -110,7 +110,9 @@
+ 
+ // === Smart-MLFQ extensions (proc.c) ===
+ int             proc_setpri(int pid, int level);
++int             proc_settrace(int pid, int on);
+ int             proc_getstats(int pid, struct procstats *out);
++int             kforkpri(int level);
+ void            proc_on_timer_tick(void);
+ 
+ // swtch.S
+diff -u --recursive --label original --label patched original patched
+--- original
++++ patched
+@@ -2,11 +2,19 @@
+ // =================================
+ // Changes from stock xv6:
+ //   * struct proc extended with priority + scheduling stats (see proc.h)
+-//   * scheduler() implements 3-level MLFQ
++//   * scheduler() implements 3-level MLFQ with serialized periodic boost
++//     (double-checked locking on boost_lock) and TRACE logging deferred
++//     until AFTER swtch returns (no printf inside p->lock).
+ //   * trap.c (timer interrupt) updates time_slice_used + demotes
+-//   * sleep() retains queue level (I/O block does not demote)
++//   * sleep() retains queue level (I/O block does not demote); only
++//     genuine I/O channels (not &ticks or proc[] addresses) bump
++//     total_io_blocks.
+ //   * kexit() records completion_tick and emits EXIT trace
+-//   * allocproc() initializes MLFQ fields
++//   * allocproc() initializes MLFQ fields; trace_enabled defaults OFF.
++//   * kfork() makes child inherit trace_enabled from parent.
++//   * NEW: kforkpri(level) — fork variant that sets child's priority
++//     atomically before it becomes RUNNABLE.
++//   * NEW: proc_settrace(pid, on) — toggle TRACE/EXIT logging per proc.
+ //   * boost: every MLFQ_BOOST_INTERVAL ticks, all procs are reset to HIGH
+ //
+ // NOTE: This is a drop-in replacement for xv6-riscv kernel/proc.c.
+@@ -40,8 +48,10 @@
+ // === Smart-MLFQ: per-level time slice limit (ticks) ===
+ const int mlfq_slice_limit[MLFQ_LEVELS] = { 2, 4, 8 };
+ 
+-// Global tracker for boost
++// Global tracker for periodic priority boost.
++// Protected by boost_lock to serialize boosts across multiple harts.
+ static int last_boost_tick = 0;
++static struct spinlock boost_lock;
+ 
+ // Allocate a page for each process's kernel stack.
+ void
+@@ -65,6 +75,7 @@
+ 
+   initlock(&pid_lock, "nextpid");
+   initlock(&wait_lock, "wait_lock");
++  initlock(&boost_lock, "mlfq_boost");   // === Smart-MLFQ ===
+   for(p = proc; p < &proc[NPROC]; p++) {
+       initlock(&p->lock, "proc");
+       p->state = UNUSED;
+@@ -139,7 +150,8 @@
+   p->total_io_blocks = 0;
+   p->arrival_tick = ticks;
+   p->completion_tick = 0;
+-  p->trace_enabled = 1;
++  p->trace_enabled = 0;        // off by default; user enables via settrace().
++                               // kfork/kforkpri inherit parent's value.
+ 
+   if((p->trapframe = (struct trapframe *)kalloc()) == 0){
+     freeproc(p);
+@@ -276,6 +288,9 @@
+ 
+   safestrcpy(np->name, p->name, sizeof(p->name));
+ 
++  // === Smart-MLFQ: child inherits parent's tracing setting ===
++  np->trace_enabled = p->trace_enabled;
++
+   pid = np->pid;
+ 
+   release(&np->lock);
+@@ -399,7 +414,9 @@
+ //
+ // At each scheduling decision:
+ //   1. Check if we should do a periodic boost (every MLFQ_BOOST_INTERVAL
+-//      ticks): reset all priorities to HIGH and slice counters to 0.
++//      ticks). Boost is serialized across harts by boost_lock with a
++//      double-checked locking pattern so only one CPU per interval
++//      walks the proc[] array.
+ //   2. Walk levels 0 (HIGH) -> 1 (MID) -> 2 (LOW). For each level, find
+ //      a RUNNABLE proc at that level and switch to it. Break on first
+ //      match.
+@@ -408,6 +425,11 @@
+ // The chosen proc runs until it yields (timer interrupt) or sleeps
+ // (I/O block). On yield, trap.c has already updated time_slice_used
+ // and possibly demoted the proc.
++//
++// TRACE log lines are emitted AFTER swtch returns (i.e. after the
++// chosen proc has finished its quantum and given the CPU back to us).
++// This avoids holding p->lock across a synchronous UART write, which
++// would distort scheduling timing and corrupt our measurements.
+ void
+ scheduler(void)
+ {
+@@ -419,17 +441,25 @@
+     intr_on();
+     intr_off();
+ 
+-    // --- Smart-MLFQ: periodic boost ---
++    // --- Smart-MLFQ: periodic boost (double-checked, serialized) ---
++    // Fast-path read is racy but the inner check after acquiring
++    // boost_lock is authoritative. We hold boost_lock for the entire
++    // boost so concurrent harts that find the inner check false will
++    // simply release and continue.
+     if(ticks - last_boost_tick >= MLFQ_BOOST_INTERVAL){
+-      for(p = proc; p < &proc[NPROC]; p++){
+-        acquire(&p->lock);
+-        if(p->state != UNUSED){
+-          p->priority = 0;
+-          p->time_slice_used = 0;
++      acquire(&boost_lock);
++      if(ticks - last_boost_tick >= MLFQ_BOOST_INTERVAL){
++        for(p = proc; p < &proc[NPROC]; p++){
++          acquire(&p->lock);
++          if(p->state != UNUSED){
++            p->priority = 0;
++            p->time_slice_used = 0;
++          }
++          release(&p->lock);
+         }
+-        release(&p->lock);
++        last_boost_tick = ticks;
+       }
+-      last_boost_tick = ticks;
++      release(&boost_lock);
+     }
+ 
+     int found = 0;
+@@ -437,11 +467,13 @@
+       for(p = proc; p < &proc[NPROC]; p++) {
+         acquire(&p->lock);
+         if(p->state == RUNNABLE && p->priority == level) {
+-          // Emit TRACE before switching.
+-          if(p->trace_enabled){
+-            printf("TRACE tick=%d pid=%d pri=%d slice=%d\n",
+-                   ticks, p->pid, p->priority, p->time_slice_used);
+-          }
++          // Snapshot trace info to print AFTER swtch — see comment above.
++          int log_trace = p->trace_enabled;
++          int log_tick  = ticks;
++          int log_pid   = p->pid;
++          int log_pri   = p->priority;
++          int log_slice = p->time_slice_used;
++
+           p->state = RUNNING;
+           c->proc = p;
+           swtch(&c->context, &p->context);
+@@ -449,6 +481,14 @@
+           c->proc = 0;
+           found = 1;
+           release(&p->lock);
++
++          // No locks held here — safe to call printf without affecting
++          // the proc's measured run time (it already finished its
++          // quantum above).
++          if(log_trace){
++            printf("TRACE tick=%d pid=%d pri=%d slice=%d\n",
++                   log_tick, log_pid, log_pri, log_slice);
++          }
+           break;
+         }
+         release(&p->lock);
+@@ -498,27 +538,50 @@
+   static int first = 1;
+   struct proc *p = myproc();
+ 
++  // Still holding p->lock from scheduler.
+   release(&p->lock);
+ 
+   if (first) {
++    // File system initialization must be run in the context of a
++    // regular process (e.g., because it calls sleep), and thus cannot
++    // be run from main().
+     fsinit(ROOTDEV);
+ 
+     first = 0;
++    // ensure other cores see first=0.
+     __sync_synchronize();
+ 
++    // We can invoke kexec() now that file system is initialized.
++    // Put the return value (argc) of kexec into a0.
+     p->trapframe->a0 = kexec("/init", (char *[]){ "/init", 0 });
+     if (p->trapframe->a0 == -1) {
+       panic("exec");
+     }
+   }
+ 
+-  usertrapret();
++  // === Compatibility fix for lecture-repo xv6 ===
++  // Mainline MIT xv6 ends forkret with `usertrapret()`. The lecture-repo
++  // variant uses an inline return-to-userspace sequence instead (no
++  // `usertrapret` symbol exists in this kernel). Using the mainline
++  // version here would fail to link with `undefined reference to
++  // 'usertrapret'`. Below mirrors `usertrap()`'s return path.
++  prepare_return();
++  uint64 satp = MAKE_SATP(p->pagetable);
++  uint64 trampoline_userret = TRAMPOLINE + (userret - trampoline);
++  ((void (*)(uint64))trampoline_userret)(satp);
+ }
+ 
+ // === MODIFIED ===
+ // On sleep (I/O block), reset time_slice_used so that when we return,
+ // we get a fresh slice at the same priority. This prevents I/O-bound
+ // processes from being penalized.
++//
++// Only count this as an I/O block if `chan` is *not* a kernel-internal
++// wait channel. We exclude:
++//   - &ticks      : sys_pause (timed sleep — not I/O)
++//   - addresses inside proc[] : kwait waiting on a child to exit
++// Everything else (pipe, console, disk, etc.) counts as real I/O and
++// drives the LLM's priority recommendation via total_io_blocks.
+ void
+ sleep(void *chan, struct spinlock *lk)
+ {
+@@ -528,7 +591,15 @@
+   release(lk);
+ 
+   // === Smart-MLFQ: I/O block — retain queue, reset slice counter ===
+-  p->total_io_blocks++;
++  // Always reset slice (sleeping process keeps its priority on wakeup).
++  // Only bump total_io_blocks for genuine I/O channels.
++  int is_internal =
++      (chan == (void*)&ticks) ||
++      ((char*)chan >= (char*)proc &&
++       (char*)chan <  (char*)(proc + NPROC));
++  if(!is_internal){
++    p->total_io_blocks++;
++  }
+   p->time_slice_used = 0;
+ 
+   p->chan = chan;
+@@ -653,6 +724,18 @@
+ 
+ // === Smart-MLFQ helpers — called from sysproc.c ===
+ 
++// Returns 1 if p->state is "live" enough to receive priority/trace updates.
++// Excludes UNUSED (slot not in use) and ZOMBIE (already exited; mutating
++// it would only hide a host-side race).
++static inline int
++proc_is_live(struct proc *p)
++{
++  return p->state == USED      ||
++         p->state == RUNNABLE  ||
++         p->state == RUNNING   ||
++         p->state == SLEEPING;
++}
++
+ // Set a process's initial priority. Called by setpri syscall.
+ int
+ proc_setpri(int pid, int level)
+@@ -663,7 +746,7 @@
+ 
+   for(p = proc; p < &proc[NPROC]; p++){
+     acquire(&p->lock);
+-    if(p->pid == pid && p->state != UNUSED){
++    if(p->pid == pid && proc_is_live(p)){
+       p->priority = level;
+       p->time_slice_used = 0;
+       release(&p->lock);
+@@ -674,6 +757,34 @@
+   return -1;
+ }
+ 
++// Enable or disable TRACE/EXIT logging for a process.
++// pid == 0 means "current process".
++// Returns 0 on success, -1 if pid not found.
++int
++proc_settrace(int pid, int on)
++{
++  struct proc *p;
++  struct proc *me = myproc();
++
++  if(pid == 0 && me){
++    acquire(&me->lock);
++    me->trace_enabled = on ? 1 : 0;
++    release(&me->lock);
++    return 0;
++  }
++
++  for(p = proc; p < &proc[NPROC]; p++){
++    acquire(&p->lock);
++    if(p->pid == pid && proc_is_live(p)){
++      p->trace_enabled = on ? 1 : 0;
++      release(&p->lock);
++      return 0;
++    }
++    release(&p->lock);
++  }
++  return -1;
++}
++
+ // Fill stats for a given pid. Returns 0 on success, -1 if pid not found.
+ int
+ proc_getstats(int pid, struct procstats *out)
+@@ -719,3 +830,61 @@
+   }
+   release(&p->lock);
+ }
++
++// === Smart-MLFQ: fork variant that sets the child's initial priority
++// atomically, BEFORE the child can be scheduled. This avoids the
++// race where workload_runner forks at HIGH (default) and the child
++// runs a few ticks before the parent's setpri takes effect.
++//
++// This is a near-copy of kfork() with two additions:
++//   * level validation up front
++//   * np->priority = level set before np->state = RUNNABLE
++int
++kforkpri(int level)
++{
++  int i, pid;
++  struct proc *np;
++  struct proc *p = myproc();
++
++  if(level < 0 || level >= MLFQ_LEVELS) return -1;
++
++  if((np = allocproc()) == 0){
++    return -1;
++  }
++
++  if(uvmcopy(p->pagetable, np->pagetable, p->sz) < 0){
++    freeproc(np);
++    release(&np->lock);
++    return -1;
++  }
++  np->sz = p->sz;
++
++  *(np->trapframe) = *(p->trapframe);
++  np->trapframe->a0 = 0;
++
++  for(i = 0; i < NOFILE; i++)
++    if(p->ofile[i])
++      np->ofile[i] = filedup(p->ofile[i]);
++  np->cwd = idup(p->cwd);
++
++  safestrcpy(np->name, p->name, sizeof(p->name));
++
++  // Inherit tracing, override priority. Set BEFORE RUNNABLE.
++  np->trace_enabled = p->trace_enabled;
++  np->priority = level;
++  np->time_slice_used = 0;
++
++  pid = np->pid;
++
++  release(&np->lock);
++
++  acquire(&wait_lock);
++  np->parent = p;
++  release(&wait_lock);
++
++  acquire(&np->lock);
++  np->state = RUNNABLE;
++  release(&np->lock);
++
++  return pid;
++}
+diff -u --recursive --label original --label patched original patched
+--- original
++++ patched
+@@ -1,6 +1,7 @@
+ // Smart-MLFQ-xv6 modified syscall.c
+ // =================================
+-// Added: sys_setpri, sys_getstats entries in the syscall table.
++// Added: sys_setpri, sys_getstats, sys_settrace, sys_forkpri
++// entries in the syscall table.
+ 
+ #include "types.h"
+ #include "param.h"
+@@ -97,6 +98,8 @@
+ extern uint64 sys_close(void);
+ extern uint64 sys_setpri(void);    // Smart-MLFQ
+ extern uint64 sys_getstats(void);  // Smart-MLFQ
++extern uint64 sys_settrace(void);  // Smart-MLFQ (I2)
++extern uint64 sys_forkpri(void);   // Smart-MLFQ (I4)
+ 
+ static uint64 (*syscalls[])(void) = {
+ [SYS_fork]    sys_fork,
+@@ -120,8 +123,10 @@
+ [SYS_link]    sys_link,
+ [SYS_mkdir]   sys_mkdir,
+ [SYS_close]   sys_close,
+-[SYS_setpri]  sys_setpri,     // Smart-MLFQ
+-[SYS_getstats] sys_getstats,  // Smart-MLFQ
++[SYS_setpri]   sys_setpri,     // Smart-MLFQ
++[SYS_getstats] sys_getstats,    // Smart-MLFQ
++[SYS_settrace] sys_settrace,    // Smart-MLFQ (I2)
++[SYS_forkpri]  sys_forkpri,     // Smart-MLFQ (I4)
+ };
+ 
+ void
+diff -u --recursive --label original --label patched original patched
+--- original
++++ patched
+@@ -1,6 +1,6 @@
+ // Smart-MLFQ-xv6 modified syscall.h
+ // =================================
+-// Added: SYS_setpri (22), SYS_getstats (23)
++// Added: SYS_setpri (22), SYS_getstats (23), SYS_settrace (24), SYS_forkpri (25)
+ 
+ // System call numbers
+ #define SYS_fork    1
+@@ -24,5 +24,7 @@
+ #define SYS_link   19
+ #define SYS_mkdir  20
+ #define SYS_close  21
+-#define SYS_setpri 22   // Smart-MLFQ
+-#define SYS_getstats 23 // Smart-MLFQ
++#define SYS_setpri   22   // Smart-MLFQ
++#define SYS_getstats 23   // Smart-MLFQ
++#define SYS_settrace 24   // Smart-MLFQ (I2)
++#define SYS_forkpri  25   // Smart-MLFQ (I4)
+diff -u --recursive --label original --label patched original patched
+--- original
++++ patched
+@@ -1,6 +1,6 @@
+ // Smart-MLFQ-xv6 modified sysproc.c
+ // =================================
+-// Added: sys_setpri, sys_getstats implementations.
++// Added: sys_setpri, sys_getstats, sys_settrace, sys_forkpri implementations.
+ 
+ #include "types.h"
+ #include "riscv.h"
+@@ -142,3 +142,30 @@
+     return -1;
+   return 0;
+ }
++
++// settrace(int pid, int on)
++//   Enable (on=1) or disable (on=0) TRACE/EXIT logging for `pid`.
++//   pid == 0 means "current process".
++// Returns 0 on success, -1 if pid not found.
++uint64
++sys_settrace(void)
++{
++  int pid, on;
++  argint(0, &pid);
++  argint(1, &on);
++  return proc_settrace(pid, on);
++}
++
++// forkpri(int level)
++//   Like fork(), but the child is created with priority `level` (0/1/2)
++//   set BEFORE it becomes RUNNABLE. Eliminates the race where a freshly-
++//   forked child runs a few ticks at HIGH before the parent's setpri()
++//   takes effect.
++// Returns child's pid in the parent, 0 in the child, -1 on error.
++uint64
++sys_forkpri(void)
++{
++  int level;
++  argint(0, &level);
++  return kforkpri(level);
++}
+diff -u --recursive --label original --label patched original patched
+--- original
++++ patched
+@@ -1,6 +1,7 @@
+ // Smart-MLFQ-xv6 modified user.h
+ // =================================
+-// Added: setpri, getstats user-space declarations + struct procstats
++// Added: setpri, getstats, settrace, forkpri user-space declarations
++// + struct procstats
+ 
+ #define SBRK_ERROR ((char *)-1)
+ 
+@@ -41,6 +42,8 @@
+ int uptime(void);
+ int setpri(int pid, int level);                // Smart-MLFQ
+ int getstats(int pid, struct procstats *out);  // Smart-MLFQ
++int settrace(int pid, int on);                 // Smart-MLFQ (I2)
++int forkpri(int level);                        // Smart-MLFQ (I4)
+ 
+ // ulib.c
+ int stat(const char*, struct stat*);
+diff -u --recursive --label original --label patched original patched
+--- original
++++ patched
+@@ -2,7 +2,7 @@
+ 
+ # Smart-MLFQ-xv6 modified usys.pl
+ # ==============================
+-# Added: setpri, getstats
++# Added: setpri, getstats, settrace, forkpri
+ 
+ # Generate usys.S, the stubs for syscalls.
+ 
+@@ -48,3 +48,5 @@
+ entry("uptime");
+ entry("setpri");    # Smart-MLFQ
+ entry("getstats");  # Smart-MLFQ
++entry("settrace");  # Smart-MLFQ (I2)
++entry("forkpri");   # Smart-MLFQ (I4)
