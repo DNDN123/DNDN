@@ -18,12 +18,23 @@ Usage:
     python3 nl_shell.py                       # interactive REPL, dry-run
     python3 nl_shell.py --once "do X fast"    # one-shot
     python3 nl_shell.py --exec                # forward commands to QEMU
+    python3 nl_shell.py --no-cache --once …   # bypass cache, force Solar call
+    python3 nl_shell.py --clear-cache         # delete cache and exit
 
 Env:
     UPSTAGE_API_KEY           (optional — falls back to heuristic if missing)
     UPSTAGE_MODEL             (default: solar-pro3)
     UPSTAGE_BASE_URL          (default: https://api.upstage.ai/v1)
     UPSTAGE_REASONING_EFFORT  (default: low — "low" | "medium" | "high")
+    SMART_MLFQ_CACHE          (default: ~/.smart-mlfq/hints_cache.json)
+    SMART_MLFQ_CACHE_TTL      (default: 604800 seconds = 7 days)
+
+Cache policy:
+    Successful Solar responses are cached by sha1(normalized text), so
+    identical NL requests skip the API round-trip. TTL defaults to 7 days.
+    Heuristic fallbacks are NOT cached (already deterministic — caching
+    them would falsely pin a heuristic answer to look like an LLM answer).
+    Use --no-cache for a forced refresh; --clear-cache wipes the file.
 """
 
 import argparse

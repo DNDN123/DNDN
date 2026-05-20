@@ -50,6 +50,11 @@ const int mlfq_slice_limit[MLFQ_LEVELS] = { 2, 4, 8 };
 
 // Global tracker for periodic priority boost.
 // Protected by boost_lock to serialize boosts across multiple harts.
+//
+// LOCK ORDER: boost_lock -> p->lock.
+// boost/aging passes acquire boost_lock first, then walk proc[] taking
+// p->lock per entry. Any future code that touches both MUST obey this
+// order; the reverse risks deadlock.
 static int last_boost_tick = 0;
 static struct spinlock boost_lock;
 

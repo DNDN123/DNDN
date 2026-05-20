@@ -40,9 +40,9 @@
 | 팀원 (브랜치) | 담당 슬라이스 | 핵심 작업 |
 |---|---|---|
 | **조현성 (`hyunsung`)** ← 본인 | **Scheduler** | 3-단계 MLFQ + LLM 힌트 통합 + Solar Pro 3 브리지 |
-| `jinhwan` | Process | 프로세스 모델 / fork-exec 확장 |
-| `haneol` | Syscall | 신규 syscall 인터페이스 / 권한 모델 |
-| `minju` | Thread | 유저레벨 스레드 / 동기화 |
+| `jinhwan` | Thread | 유저레벨 스레드 + worker pool (clone/futex 기반) |
+| `haneol` | Process | `sys_ps` + NL Intent 브리지 + 안전 가드 |
+| `minju` | Syscall | 통합 syscall 후킹 + trace JSON |
 
 > ⚠️ `jinhwan / haneol / minju` 의 구체 작업 항목은 W13 통합 시점에 각 브랜치의
 > README 를 참조하세요. 본 저장소(`hyunsung` 브랜치)는 **Scheduler 슬라이스**만 다룹니다.
@@ -68,7 +68,7 @@
 ### 진행 중 / 예정
 | 항목 | 예정 주차 | 상태 |
 |---|---|---|
-| 정량적 3-way 비교 (RR baseline vs MLFQ vs MLFQ+LLM) | W12 | 🟡 진행 중 |
+| 정량적 3-way 비교 (RR baseline vs MLFQ vs MLFQ+LLM) | W12 | ✅ |
 | 다른 팀원 슬라이스와 통합 | W13 | ⏳ 예정 |
 | 최종 영문 기술 보고서 + 데모 영상 | W14 | ⏳ 예정 |
 
@@ -102,7 +102,7 @@
   - I4: fork→setpri race → `forkpri()` syscall로 원자화
 - ✅ **Hello World 시연 통과** — 약한 팀의 가장 큰 분기점 돌파
 
-### Week 12 — 정량적 평가 (현재) 🟡
+### Week 12 — 정량적 평가 ✅
 - baseline (RR) vs MLFQ vs MLFQ+LLM 3-way 매트릭스 실험
 - 평가 지표: turnaround time, response time, throughput, Jain's fairness index
 - 워크로드 6종 (`cpu_heavy`, `io_heavy`, `mixed`, `realprog`, `stress`, `three_way`)
@@ -142,7 +142,10 @@
 │   ├── workloads/                  ← 워크로드 spec 6종
 │   └── README.md                   ← 패치 적용/검증 가이드
 └── docs/
-    ├── repo-policy.md              ← canonical source 정책
+    ├── syscall-allocation.md       ← 4팀 syscall 번호 분배표 (W13 통합 기준)
+    ├── trace-format.md             ← TRACE/EXIT 라인 정식 스펙
+    ├── hints-format.md             ← hints.txt 포맷
+    ├── w11-hello-world.md          ← W11 시연 재현 절차
     └── charts/                     ← 실험 결과 차트
 ```
 
@@ -176,6 +179,24 @@ python nl_shell.py --once "Run a heavy job in background"
 $ nlrun 2 cpu_burner 1000000
 TRACE tick=... pid=... pri=2 slice=...     # MLFQ가 LLM 힌트 받아들임
 EXIT  pid=... name=cpu_burner ... final_pri=2
+```
+
+### 4) W10 batch hint 흐름 (참고)
+```bash
+# 1. xv6에서 baseline 워크로드를 돌리고 콘솔 로그를 캡처해둔 뒤:
+python parse_trace.py qemu_baseline.log --output baseline.json
+
+# 2. baseline 통계 → Solar → hints.txt (API 키 없으면 휴리스틱 폴백)
+python llm_hint.py baseline.json --output hints.txt
+
+# 3. xv6 (QEMU 안): hints.txt를 받아 setpri 후 워크로드 재실행
+$ wrunner cpu_heavy.txt hints.txt
+TRACE ... / EXIT ...                       # LLM-guided 트레이스 캡처
+
+# 4. baseline vs LLM 비교 차트
+python parse_trace.py qemu_llm.log --output llm.json
+python evaluator.py --baseline baseline.json --llm llm.json
+python viz.py --baseline baseline.json --llm llm.json --out-dir docs/charts/w10
 ```
 
 ---

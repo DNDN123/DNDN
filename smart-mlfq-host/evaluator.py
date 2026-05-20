@@ -85,14 +85,9 @@ def compute_metrics(trace: dict) -> dict:
     p99_tt = _percentile(tts_sorted, 0.99)
     p95_rt = _percentile(rts_sorted, 0.95)
 
-    # Starvation count: per-pid max consecutive ticks spent at LOW (pri=2)
-    # without being chosen by the scheduler. If this exceeds threshold for
-    # any pid, that pid was starved.
-    pid_low_runs = defaultdict(lambda: [0, 0])  # [current_streak, max_streak]
-    last_tick = 0
-    by_pid_tick = sorted(traces, key=lambda x: (x["pid"], x["tick"]))
-    # A simpler approximation: per-pid, count the longest gap between
-    # consecutive TRACE entries where pri==2 throughout.
+    # Starvation: per-pid, find the longest gap between consecutive TRACE
+    # entries where pri==2 throughout. If gap >= STARVATION_THRESHOLD,
+    # count that pid as starved.
     pid_traces = defaultdict(list)
     for t in traces:
         pid_traces[t["pid"]].append(t)

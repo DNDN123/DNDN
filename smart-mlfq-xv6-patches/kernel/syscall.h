@@ -1,6 +1,12 @@
 // Smart-MLFQ-xv6 modified syscall.h
 // =================================
-// Added: SYS_setpri (22), SYS_getstats (23), SYS_settrace (24), SYS_forkpri (25)
+// Added: SYS_setpri (30), SYS_getstats (31), SYS_settrace (32), SYS_forkpri (33)
+//
+// Team-wide syscall number allocation (W13 integration plan):
+//   22..24  reserved for Syscall slice (minju): trace_on/off/stats
+//   25..29  reserved for Thread   slice (jinhwan): thread_*/futex_*
+//   30..33  Scheduler slice (hyunsung): this block
+// Stay out of 22..29 so other slices can merge without renumbering.
 
 // System call numbers
 #define SYS_fork    1
@@ -24,7 +30,7 @@
 #define SYS_link   19
 #define SYS_mkdir  20
 #define SYS_close  21
-#define SYS_setpri   22   // Smart-MLFQ
-#define SYS_getstats 23   // Smart-MLFQ
-#define SYS_settrace 24   // Smart-MLFQ (I2)
-#define SYS_forkpri  25   // Smart-MLFQ (I4)
+#define SYS_setpri   30   // Smart-MLFQ
+#define SYS_getstats 31   // Smart-MLFQ
+#define SYS_settrace 32   // Smart-MLFQ (I2)
+#define SYS_forkpri  33   // Smart-MLFQ (I4)

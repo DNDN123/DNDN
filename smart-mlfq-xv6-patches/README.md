@@ -8,8 +8,6 @@
 ```
 smart-mlfq-xv6-patches/
 ├── README.md                    # 이 파일
-├── REVIEW_AND_PATCHES.md        # ⭐ 패치 상세 설명 (먼저 읽으세요)
-├── VSCODE_VERIFICATION.md       # ⭐ 본인 환경 검증 체크리스트
 ├── CHANGES.diff                 # 원본 대비 unified diff
 ├── apply_patches.sh             # 자동 적용 스크립트
 ├── kernel/
@@ -66,8 +64,6 @@ make qemu
 | I2 | Important | 무조건 trace ON → settrace() syscall 추가, 기본 off |
 | I4 | Important | fork→setpri 사이 race → forkpri() syscall 추가 |
 
-상세한 설명은 `REVIEW_AND_PATCHES.md` 참고.
-
 ## 🆕 추가된 Syscall
 
 ```c
@@ -97,8 +93,6 @@ int forkpri(int level);          // level=0/1/2. priority를 갖고 fork
 - [ ] 멀티 인스턴스 panic 없음
 - [ ] baseline trace에서 `workload_runner.total_io_blocks ≈ 0` 확인
 
-자세한 명령어는 `VSCODE_VERIFICATION.md` 참고.
-
 ## 📚 다음 단계
 
 1. **`workload_runner.c` 업데이트** — 새 syscall 활용:
@@ -107,7 +101,7 @@ int forkpri(int level);          // level=0/1/2. priority를 갖고 fork
    int pid = forkpri(hint_level);     // 우선순위와 함께 fork
    ```
 
-2. **`docs/architecture.md` 수정** — 다이어그램의 *"priority=2 LOW
+2. **아키텍처 다이어그램 정정** — 다이어그램의 *"priority=2 LOW
    by default"* → `priority=0 HIGH` (코드 및 proposal.md와 일치)
 
 3. **첫 실제 실험** — baseline 실행 후 `total_io_blocks` 분포 확인
