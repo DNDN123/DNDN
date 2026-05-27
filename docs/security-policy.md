@@ -8,8 +8,9 @@
 
 | 일자 | 위치 | 내용 | 상태 |
 |---|---|---|---|
-| ~W11 | `jinhwan` 브랜치 `solar_bridge.py` L5 | Upstage 키 평문 하드코딩 후 push | ✅ 해결 (2026-05-27) |
+| 프로젝트 초반 | `jinhwan` 브랜치 `solar_bridge.py` L5 | Upstage 키 평문 하드코딩 후 push | ✅ 해결 (2026-05-27) |
 | 2026-05-21 | `hyunsung` 브랜치 `smart-mlfq-host/.env.example` L5 | 실제 키 `up_lq0WSlcP...` 가 placeholder처럼 들어가 push | ✅ 해결 (2026-05-27) |
+| 2026-05-27 | `hyunsung` 브랜치 `integration/host/.env.example` L5 | 통합 트리 생성 시 위 키가 그대로 복사돼 또 untracked로 잔존 (이미 revoke된 키라 위협 0이지만 정책 위반) | ✅ 해결 (2026-05-27) |
 
 ### 2026-05-27 해결 조치 요약
 
