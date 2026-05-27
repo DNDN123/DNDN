@@ -1,7 +1,7 @@
-# W12 정량 평가 결과 — Smart-MLFQ 3-way 비교
+# 단독 슬라이스 정량 평가 결과 — Smart-MLFQ 3-way 비교
 
 실험 일자: 2026-05-20
-실험 환경: WSL Ubuntu, QEMU RISC-V, xv6-riscv (본인 MLFQ 패치 적용)
+실험 환경: WSL Ubuntu, QEMU RISC-V, xv6-riscv (본인 MLFQ 패치 적용, 통합 전 단독 슬라이스)
 
 ## 비교 대상 (3-way)
 
@@ -47,7 +47,7 @@ LLM cpu_burner TT:        6.67  (+401%)
 ## 파일 구조
 
 ```
-w12/
+standalone/
 ├── README.md                 (이 파일)
 ├── combined_report.txt       (5개 워크로드 통합 리포트)
 └── <workload>/
@@ -64,7 +64,7 @@ w12/
 ```bash
 cd /root/smart-mlfq-host
 source venv/bin/activate
-OUT_ROOT=/root/mlfq-experiments/w12_full ./run_w12_matrix.sh
+OUT_ROOT=/root/mlfq-experiments/eval_full ./run_eval_matrix.sh
 ```
 
 총 소요 시간: 약 7~8분 (15 QEMU runs × ~30초 + Solar API 5회)

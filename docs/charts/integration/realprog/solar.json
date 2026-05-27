@@ -1,5 +1,5 @@
 {
-  "source_log": "../../docs/charts/w13/realprog/solar.log",
+  "source_log": "../../docs/charts/integration/realprog/solar.log",
   "events": [
     {
       "kind": "trace",

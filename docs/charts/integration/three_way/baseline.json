@@ -1,5 +1,5 @@
 {
-  "source_log": "../../docs/charts/w13/three_way/baseline.log",
+  "source_log": "../../docs/charts/integration/three_way/baseline.log",
   "events": [
     {
       "kind": "trace",

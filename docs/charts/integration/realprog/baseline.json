@@ -1,5 +1,5 @@
 {
-  "source_log": "../../docs/charts/w13/realprog/baseline.log",
+  "source_log": "../../docs/charts/integration/realprog/baseline.log",
   "events": [
     {
       "kind": "trace",

@@ -133,7 +133,7 @@
 │   │                                  • --analyze-tracetool FILE  (tracetool dump → Solar 분석)
 │   ├── prompts.py                  ← Solar 프롬프트 4종
 │   ├── parse_trace.py              ← xv6 로그 → JSON
-│   ├── llm_hint.py                 ← W10 통계 → hints.txt
+│   ├── llm_hint.py                 ← batch 통계 → hints.txt
 │   ├── evaluator.py                ← turnaround / fairness 메트릭
 │   ├── viz.py                      ← Gantt + 막대 차트
 │   └── requirements.txt
@@ -201,7 +201,7 @@ TRACE tick=... pid=... pri=2 slice=...     # MLFQ가 LLM 힌트 받아들임
 EXIT  pid=... name=cpu_burner ... final_pri=2
 ```
 
-### 4) W10 batch hint 흐름 (참고)
+### 4) Batch hint 흐름 (참고)
 ```bash
 # 1. xv6에서 baseline 워크로드를 돌리고 콘솔 로그를 캡처해둔 뒤:
 python parse_trace.py qemu_baseline.log --output baseline.json
@@ -216,7 +216,7 @@ TRACE ... / EXIT ...                       # LLM-guided 트레이스 캡처
 # 4. baseline vs LLM 비교 차트
 python parse_trace.py qemu_llm.log --output llm.json
 python evaluator.py --baseline baseline.json --llm llm.json
-python viz.py --baseline baseline.json --llm llm.json --out-dir docs/charts/w10
+python viz.py --baseline baseline.json --llm llm.json --out-dir docs/charts/batch_demo
 ```
 
 ---
@@ -237,7 +237,7 @@ Solar Pro 3는 JSON을 반환합니다. 그 JSON에서 우리가 추출하는 �
 
 ## 8. 강의계획서 요구사항 체크리스트
 
-| 요구사항 (W9 README 기준) | 충족 위치 |
+| 요구사항 (강의계획서 기준) | 충족 위치 |
 |---|---|
 | OS 개념의 **substantive** 구현 | MLFQ, syscall path, spinlock, sleep/wakeup 모두 실제 xv6 커널 C |
 | LLM thin-wrapper **금지** | LLM 출력은 syscall 경계에서 2비트 정수로 축약 |

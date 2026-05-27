@@ -1,5 +1,5 @@
 {
-  "source_log": "../../docs/charts/w13/io_heavy/baseline.log",
+  "source_log": "../../docs/charts/integration/io_heavy/baseline.log",
   "events": [
     {
       "kind": "trace",

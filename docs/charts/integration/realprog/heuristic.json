@@ -1,5 +1,5 @@
 {
-  "source_log": "../../docs/charts/w13/realprog/heuristic.log",
+  "source_log": "../../docs/charts/integration/realprog/heuristic.log",
   "events": [
     {
       "kind": "trace",

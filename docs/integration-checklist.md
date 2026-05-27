@@ -96,9 +96,9 @@ $ threadtest
 # haneol (Process)
 $ ps
 PID  PPID  STATE    PRIO  SZ        NAME
-1    0     sleep    10    12288     init
-$ setprio 4 5
-OK pid=4 prio=5
+1    0     sleep    1     12288     init
+$ setprio 4 2
+OK pid=4 level=2
 ```
 
 각 라인이 정상 출력되면 통합 성공.

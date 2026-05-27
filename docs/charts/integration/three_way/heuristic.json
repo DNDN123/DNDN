@@ -1,5 +1,5 @@
 {
-  "source_log": "../../docs/charts/w13/three_way/heuristic.log",
+  "source_log": "../../docs/charts/integration/three_way/heuristic.log",
   "events": [
     {
       "kind": "trace",

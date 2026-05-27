@@ -87,7 +87,7 @@ sudo apt install -y gcc-riscv64-unknown-elf qemu-system-misc python3-venv
 cd integration/host
 python3 -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt requests
+pip install -r requirements.txt
 
 # .env 생성 — Solar API 키는 본인 키 사용
 cp .env.example .env
@@ -135,7 +135,7 @@ PID  PPID  STATE    PRIO  SZ        NAME
 $ setprio 1 2
 OK pid=1 level=2
 
-# 통합 데모 (W13 추가) — 백그라운드 큐 + LOW 우선순위 + 좀비 회수
+# 통합 데모 — 백그라운드 큐 + LOW 우선순위 + 좀비 회수
 $ bgq bgq.txt
 BGQ start echo
 job1_started

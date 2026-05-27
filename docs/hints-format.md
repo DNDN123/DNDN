@@ -1,6 +1,6 @@
 # Hints File Format (`hints.txt`)
 
-W10 batch hint 모드에서 LLM(또는 휴리스틱 폴백)이 추천한 **프로그램별 초기 큐 레벨**을
+Batch hint 모드에서 LLM(또는 휴리스틱 폴백)이 추천한 **프로그램별 초기 큐 레벨**을
 xv6 의 `wrunner` 가 읽어들이기 위한 가벼운 텍스트 포맷.
 
 ## 라인 포맷

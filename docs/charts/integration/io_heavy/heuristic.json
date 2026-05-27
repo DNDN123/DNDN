@@ -1,5 +1,5 @@
 {
-  "source_log": "../../docs/charts/w13/io_heavy/heuristic.log",
+  "source_log": "../../docs/charts/integration/io_heavy/heuristic.log",
   "events": [
     {
       "kind": "trace",

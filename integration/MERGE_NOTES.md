@@ -244,7 +244,7 @@ fork+wait 시퀀스로 normally 슬롯 누수가 없으면 절대 실패하지 �
   `kfork`/`kforkpri` 의 trace inheritance / `kfutex_wait` 의 lock ordering
 - 진단 방법: usertests 의 26개 중 어느 시점부터 슬롯 점유가 누적되는지 측정
   (예: 각 테스트 사이 `ps` 호출해 사용 중 슬롯 수 추적)
-- W14 후속 작업으로 보류 — 통합 데모와 발표 시연에는 영향 없으므로 차단급 결함 아님
+- 후속 작업으로 보류 — 통합 데모와 발표 시연에는 영향 없으므로 차단급 결함 아님
 
 ---
 

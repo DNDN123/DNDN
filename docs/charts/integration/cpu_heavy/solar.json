@@ -1,5 +1,5 @@
 {
-  "source_log": "../../docs/charts/w13/cpu_heavy/solar.log",
+  "source_log": "../../docs/charts/integration/cpu_heavy/solar.log",
   "events": [
     {
       "kind": "trace",

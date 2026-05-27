@@ -1,5 +1,5 @@
 {
-  "source_log": "../../docs/charts/w13/mixed/solar.log",
+  "source_log": "../../docs/charts/integration/mixed/solar.log",
   "events": [
     {
       "kind": "trace",

@@ -1,5 +1,5 @@
 {
-  "source_log": "../../docs/charts/w13/mixed/heuristic.log",
+  "source_log": "../../docs/charts/integration/mixed/heuristic.log",
   "events": [
     {
       "kind": "trace",
