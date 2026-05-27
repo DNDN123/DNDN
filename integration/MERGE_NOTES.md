@@ -203,7 +203,7 @@ WSL/QEMU 환경에서 `make qemu CPUS=2` 로 빌드/부팅/슬라이스 데모 �
 | 위험 | 영향 | 완화 |
 |---|---|---|
 | `ps` 의 priority 출력은 0..2 (MLFQ 큐) | haneol 원본은 0..20 | 출력 포맷 유지, 의미만 변경 |
-| host adapters 가 nl_shell.py 와 import 통합되어 있지 않음 | 단일 진입점 보장 정도가 약함 | 다음 단계 정리 |
+| host adapters 가 nl_shell.py 와 import 통합되어 있지 않음 | 단일 진입점 보장 정도가 약함 | 해결 (2026-05-27): `nl_shell.py --mode {process,thread}` 가 adapters를 import해 호출, 단일 진입점 완성 |
 | jinhwan 의 thread 라이브러리(thread.c, mutex.c 등) 는 통합 안 함 | userspace 추상화, xv6 안에서는 syscall 만으로 충분 | 단독 시연용으로 _sources/ 에 보존 |
 | haneol 의 `mlfq_bench.c`, `priority_test.c`, `spin.c`, `trace_test.c`, `sysinfo_test.c` | 단독 테스트 프로그램 | 통합 트리엔 미포함, _sources/ 보존 |
 | `run_eval_matrix.sh`가 `>/dev/null 2>&1`로 에러 가림 | 5.1 같은 무음 실패 재발 가능 | stderr 패치 적용 완료 (2026-05-27) |

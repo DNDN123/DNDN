@@ -32,13 +32,21 @@ host/
 
 ## 어떤 걸 언제 쓰는가
 
-| 용도 | 사용 모듈 |
+`nl_shell.py` 가 모든 NL 도메인의 단일 진입점입니다. 도메인은 `--mode` 플래그로 지정:
+
+| 용도 | 명령 |
 |---|---|
-| 자연어 → xv6 명령 한 줄 (Scheduler/MLFQ 데모) | `nl_shell.py` |
-| `ps`, `setprio` 등 프로세스 관리 자연어 | `adapters/process_bridge.py` |
-| `threadtest`, futex 관련 자연어 | `adapters/thread_bridge.py` |
-| baseline → hints.txt (배치 모드) | `llm_hint.py` |
-| 정량 평가 재실행 | `run_eval_matrix.sh` |
+| 자연어 → xv6 명령 한 줄 (Scheduler/MLFQ 데모, default) | `python nl_shell.py --once "..."` |
+| `ps`, `setprio`, `kill` 등 프로세스 관리 자연어 | `python nl_shell.py --mode process --once "..."` |
+| `threadtest`, futex 관련 자연어 | `python nl_shell.py --mode thread --once "..."` |
+| 시스템 상태 진단 (diagprog 출력) | `python nl_shell.py --diagnose-from FILE` |
+| syscall 추적 분석 (tracetool dump) | `python nl_shell.py --analyze-tracetool FILE` |
+| baseline → hints.txt (배치 모드) | `python llm_hint.py baseline.json --output hints.txt` |
+| 정량 평가 재실행 | `./run_eval_matrix.sh` |
+
+`--mode process/thread` 는 내부적으로 `adapters/process_bridge.py` / `adapters/thread_bridge.py`
+를 import해 호출합니다. 두 어댑터는 여전히 standalone (자체 `__main__`) 으로도 실행 가능하지만,
+**정식 단일 진입점은 `nl_shell.py` 한 곳**.
 
 ---
 

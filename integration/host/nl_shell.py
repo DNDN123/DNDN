@@ -462,11 +462,42 @@ def render_tracetool_analysis(result: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
+def translate_process_intent(text: str) -> str:
+    """Use adapters.process_bridge to classify NL into Intent and render the
+    resulting xv6 command. Single-entry-point bridge to haneol's domain."""
+    from adapters import process_bridge
+    intent = process_bridge.parse_nl(text)
+    reject = process_bridge.guard(intent)
+    if reject:
+        return f"# REJECT — {reject}"
+    if intent.type == "PS":
+        return "ps"
+    if intent.type == "SETPRIO":
+        return f"setprio {intent.args['pid']} {intent.args['prio']}"
+    if intent.type == "SPAWN":
+        return intent.args.get("cmd", "# SPAWN — empty cmd")
+    if intent.type == "KILL":
+        return f"kill {intent.args['pid']}"
+    if intent.type == "EXPLAIN":
+        return f"# EXPLAIN — {intent.args.get('about','')}"
+    return f"# {intent.type} — {intent.reason}"
+
+
+def translate_thread_intent(text: str) -> str:
+    """Use adapters.thread_bridge.call_solar to translate NL into a single
+    xv6 shell command. Single-entry-point bridge to jinhwan's domain."""
+    from adapters import thread_bridge
+    return thread_bridge.call_solar(text)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--once", help="single request, then exit")
     ap.add_argument("--exec", action="store_true",
                     help="(stub) forward commands to QEMU instead of printing")
+    ap.add_argument("--mode", choices=("scheduler", "process", "thread"),
+                    default="scheduler",
+                    help="which slice's NL bridge to use (default: scheduler)")
     ap.add_argument("--no-cache", action="store_true",
                     help="bypass hint cache (force a fresh Solar call)")
     ap.add_argument("--clear-cache", action="store_true",
@@ -499,6 +530,16 @@ def main():
         return 0
 
     if args.once:
+        if args.mode == "process":
+            cmd = translate_process_intent(args.once)
+            print(f"\n  mode    : process (haneol slice via adapters/process_bridge)\n"
+                  f"  xv6 cmd : $ {cmd}\n")
+            return 0
+        if args.mode == "thread":
+            cmd = translate_thread_intent(args.once)
+            print(f"\n  mode    : thread (jinhwan slice via adapters/thread_bridge)\n"
+                  f"  xv6 cmd : $ {cmd}\n")
+            return 0
         spec = translate(args.once, use_cache=not args.no_cache)
         print(render(spec))
         return 0
