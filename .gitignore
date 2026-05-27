@@ -66,3 +66,9 @@ dist/
 # Excluded to avoid duplicating committed branches AND to prevent re-committing
 # old leaked API key strings inside legacy team source files.
 integration/_sources/
+
+# Lecture-provided reference material (stock xv6, week-N assignments, etc.).
+# Kept locally as a read-only reference for parts (e.g. mkfs.c) we sometimes
+# pull from. Not part of this project's deliverable; excluded so `git add .`
+# can never accidentally commit external course material to our repo.
+lecture-repo/
