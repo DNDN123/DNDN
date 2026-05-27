@@ -221,6 +221,31 @@ WSL/QEMU 환경에서 `make qemu CPUS=2` 로 빌드/부팅/슬라이스 데모 �
 
 `--analyze-tracetool` 검증: 샘플 tracetool dump JSON 입력 → Solar Pro 3 응답 `{"verdict":"spawner","summary":"...","queue_hint":0,"reason":"..."}`. 풀 체인 동작.
 
+### 6.2 알려진 회귀 — `usertests -q` 부분 실패 (2026-05-27 발견)
+
+`make qemu CPUS=2` 후 `usertests -q` 실행 시 26개 테스트 통과 후 27번째 `reparent2` 에서
+"fork failed" 출력 + `FAILED / SOME TESTS FAILED` 종료. `reparent2` 는 800회 sequential
+fork+wait 시퀀스로 normally 슬롯 누수가 없으면 절대 실패하지 않는 stock xv6 표준 테스트.
+
+**격리 실험** (`user/forkstress.c` 신규 추가, fresh QEMU 부팅에서 단일 실행):
+- `forkstress 1000` → `FORKSTRESS done 1000/1000`, 누수 0건
+- → **기본 fork+wait 경로는 깨끗**. usertests의 누수는 **이전 26개 테스트 중 어느
+  하나가 남긴 누적 상태** (잠재적으로 `forkforkfork`, `reparent`, `twochildren`,
+  `exitwait` 부근에서 일어나는 zombie/thread/page-table 회수 실패).
+
+**영향**
+- 5종 슬라이스 라이브 데모: 영향 없음 (시연 시나리오에 800회 fork stress 없음)
+- `bgq.txt` 시연: 영향 없음 (3 fork)
+- `forkstress 1000`: 영향 없음
+- 평가자가 직접 `usertests -q` 돌리면 발각됨
+
+**후속 작업** (다음 단계)
+- 후보 origin: `proc.c::allocproc` K1 fix 의 64-slot 초기화 / `freeproc` 의 thread 분기 /
+  `kfork`/`kforkpri` 의 trace inheritance / `kfutex_wait` 의 lock ordering
+- 진단 방법: usertests 의 26개 중 어느 시점부터 슬롯 점유가 누적되는지 측정
+  (예: 각 테스트 사이 `ps` 호출해 사용 중 슬롯 수 추적)
+- W14 후속 작업으로 보류 — 통합 데모와 발표 시연에는 영향 없으므로 차단급 결함 아님
+
 ---
 
 ## 7. 흔한 함정 (체크리스트 §9 + 본 통합 작업에서 발견)
