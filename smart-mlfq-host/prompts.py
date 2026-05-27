@@ -96,6 +96,43 @@ Output:
 """
 
 
+TRACETOOL_ANALYZE_PROMPT = """\
+You are a system-call behavior analyst for an xv6 process. You will receive
+the JSON output from `tracetool dump`, which has shape:
+
+  {{"pid": <int>, "traced": 1, "total": <int>, "errors": <int>,
+   "calls": {{"<syscall_name>": <count>, ...}}}}
+
+Each call count is how many times that syscall was invoked while tracing
+was on. `total` is the sum, `errors` is how many of those returned <0.
+
+Your task is to classify the process's behavior pattern and flag anything
+unusual. Consider:
+  - Heavy `read`/`write`/`pipe` → I/O-bound, would benefit from HIGH queue
+  - Heavy `fork`/`exec` → spawning many children (shell, fork bomb risk)
+  - High `errors`/`total` ratio → failing operations, possibly broken or hostile
+  - `kill` or `unlink` use → potentially destructive
+  - Repeated `trace_on`/`trace_off` → observer-effect, suspicious
+  - Few syscalls with high `wait`/`pause` → mostly idle or waiting
+
+Output a single JSON object with exactly these keys, no markdown fences:
+
+  {{
+    "verdict":  "one-word label: io_heavy | cpu_heavy | spawner | idle | failing | suspicious | normal",
+    "summary":  "one English sentence describing the pattern",
+    "concerns": ["short concern strings, [] if none"],
+    "queue_hint": 0 | 1 | 2,
+    "reason":   "one sentence why that queue level"
+  }}
+
+Now analyze. Respond ONLY with the JSON object.
+
+Input:
+{trace_json}
+Output:
+"""
+
+
 PRIORITY_RECOMMENDATION_PROMPT_FEWSHOT = """\
 You are a CPU scheduling advisor for an xv6 kernel running a 3-level
 Multi-Level Feedback Queue (MLFQ) scheduler. Priority levels:

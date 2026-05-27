@@ -46,7 +46,7 @@ import sys
 import time
 from pathlib import Path
 
-from prompts import NL_TO_SPEC_PROMPT, DIAGNOSE_PROMPT
+from prompts import NL_TO_SPEC_PROMPT, DIAGNOSE_PROMPT, TRACETOOL_ANALYZE_PROMPT
 
 
 # Cache for natural-language → spec results so repeated requests skip
@@ -370,6 +370,109 @@ def render_diagnosis(result: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
+TRACETOOL_LINE_RE = re.compile(
+    r'(\{"pid"\s*:\s*\d+[^\n}]*"calls"\s*:\s*\{[^}]*\}\s*\})'
+)
+
+
+def _extract_tracetool_json(raw: str) -> str | None:
+    """Find the tracetool dump JSON line in raw text (may be surrounded by
+    QEMU console noise). Returns the JSON substring or None."""
+    m = TRACETOOL_LINE_RE.search(raw)
+    return m.group(1) if m else None
+
+
+def analyze_tracetool(input_path: str | None) -> dict:
+    """Read tracetool dump JSON (from file or stdin), call Solar with
+    TRACETOOL_ANALYZE_PROMPT, return the structured verdict."""
+    if input_path:
+        with open(input_path) as f:
+            raw = f.read()
+    else:
+        print("[nl_shell] paste tracetool dump JSON, end with Ctrl-D:")
+        raw = sys.stdin.read()
+
+    snippet = _extract_tracetool_json(raw) or raw.strip()
+    try:
+        trace = json.loads(snippet)
+    except json.JSONDecodeError as e:
+        return {"error": f"could not parse tracetool JSON: {e}",
+                "raw_preview": snippet[:200]}
+
+    if "calls" not in trace:
+        return {"error": "input has no 'calls' field — not a tracetool dump?",
+                "trace": trace}
+
+    if not HAVE_OPENAI:
+        return {"error": "openai SDK not installed", "trace": trace}
+    key = os.getenv("UPSTAGE_API_KEY")
+    if not key or key == "your_api_key_here":
+        # Mechanical fallback when no API key
+        calls = trace.get("calls", {})
+        verdict = "normal"
+        io_share = sum(calls.get(k, 0) for k in ("read", "write", "pipe"))
+        spawn_share = sum(calls.get(k, 0) for k in ("fork", "exec"))
+        if trace.get("errors", 0) * 2 > trace.get("total", 1):
+            verdict = "failing"
+        elif spawn_share > 4 and spawn_share * 2 > trace.get("total", 0):
+            verdict = "spawner"
+        elif io_share * 2 > trace.get("total", 1):
+            verdict = "io_heavy"
+        return {
+            "verdict": verdict,
+            "summary": "no API key — mechanical classification only",
+            "concerns": [],
+            "queue_hint": 0 if verdict == "io_heavy" else 1,
+            "reason": "fallback heuristic",
+            "trace": trace,
+        }
+
+    base = os.getenv("UPSTAGE_BASE_URL", "https://api.upstage.ai/v1")
+    model = os.getenv("UPSTAGE_MODEL", "solar-pro3")
+    effort = os.getenv("UPSTAGE_REASONING_EFFORT", "low")
+    client = OpenAI(api_key=key, base_url=base)
+    prompt = TRACETOOL_ANALYZE_PROMPT.format(trace_json=json.dumps(trace))
+
+    try:
+        resp = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.0,
+            max_tokens=512,
+            extra_body={"reasoning_effort": effort},
+        )
+        text = resp.choices[0].message.content.strip()
+        if text.startswith("```"):
+            text = text.strip("`")
+            if text.lower().startswith("json"):
+                text = text[4:].strip()
+        result = json.loads(text)
+        result["trace"] = trace
+        return result
+    except Exception as e:
+        return {"error": f"Solar call failed: {type(e).__name__}: {e}",
+                "trace": trace}
+
+
+def render_tracetool_analysis(result: dict) -> str:
+    if "error" in result:
+        return f"[nl_shell] analyze-tracetool error: {result['error']}\n"
+    lines = ["=" * 55, "  Tracetool LLM Analysis"]
+    trace = result.get("trace", {})
+    lines.append(f"  pid={trace.get('pid','?')}  "
+                 f"total={trace.get('total','?')}  "
+                 f"errors={trace.get('errors','?')}")
+    lines.append("-" * 55)
+    lines.append(f"  verdict : {result.get('verdict','?')}")
+    lines.append(f"  summary : {result.get('summary','?')}")
+    for c in result.get("concerns", []):
+        lines.append(f"  ⚠ concern : {c}")
+    if "queue_hint" in result:
+        lines.append(f"  → suggested queue: {result['queue_hint']} "
+                     f"({result.get('reason','')})")
+    return "\n".join(lines) + "\n"
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--once", help="single request, then exit")
@@ -382,12 +485,20 @@ def main():
     ap.add_argument("--diagnose-from", metavar="FILE",
                     help="run system diagnosis using a diagprog output file"
                          " (use '-' for stdin)")
+    ap.add_argument("--analyze-tracetool", metavar="FILE", dest="analyze_tracetool",
+                    help="analyze tracetool dump JSON (use '-' for stdin)")
     args = ap.parse_args()
 
     if args.diagnose_from:
         path = None if args.diagnose_from == "-" else args.diagnose_from
         result = diagnose(path)
         print(render_diagnosis(result))
+        return 0
+
+    if args.analyze_tracetool:
+        path = None if args.analyze_tracetool == "-" else args.analyze_tracetool
+        result = analyze_tracetool(path)
+        print(render_tracetool_analysis(result))
         return 0
 
     if args.clear_cache:
