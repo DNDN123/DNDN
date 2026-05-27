@@ -2,7 +2,7 @@
 // =================================
 // Added: SYS_setpri (30), SYS_getstats (31), SYS_settrace (32), SYS_forkpri (33)
 //
-// Team-wide syscall number allocation (W13 integration plan):
+// Team-wide syscall number allocation (integration plan):
 //   22..24  reserved for Syscall slice (minju): trace_on/off/stats
 //   25..29  reserved for Thread   slice (jinhwan): thread_*/futex_*
 //   30..33  Scheduler slice (hyunsung): this block

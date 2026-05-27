@@ -44,7 +44,7 @@
 | `haneol` | Process | `sys_ps` + NL Intent 브리지 + 안전 가드 |
 | `minju` | Syscall | 통합 syscall 후킹 + trace JSON |
 
-> ⚠️ `jinhwan / haneol / minju` 의 구체 작업 항목은 W13 통합 시점에 각 브랜치의
+> ⚠️ `jinhwan / haneol / minju` 의 구체 작업 항목은 통합 시점에 각 브랜치의
 > README 를 참조하세요. 본 저장소(`hyunsung` 브랜치)는 **Scheduler 슬라이스**만 다룹니다.
 
 각 슬라이스는 *"이 모듈이 망해도 본인 단독 데모가 가능"* 한 형태로 설계되어 있어서,
@@ -69,7 +69,7 @@
 | 항목 | 예정 주차 | 상태 |
 |---|---|---|
 | 정량적 3-way 비교 (RR baseline vs MLFQ vs MLFQ+LLM) | W12 | ✅ |
-| 다른 팀원 슬라이스와 통합 | W13 | ⏳ 예정 |
+| 다른 팀원 슬라이스와 통합 | — | ✅ 완료 (2026-05) |
 | 최종 영문 기술 보고서 + 데모 영상 | W14 | ⏳ 예정 |
 
 ---
@@ -142,10 +142,12 @@
 │   ├── workloads/                  ← 워크로드 spec 6종
 │   └── README.md                   ← 패치 적용/검증 가이드
 └── docs/
-    ├── syscall-allocation.md       ← 4팀 syscall 번호 분배표 (W13 통합 기준)
+    ├── syscall-allocation.md       ← 4팀 syscall 번호 분배표 (통합 기준)
     ├── trace-format.md             ← TRACE/EXIT 라인 정식 스펙
     ├── hints-format.md             ← hints.txt 포맷
     ├── w11-hello-world.md          ← W11 시연 재현 절차
+    ├── integration-checklist.md    ← 통합일 순서·충돌 해결
+    ├── security-policy.md          ← API 키 보관 + 사고 대응
     └── charts/                     ← 실험 결과 차트
 ```
 

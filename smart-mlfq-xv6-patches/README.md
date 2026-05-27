@@ -71,8 +71,10 @@ int settrace(int pid, int on);  // pid=0 means self. trace 토글
 int forkpri(int level);          // level=0/1/2. priority를 갖고 fork
 ```
 
-기존 syscall(`setpri`, `getstats`)는 번호도 시그니처도 그대로입니다.
-호스트 Python 측 변경은 불필요합니다.
+전체 4종(`setpri` / `getstats` / `settrace` / `forkpri`)이 syscall 번호
+30~33을 사용합니다. 통합 시 다른 슬라이스와의 번호 충돌을 피하기
+위해 22~25에서 옮겨왔습니다 — 자세한 분배표는 `docs/syscall-allocation.md`
+참고. 시그니처와 호스트 Python 측 코드는 변경 없음.
 
 ## ✅ 검증 상태
 
