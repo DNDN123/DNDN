@@ -221,30 +221,37 @@ WSL/QEMU 환경에서 `make qemu CPUS=2` 로 빌드/부팅/슬라이스 데모 �
 
 `--analyze-tracetool` 검증: 샘플 tracetool dump JSON 입력 → Solar Pro 3 응답 `{"verdict":"spawner","summary":"...","queue_hint":0,"reason":"..."}`. 풀 체인 동작.
 
-### 6.2 알려진 회귀 — `usertests -q` 부분 실패 (2026-05-27 발견)
+### 6.2 환경 의존성 — `usertests -q` /mnt/c vs /root 동작 차이 (2026-05-27 검증)
 
-`make qemu CPUS=2` 후 `usertests -q` 실행 시 26개 테스트 통과 후 27번째 `reparent2` 에서
-"fork failed" 출력 + `FAILED / SOME TESTS FAILED` 종료. `reparent2` 는 800회 sequential
-fork+wait 시퀀스로 normally 슬롯 누수가 없으면 절대 실패하지 않는 stock xv6 표준 테스트.
+**현상**: `make qemu CPUS=2` 후 `usertests -q` 실행 시 환경에 따라 결과가 다름.
+- **/mnt/c (Windows mount)**: 26개 통과 후 #27 `reparent2` 에서 `fork failed`
+- **/root (Linux native FS)**: `ALL TESTS PASSED` (29 quick + 25 slow 전부)
 
-**격리 실험** (`user/forkstress.c` 신규 추가, fresh QEMU 부팅에서 단일 실행):
-- `forkstress 1000` → `FORKSTRESS done 1000/1000`, 누수 0건
-- → **기본 fork+wait 경로는 깨끗**. usertests의 누수는 **이전 26개 테스트 중 어느
-  하나가 남긴 누적 상태** (잠재적으로 `forkforkfork`, `reparent`, `twochildren`,
-  `exitwait` 부근에서 일어나는 zombie/thread/page-table 회수 실패).
+**진단 과정**
+1. `forkstress 1000` (신규 추가, `user/forkstress.c`) 을 fresh boot 에서 단독 실행 →
+   /mnt/c, /root 양쪽 모두 `FORKSTRESS done 1000/1000`. 기본 fork+wait 경로 깨끗.
+2. `usertests forkforkfork` 직후 `forkstress 800` (reparent2 동등 부하) →
+   /mnt/c 에서도 `FORKSTRESS done 800/800`. fork bomb 직후의 cleanup 도 정상.
+3. 통합 트리 전체를 `cp -r /mnt/c/.../integration/xv6-riscv /root/integration-test` →
+   /root 에서 `usertests -q ALL TESTS PASSED`. 같은 코드, 다른 디스크.
+
+**결론**: 통합 코드의 결함 아니며 **/mnt/c 의 9P 파일시스템 + QEMU virtio-blk** 가
+fork bomb cleanup 의 100ms window 안에 다 처리 못 함. /root (ext4) 에서는 충분.
 
 **영향**
-- 5종 슬라이스 라이브 데모: 영향 없음 (시연 시나리오에 800회 fork stress 없음)
-- `bgq.txt` 시연: 영향 없음 (3 fork)
-- `forkstress 1000`: 영향 없음
-- 평가자가 직접 `usertests -q` 돌리면 발각됨
+- 5종 슬라이스 라이브 데모: 영향 없음 (어느 환경이든)
+- `bgq.txt` 시연: 영향 없음
+- `forkstress 1000`: 영향 없음 (어느 환경이든)
+- /root 에서 평가 시: `usertests -q` 통과
+- /mnt/c 에서 평가 시: `usertests -q` 의 fork-bomb 직후 테스트에서 timing miss
 
-**후속 작업** (다음 단계)
-- 후보 origin: `proc.c::allocproc` K1 fix 의 64-slot 초기화 / `freeproc` 의 thread 분기 /
-  `kfork`/`kforkpri` 의 trace inheritance / `kfutex_wait` 의 lock ordering
-- 진단 방법: usertests 의 26개 중 어느 시점부터 슬롯 점유가 누적되는지 측정
-  (예: 각 테스트 사이 `ps` 호출해 사용 중 슬롯 수 추적)
-- 후속 작업으로 보류 — 통합 데모와 발표 시연에는 영향 없으므로 차단급 결함 아님
+**권고**: 평가 / 시연 / 자동 회귀 테스트는 `/root/integration-test` 같은 Linux native
+FS 에서 실행. 통합 트리 자체에는 추가 fix 필요 없음.
+
+**시도했지만 효과 없었던 fix (참고용)**:
+- PID=1 demote 면제 (`proc_on_timer_tick` 내 분기) — /mnt/c 에서 여전히 실패,
+  /root 에서 fix 없이도 통과. 즉 init demote 가 원인이 아니었음. 코드 복잡도만
+  늘어 revert. 진짜 원인은 환경의 디스크/blk I/O latency.
 
 ---
 

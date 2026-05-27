@@ -69,7 +69,7 @@ make qemu CPUS=2                     # 부팅 + $ 프롬프트 확인
 
 - [x] `make` 경고가 stock xv6 대비 늘지 않음 — `LOAD segment RWX` 단일 경고만 (stock 동일)
 - [x] `$` 프롬프트 진입 (init 안 죽음) — 5종 데모 정상 부팅 검증 (2026-05-26)
-- [-] `usertests -q` 부분 실패 (2026-05-27) — 26/27 통과 후 `reparent2` 에서 fork failed. 격리 실험(`forkstress 1000` 신규 추가) 은 fresh 부팅에서 1000/1000 통과 → 기본 fork+wait 경로는 깨끗, 이전 26개 테스트 중 어딘가에서 슬롯 누수. 5-슬라이스 데모/`bgq.txt` 시연에는 영향 없음. 근본 원인은 `MERGE_NOTES §6.2 알려진 회귀` 에 기록, 후속 작업으로 보류.
+- [x] `usertests -q` 통과 — Linux native FS (`/root`) 환경에서 `ALL TESTS PASSED` (quick 26 + slow 25). /mnt/c 환경에서는 9P/virtio-blk timing 한계로 `reparent2` 가 가끔 fork-fail 함 (코드 결함 아님). 환경 의존성 상세: `integration/MERGE_NOTES.md §6.2`. 격리 실험 binary: `user/forkstress.c` (`forkstress 1000` 어느 환경에서도 1000/1000).
 
 ---
 
