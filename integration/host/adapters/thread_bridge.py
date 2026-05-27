@@ -18,8 +18,10 @@ import requests
 
 # ── 설정 ──────────────────────────────────────────────────────────────────────
 
-SOLAR_API_KEY = os.environ.get("UPSTAGE_API_KEY") or os.environ.get("SOLAR_API_KEY")
-SOLAR_URL     = "https://api.upstage.ai/v1/solar/chat/completions"
+SOLAR_API_KEY  = os.environ.get("UPSTAGE_API_KEY") or os.environ.get("SOLAR_API_KEY")
+SOLAR_BASE_URL = os.environ.get("UPSTAGE_BASE_URL", "https://api.upstage.ai/v1")
+SOLAR_URL      = f"{SOLAR_BASE_URL}/chat/completions"
+SOLAR_MODEL    = os.environ.get("UPSTAGE_MODEL", "solar-pro3")
 
 # 통합 트리 기본 위치 (host/ 와 같은 레벨의 xv6-riscv/)
 _DEFAULT_XV6 = os.path.join(
@@ -73,7 +75,7 @@ def call_solar(user_input: str) -> str:
                 "Content-Type":  "application/json",
             },
             json={
-                "model": "solar-pro",
+                "model": SOLAR_MODEL,
                 "messages": [
                     {"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user",   "content": user_input},

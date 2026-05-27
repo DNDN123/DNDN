@@ -50,8 +50,8 @@ XV6_DIR = os.environ.get(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "xv6-riscv"),
 )
 SOLAR_API_KEY = os.environ.get("UPSTAGE_API_KEY") or os.environ.get("SOLAR_API_KEY")
-SOLAR_BASE_URL = "https://api.upstage.ai/v1/solar"
-SOLAR_MODEL = "solar-pro2"
+SOLAR_BASE_URL = os.environ.get("UPSTAGE_BASE_URL", "https://api.upstage.ai/v1")
+SOLAR_MODEL = os.environ.get("UPSTAGE_MODEL", "solar-pro3")
 
 # Programs the LLM is allowed to spawn. PID-1 (init) is never killable.
 # K4 fix: priority_test / trace_test / sysinfo_test were dropped at
