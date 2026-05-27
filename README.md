@@ -127,20 +127,34 @@
 .
 ├── README.md                       ← 이 파일
 ├── .gitignore
-├── smart-mlfq-host/                ← 호스트 측 Python (LLM 브리지)
+├── smart-mlfq-host/                ← 호스트 측 Python (단독 슬라이스)
 │   ├── nl_shell.py                 ← W11 자연어 REPL ⭐
-│   ├── prompts.py                  ← Solar 프롬프트 2종
+│   │                                  • --diagnose-from FILE   (diagprog → Solar 진단)
+│   │                                  • --analyze-tracetool FILE  (tracetool dump → Solar 분석)
+│   ├── prompts.py                  ← Solar 프롬프트 4종
 │   ├── parse_trace.py              ← xv6 로그 → JSON
 │   ├── llm_hint.py                 ← W10 통계 → hints.txt
 │   ├── evaluator.py                ← turnaround / fairness 메트릭
 │   ├── viz.py                      ← Gantt + 막대 차트
 │   └── requirements.txt
-├── smart-mlfq-xv6-patches/         ← xv6 커널/유저 패치 묶음
+├── smart-mlfq-xv6-patches/         ← xv6 커널/유저 패치 묶음 (단독 슬라이스)
 │   ├── apply_patches.sh            ← 깨끗한 xv6-riscv 트리에 적용
 │   ├── kernel/                     ← proc.c, trap.c, sysproc.c, ...
 │   ├── user/                       ← nlrun.c, wrunner.c, *_burner.c
 │   ├── workloads/                  ← 워크로드 spec 6종
 │   └── README.md                   ← 패치 적용/검증 가이드
+├── integration/                    ← ⭐ 4팀 슬라이스 통합 결과 (단일 buildable 트리)
+│   ├── README.md                   ← 통합 개요 + 정량 평가 결과 요약
+│   ├── MERGE_NOTES.md              ← 충돌 결정 / K1~K4 fix 라벨 매핑
+│   ├── xv6-riscv/                  ← 통합 커널 + user 빌드 대상
+│   │   ├── kernel/                 ← MLFQ + trace + thread/futex + ps 모두
+│   │   ├── user/                   ← nlrun, wrunner, threadtest, tracetool, ps, setprio, ⭐ bgq
+│   │   └── workloads/              ← cpu_heavy/io_heavy/mixed/three_way/realprog/bgq
+│   └── host/                       ← 통합 호스트 Python (smart-mlfq-host 의 사본 + 어댑터)
+│       ├── nl_shell.py             ← 동일 (--analyze-tracetool 포함)
+│       └── adapters/
+│           ├── process_bridge.py   ← haneol — Process Intent 브리지
+│           └── thread_bridge.py    ← jinhwan — Thread Intent 브리지
 └── docs/
     ├── syscall-allocation.md       ← 4팀 syscall 번호 분배표 (통합 기준)
     ├── trace-format.md             ← TRACE/EXIT 라인 정식 스펙
@@ -148,8 +162,12 @@
     ├── w11-hello-world.md          ← W11 시연 재현 절차
     ├── integration-checklist.md    ← 통합일 순서·충돌 해결
     ├── security-policy.md          ← API 키 보관 + 사고 대응
-    └── charts/                     ← 실험 결과 차트
+    └── charts/
+        ├── w12/                    ← W12 단독-슬라이스 정량 평가 결과
+        └── integration/            ← 통합 트리 정량 평가 결과 (재실행)
 ```
+
+> 단독 슬라이스(`smart-mlfq-host/`, `smart-mlfq-xv6-patches/`)는 hyunsung 본인 작업물만 들어있어 백업 데모용으로 단독 빌드 가능. `integration/` 은 4팀 합본으로 통합 데모용. 둘은 의도적으로 공존합니다.
 
 ---
 
