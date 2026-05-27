@@ -24,11 +24,15 @@
 → 세 슬라이스가 **22~24를 동시에 사용**. 어느 두 슬라이스든 머지하면 즉시 컴파일
 실패 또는 silently wrong dispatch.
 
-## 정리 후 (2026-05-20 기준)
+## 정리 후 (2026-05-26 통합 시점 최종)
 
-- `hyunsung`: **30~33으로 이동 완료** (`smart-mlfq-xv6-patches/kernel/syscall.h`)
-- `minju`:    22~24 유지 권장 (가장 먼저 commit, 트레이싱은 LLM 진단의 입구)
-- `jinhwan`:  **25~29로 이동 필요** — 두 사람 합의 후 본인이 변경
+- `hyunsung`: **30~33으로 이동 완료** (`smart-mlfq-xv6-patches/kernel/syscall.h`, `integration/xv6-riscv/kernel/syscall.h`)
+- `minju`:    **22~24 유지** (가장 먼저 commit, 트레이싱은 LLM 진단의 입구)
+- `jinhwan`:  **25~29로 이동 완료** (통합 시 `integration/xv6-riscv/kernel/syscall.h`에 적용)
+- `haneol`:   **34~35로 신규 배정** (`sys_ps`=34, `sys_sysinfo`=35; 통합 시 합의)
+
+모든 슬라이스 충돌 해결. NELEM(syscalls)=64 안에 들어감.
+실제 적용 표는 `integration/MERGE_NOTES.md §1` 참조.
 
 ## 변경 절차
 

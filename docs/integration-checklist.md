@@ -4,17 +4,21 @@
 `jinhwan` Thread)를 단일 xv6 트리에 머지하는 작업 순서. 통합일 당일 패닉을
 피하기 위한 체크리스트.
 
+> **Status (2026-05-27)**: 통합 작업은 2026-05-26~05-27에 완료. 본 체크리스트는
+> 그 작업 순서의 reference. 각 항목의 결과는 `integration/MERGE_NOTES.md` 및
+> `integration/README.md` §"진행 상황" 에 기록.
+>
 > 사전 가정: 각 슬라이스가 본인 브랜치에서 단독 빌드·시연 가능 상태.
 
 ---
 
 ## 0. 통합 전 합의 (회의 1회, ~30분)
 
-- [ ] `docs/syscall-allocation.md` 표를 확정 (현재 안: minju 22~24 / jinhwan 25~29 / hyunsung 30~33 / haneol 34~)
-- [ ] 본인 외 슬라이스의 syscall 번호 이동이 필요한 사람은 **이 회의 직후** 본인 브랜치에서 `kernel/syscall.h` 한 파일만 수정 후 push
-- [ ] MLFQ 단일화 방향 합의 → **Scheduler = hyunsung 단일 채택**, haneol의 `proc.c` 안 MLFQ 블록 제거 합의
-- [ ] 호스트 NL 브리지 단일화 방향 합의 → **`smart-mlfq-host/nl_shell.py`를 기준**, `nl_bridge.py`(haneol) + `solar_bridge.py`(jinhwan)는 자기 슬라이스 고유 Intent만 모듈로 분리
-- [ ] 통합 작업자 1명 지정 (보통 Scheduler 담당자 = hyunsung)
+- [x] `docs/syscall-allocation.md` 표 확정 (minju 22~24 / jinhwan 25~29 / hyunsung 30~33 / haneol 34~35) — `MERGE_NOTES.md §1`
+- [x] 본인 외 슬라이스의 syscall 번호 이동 — 통합 시 일괄 적용 (`integration/xv6-riscv/kernel/syscall.h`)
+- [x] MLFQ 단일화 → hyunsung 채택, haneol 0..20 priority DROP (`MERGE_NOTES.md §2.1`)
+- [x] 호스트 NL 브리지 단일화 → `nl_shell.py` 기준, `nl_bridge.py`/`solar_bridge.py` 는 `adapters/` 모듈로 분리
+- [x] 통합 작업자: hyunsung (Scheduler 담당)
 
 ---
 
@@ -63,9 +67,9 @@ make                                 # 컴파일 통과해야 다음 단계
 make qemu CPUS=2                     # 부팅 + $ 프롬프트 확인
 ```
 
-- [ ] `make` 경고가 stock xv6 대비 늘지 않음
-- [ ] `$` 프롬프트 진입 (init 안 죽음)
-- [ ] `usertests -q` 통과 (적어도 hyunsung 단독 브랜치와 동일 수준)
+- [x] `make` 경고가 stock xv6 대비 늘지 않음 — `LOAD segment RWX` 단일 경고만 (stock 동일)
+- [x] `$` 프롬프트 진입 (init 안 죽음) — 5종 데모 정상 부팅 검증 (2026-05-26)
+- [ ] `usertests -q` 통과 — **미실행** (5-슬라이스 라이브 데모로 핵심 경로 검증, 전체 회귀 테스트는 후속 작업)
 
 ---
 
@@ -110,8 +114,8 @@ XV6_DIR=/path/to/integration/xv6-riscv \
     ./run_eval_matrix.sh
 ```
 
-- [ ] 단독 슬라이스와 동등하거나 더 좋은 결과 (다른 슬라이스가 스케줄러를 망가뜨리지 않았는지 확인)
-- [ ] `docs/charts/integration/combined_report.txt` commit
+- [x] 단독 슬라이스와 동등하거나 더 좋은 결과 — `three_way` Δheur −7.3%, Δllm −5.8%; 회귀 없음 (`integration/MERGE_NOTES.md §5.3`)
+- [x] `docs/charts/integration/combined_report.txt` commit — 5b810d3
 
 ---
 
