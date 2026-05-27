@@ -56,3 +56,9 @@ charts*/
 build/
 dist/
 *.egg-info/
+
+# Integration source snapshots — frozen copies of team branches (also on GitHub
+# as separate branches). Local-only working copy per MERGE_NOTES "원본 보호 원칙".
+# Excluded to avoid duplicating committed branches AND to prevent re-committing
+# old leaked API key strings inside legacy team source files.
+integration/_sources/

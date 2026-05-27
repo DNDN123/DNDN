@@ -1,0 +1,18 @@
+# Smart-MLFQ workload: real_programs
+# Uses xv6's actual built-in user programs (not synthetic burners) to show
+# the scheduler under genuinely diverse system calls.
+#
+# Each program is invoked with one argument (wrunner's format limitation).
+#   cat <file>  — file I/O, read-and-print
+#   wc  <file>  — file I/O + CPU (count words)
+#   ls  <dir>   — directory traversal
+#
+# Expected behaviour with default MLFQ (no hints):
+#   cat README ⇒ stays near HIGH (sleeps on disk reads — I/O-aware retention)
+#   wc  README ⇒ mostly HIGH, mild demotion if file is large
+#   ls         ⇒ very short, HIGH only
+cat README     0
+wc  README     0
+ls  .          1
+cat cpu_heavy.txt 2
+wc  mixed.txt  3

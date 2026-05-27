@@ -1,0 +1,7 @@
+# bgq sample: 3 jobs run sequentially at LOW priority
+# Each line is one command (program + optional args).
+# Blank lines and "#" comments are skipped.
+
+echo job1_started
+cpu_burner 50000
+echo job3_finished
