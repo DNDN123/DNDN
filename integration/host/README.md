@@ -17,11 +17,11 @@ host/
 ├── nl_shell.py             ← ⭐ 주 진입점: 자연어 → xv6 명령
 ├── prompts.py              ← Solar 프롬프트 정의
 ├── parse_trace.py          ← xv6 콘솔 로그 → JSON
-├── llm_hint.py             ← W10: baseline 통계 → Solar → hints.txt
+├── llm_hint.py             ← batch: baseline 통계 → Solar → hints.txt
 ├── evaluator.py            ← turnaround / fairness 메트릭 계산
 ├── viz.py                  ← Gantt + 막대 차트 생성
 ├── hello_solar.py          ← Solar API 연결 sanity 체크
-├── run_w12_matrix.sh       ← W12 3-way 평가 자동 실행 스크립트
+├── run_eval_matrix.sh      ← 3-way 평가 자동 실행 스크립트
 │
 └── adapters/               ← 다른 팀원 슬라이스 고유 Intent (선택적)
     ├── process_bridge.py   ← haneol — Process 슬라이스 NL 브리지 (sys_ps 등)
@@ -37,8 +37,8 @@ host/
 | 자연어 → xv6 명령 한 줄 (Scheduler/MLFQ 데모) | `nl_shell.py` |
 | `ps`, `setprio` 등 프로세스 관리 자연어 | `adapters/process_bridge.py` |
 | `threadtest`, futex 관련 자연어 | `adapters/thread_bridge.py` |
-| baseline → hints.txt (W10 배치 모드) | `llm_hint.py` |
-| W12 정량 평가 재실행 | `run_w12_matrix.sh` |
+| baseline → hints.txt (배치 모드) | `llm_hint.py` |
+| 정량 평가 재실행 | `run_eval_matrix.sh` |
 
 ---
 

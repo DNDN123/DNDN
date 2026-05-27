@@ -68,9 +68,9 @@
 ### 진행 중 / 예정
 | 항목 | 예정 주차 | 상태 |
 |---|---|---|
-| 정량적 3-way 비교 (RR baseline vs MLFQ vs MLFQ+LLM) | W12 | ✅ |
+| 정량적 3-way 비교 (RR baseline vs MLFQ vs MLFQ+LLM) | — | ✅ |
 | 다른 팀원 슬라이스와 통합 | — | ✅ 완료 (2026-05) |
-| 최종 영문 기술 보고서 + 데모 영상 | W14 | ⏳ 예정 |
+| 최종 영문 기술 보고서 + 데모 영상 | — | ⏳ 예정 |
 
 ---
 
@@ -106,7 +106,7 @@
 - baseline (RR) vs MLFQ vs MLFQ+LLM 3-way 매트릭스 실험
 - 평가 지표: turnaround time, response time, throughput, Jain's fairness index
 - 워크로드 6종 (`cpu_heavy`, `io_heavy`, `mixed`, `realprog`, `stress`, `three_way`)
-- 차트 자동 생성 (`run_w12_matrix.sh`)
+- 차트 자동 생성 (`run_eval_matrix.sh`)
 
 ### Week 13 — 팀 통합 (예정) ⏳
 - 4명 슬라이스 머지 → 단일 xv6 트리에서 빌드/부팅
@@ -128,7 +128,7 @@
 ├── README.md                       ← 이 파일
 ├── .gitignore
 ├── smart-mlfq-host/                ← 호스트 측 Python (단독 슬라이스)
-│   ├── nl_shell.py                 ← W11 자연어 REPL ⭐
+│   ├── nl_shell.py                 ← 자연어 REPL ⭐
 │   │                                  • --diagnose-from FILE   (diagprog → Solar 진단)
 │   │                                  • --analyze-tracetool FILE  (tracetool dump → Solar 분석)
 │   ├── prompts.py                  ← Solar 프롬프트 4종
@@ -159,11 +159,11 @@
     ├── syscall-allocation.md       ← 4팀 syscall 번호 분배표 (통합 기준)
     ├── trace-format.md             ← TRACE/EXIT 라인 정식 스펙
     ├── hints-format.md             ← hints.txt 포맷
-    ├── w11-hello-world.md          ← W11 시연 재현 절차
+    ├── hello-world.md              ← 시연 재현 절차
     ├── integration-checklist.md    ← 통합일 순서·충돌 해결
     ├── security-policy.md          ← API 키 보관 + 사고 대응
     └── charts/
-        ├── w12/                    ← W12 단독-슬라이스 정량 평가 결과
+        ├── standalone/             ← 단독-슬라이스 정량 평가 결과
         └── integration/            ← 통합 트리 정량 평가 결과 (재실행)
 ```
 
@@ -190,7 +190,7 @@ cp .env.example .env       # UPSTAGE_API_KEY 입력 (없어도 동작)
 python3 hello_solar.py     # 'ok' 가 뜨면 OK
 ```
 
-### 3) W11 자연어 → 실행 흐름
+### 3) 자연어 → 실행 흐름
 ```bash
 # 호스트: 자연어를 xv6 명령으로 변환
 python nl_shell.py --once "Run a heavy job in background"
@@ -242,7 +242,7 @@ Solar Pro 3는 JSON을 반환합니다. 그 JSON에서 우리가 추출하는 �
 | OS 개념의 **substantive** 구현 | MLFQ, syscall path, spinlock, sleep/wakeup 모두 실제 xv6 커널 C |
 | LLM thin-wrapper **금지** | LLM 출력은 syscall 경계에서 2비트 정수로 축약 |
 | Public GitHub repo + 셋업/실행/데모 | 본 저장소 README (위 §6) |
-| 최종 산출물 영문 | W14 슬라이드/보고서 (작성 중) |
+| 최종 산출물 영문 | 최종 슬라이드/보고서 (작성 중) |
 | Solar Pro 3 backend | `.env.example` 의 `UPSTAGE_MODEL=solar-pro3` 기본값 |
 
 ---

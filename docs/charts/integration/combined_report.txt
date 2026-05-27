@@ -1,0 +1,146 @@
+
+### Workload: cpu_heavy ###
+
+====================================================================================
+Smart-MLFQ 3-way Evaluation Report
+====================================================================================
+  Baseline:  5 exits, 22 traces
+  Heuristic: 5 exits, 29 traces
+  LLM:       5 exits, 31 traces
+
+  Metric                     Baseline    Heuristic          LLM    Δheur%     Δllm%
+  --------------------------------------------------------------------------------
+  avg_turnaround                  1.2          4.6          7.8   283.33%   550.00%
+  median_turnaround                 1            5            8   400.00%   700.00%
+  max_turnaround                    2            6           10   200.00%   400.00%
+  p95_turnaround                  1.8          5.8          9.8   222.22%   444.44%
+  p99_turnaround                 1.96         5.96         9.96   204.08%   408.16%
+  avg_response                    0.8            3            6   275.00%   650.00%
+  p95_response                    1.0          5.0          8.8   400.00%   780.00%
+  throughput_per_tick          0.5556       0.5556       0.3846     0.00%   -30.78%
+  fairness_jain                   0.9       0.9532       0.9536     5.91%     5.96%
+  starved_pids                      0            0            0     0.00%     0.00%
+  longest_low_gap                   0            3            0     0.00%     0.00%
+
+  Program               Base TT    Heur TT     LLM TT    Δheur%     Δllm%
+  ---------------------------------------------------------------------------
+  cpu_burner                1.2        4.6        7.8   283.33%    550.0%
+
+
+### Workload: io_heavy ###
+
+====================================================================================
+Smart-MLFQ 3-way Evaluation Report
+====================================================================================
+  Baseline:  2 exits, 2123 traces
+  Heuristic: 2 exits, 2083 traces
+  LLM:       2 exits, 2013 traces
+
+  Metric                     Baseline    Heuristic          LLM    Δheur%     Δllm%
+  --------------------------------------------------------------------------------
+  avg_turnaround                177.5        182.5        205.5     2.82%    15.77%
+  median_turnaround             177.5        182.5        205.5     2.82%    15.77%
+  max_turnaround                  188          187          210    -0.53%    11.70%
+  p95_turnaround               186.95       186.55       209.55    -0.21%    12.09%
+  p99_turnaround               187.79       186.91       209.91    -0.47%    11.78%
+  avg_response                    1.5          0.5          1.5   -66.67%     0.00%
+  p95_response                   1.95         0.95         1.95   -51.28%     0.00%
+  throughput_per_tick          0.0106       0.0107       0.0095     0.94%   -10.38%
+  fairness_jain                0.9965       0.9994       0.9995     0.29%     0.30%
+  starved_pids                      0            0            0     0.00%     0.00%
+  longest_low_gap                   0            0            0     0.00%     0.00%
+
+  Program               Base TT    Heur TT     LLM TT    Δheur%     Δllm%
+  ---------------------------------------------------------------------------
+  io_burner               177.5      182.5      205.5     2.82%    15.77%
+
+
+### Workload: mixed ###
+
+====================================================================================
+Smart-MLFQ 3-way Evaluation Report
+====================================================================================
+  Baseline:  7 exits, 1295 traces
+  Heuristic: 7 exits, 549 traces
+  LLM:       7 exits, 1273 traces
+
+  Metric                     Baseline    Heuristic          LLM    Δheur%     Δllm%
+  --------------------------------------------------------------------------------
+  avg_turnaround                75.86        88.86        86.71    17.14%    14.30%
+  median_turnaround                30           88           46   193.33%    53.33%
+  max_turnaround                  232          109          222   -53.02%    -4.31%
+  p95_turnaround                227.8        104.5        213.6   -54.13%    -6.23%
+  p99_turnaround               231.16        108.1       220.32   -53.24%    -4.69%
+  avg_response                   1.86         5.86         3.71   215.05%    99.46%
+  p95_response                    4.4          9.0         10.6   104.55%   140.91%
+  throughput_per_tick           0.029       0.0625       0.0307   115.52%     5.86%
+  fairness_jain                0.3872       0.9878       0.5563   155.11%    43.67%
+  starved_pids                      0            0            0     0.00%     0.00%
+  longest_low_gap                  13           38           33   192.31%   153.85%
+
+  Program               Base TT    Heur TT     LLM TT    Δheur%     Δllm%
+  ---------------------------------------------------------------------------
+  cpu_burner                  3         85      43.33  2733.33%  1344.33%
+  io_burner                 225         99        208    -56.0%    -7.56%
+  mixed_burner               36       84.5       30.5   134.72%   -15.28%
+
+
+### Workload: three_way ###
+
+====================================================================================
+Smart-MLFQ 3-way Evaluation Report
+====================================================================================
+  Baseline:  3 exits, 1382 traces
+  Heuristic: 3 exits, 1350 traces
+  LLM:       3 exits, 1362 traces
+
+  Metric                     Baseline    Heuristic          LLM    Δheur%     Δllm%
+  --------------------------------------------------------------------------------
+  avg_turnaround               202.33       187.67       190.67    -7.25%    -5.76%
+  median_turnaround               192          156          171   -18.75%   -10.94%
+  max_turnaround                  323          314          317    -2.79%    -1.86%
+  p95_turnaround                309.9        298.2        302.4    -3.78%    -2.42%
+  p99_turnaround               320.38       310.84       314.08    -2.98%    -1.97%
+  avg_response                   0.67         0.67         0.67     0.00%     0.00%
+  p95_response                    1.0          1.8          1.0    80.00%     0.00%
+  throughput_per_tick          0.0091       0.0095       0.0094     4.40%     3.30%
+  fairness_jain                0.8207        0.803       0.7973    -2.16%    -2.85%
+  starved_pids                      0            0            0     0.00%     0.00%
+  longest_low_gap                   3            1            3   -66.67%     0.00%
+
+  Program               Base TT    Heur TT     LLM TT    Δheur%     Δllm%
+  ---------------------------------------------------------------------------
+  cpu_burner                192        156        171   -18.75%   -10.94%
+  io_burner                 323        314        317    -2.79%    -1.86%
+  mixed_burner               92         93         84     1.09%     -8.7%
+
+
+### Workload: realprog ###
+
+====================================================================================
+Smart-MLFQ 3-way Evaluation Report
+====================================================================================
+  Baseline:  5 exits, 2679 traces
+  Heuristic: 5 exits, 2685 traces
+  LLM:       5 exits, 2683 traces
+
+  Metric                     Baseline    Heuristic          LLM    Δheur%     Δllm%
+  --------------------------------------------------------------------------------
+  avg_turnaround                  278        296.8        277.4     6.76%    -0.22%
+  median_turnaround               277          285          278     2.89%     0.36%
+  max_turnaround                  286          326          284    13.99%    -0.70%
+  p95_turnaround                285.8        324.0        283.8    13.37%    -0.70%
+  p99_turnaround               285.96        325.6       283.96    13.86%    -0.70%
+  avg_response                  150.4        111.4          150   -25.93%    -0.27%
+  p95_response                  264.0        280.8        263.8     6.36%    -0.08%
+  throughput_per_tick          0.0154       0.0153       0.0154    -0.65%     0.00%
+  fairness_jain                0.9994       0.9953       0.9996    -0.41%     0.02%
+  starved_pids                      0            0            0     0.00%     0.00%
+  longest_low_gap                   1            1            1     0.00%     0.00%
+
+  Program               Base TT    Heur TT     LLM TT    Δheur%     Δllm%
+  ---------------------------------------------------------------------------
+  cat                     277.5        300      276.5     8.11%    -0.36%
+  ls                        277        326        278    17.69%     0.36%
+  wc                        279        279        278      0.0%    -0.36%
+

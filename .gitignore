@@ -50,7 +50,11 @@ user/_*
 # Trace logs / generated experiment artefacts (regenerable, keep small)
 *.log
 charts*/
-!charts_w11/
+# Eval artefacts under docs/charts/ are explicit history we want tracked
+# (W12 standalone results + W13 integration re-eval). Without this exception
+# the `charts*/` rule above would block them.
+!docs/charts/
+!docs/charts/**
 
 # Python distribution
 build/

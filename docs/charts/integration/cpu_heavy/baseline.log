@@ -1,0 +1,48 @@
+qemu-system-riscv64 -machine virt -bios none -kernel kernel/kernel -m 128M -smp 1 -nographic -global virtio-mmio.force-legacy=false -drive file=fs.img,if=none,format=raw,id=x0 -device virtio-blk-device,drive=x0,bus=virtio-mmio-bus.0
+
+xv6 kernel is booting
+
+init: starting sh
+$ wrunner cpu_heavy.txt
+TRACE tick=19 pid=3 pri=0 slice=0
+wrunner: loaded 5 items, 0 hints
+wrunner: spawn cpu_burner pid=4 (default priority)
+TRACE tick=20 pid=3 pri=0 slice=1
+TRACE tick=21 pid=4 pri=0 slice=0
+TRACE tick=21 pid=4 pri=0 slice=0
+TRACE tick=21 pid=4 pri=0 slice=0
+TRACE tick=21 pid=4 pri=0 slice=0
+TRACE tick=21 pid=4 pri=0 slice=0
+cpu_burner pid=4 done acc=159194625
+EXIT pid=4 name=cpu_burner arrival=20 completion=22 run=1 ioblock=4 final_pri=0
+TRACE tick=22 pid=4 pri=0 slice=1
+wrunner: spawn cpu_burner pid=5 (default priority)
+TRACE tick=23 pid=3 pri=1 slice=0
+TRACE tick=23 pid=5 pri=0 slice=0
+cpu_burner pid=5 done acc=1205313985
+EXIT pid=5 name=cpu_burner arrival=23 completion=24 run=1 ioblock=0 final_pri=0
+TRACE tick=24 pid=5 pri=0 slice=1
+wTRACE tick=24 pid=3 pri=1 slice=0
+cpu_burner pid=6 done acc=1769626177
+EXIT pid=6 name=cpu_burner arrival=24 completion=25 run=0 ioblock=0 final_pri=0
+TRACE tick=25 pid=6 pri=0 slice=0
+TRACE tick=26 pid=6 pri=0 slice=1
+runner: spawn cpu_burner pid=6 (default priority)
+wrunner: sTRACE tick=26 pid=3 pri=1 slice=1
+cpu_burner pid=7 done acc=1487103969
+EXIT pid=7 name=cpu_burner arrival=26 completion=27 run=0 ioblock=0 final_pri=0
+TRACE tick=27 pid=7 pri=0 slice=0
+TRACE tick=28 pid=7 pri=0 slice=1
+pawn cpu_burner pid=7 (default priority)
+wrunner: spawn cpu_burner pid=8 (default priority)
+TRACE tick=28 pid=3 pri=1 slice=2
+cpu_burner pid=8 done acc=1659683873
+EXIT pid=8 name=cpu_burner arrival=28 completion=29 run=0 ioblock=0 final_pri=0
+TRACE tick=29 pid=8 pri=0 slice=0
+TRACE tick=30 pid=3 pri=1 slice=0
+TRACE tick=30 pid=4 pri=1 slice=0
+ALL_DONE wrunner pid=3
+EXIT pid=3 name=wrunner arrival=19 completion=30 run=4 ioblock=6 final_pri=1
+TRACE tick=30 pid=3 pri=1 slice=0
+$ QEMU: Terminated
+

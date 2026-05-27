@@ -1,0 +1,270 @@
+{
+  "source_log": "../../docs/charts/w13/cpu_heavy/heuristic.log",
+  "events": [
+    {
+      "kind": "trace",
+      "tick": 23,
+      "pid": 3,
+      "pri": 0,
+      "slice": 0
+    },
+    {
+      "kind": "trace",
+      "tick": 24,
+      "pid": 3,
+      "pri": 0,
+      "slice": 1
+    },
+    {
+      "kind": "trace",
+      "tick": 25,
+      "pid": 3,
+      "pri": 0,
+      "slice": 0
+    },
+    {
+      "kind": "trace",
+      "tick": 26,
+      "pid": 3,
+      "pri": 0,
+      "slice": 1
+    },
+    {
+      "kind": "trace",
+      "tick": 26,
+      "pid": 4,
+      "pri": 2,
+      "slice": 0
+    },
+    {
+      "kind": "trace",
+      "tick": 26,
+      "pid": 4,
+      "pri": 2,
+      "slice": 0
+    },
+    {
+      "kind": "trace",
+      "tick": 26,
+      "pid": 5,
+      "pri": 2,
+      "slice": 0
+    },
+    {
+      "kind": "trace",
+      "tick": 26,
+      "pid": 4,
+      "pri": 2,
+      "slice": 0
+    },
+    {
+      "kind": "trace",
+      "tick": 26,
+      "pid": 4,
+      "pri": 2,
+      "slice": 0
+    },
+    {
+      "kind": "trace",
+      "tick": 26,
+      "pid": 4,
+      "pri": 2,
+      "slice": 0
+    },
+    {
+      "kind": "trace",
+      "tick": 27,
+      "pid": 3,
+      "pri": 0,
+      "slice": 0
+    },
+    {
+      "kind": "trace",
+      "tick": 27,
+      "pid": 4,
+      "pri": 2,
+      "slice": 1
+    },
+    {
+      "kind": "trace",
+      "tick": 28,
+      "pid": 3,
+      "pri": 0,
+      "slice": 0
+    },
+    {
+      "kind": "trace",
+      "tick": 28,
+      "pid": 4,
+      "pri": 2,
+      "slice": 2
+    },
+    {
+      "kind": "trace",
+      "tick": 29,
+      "pid": 4,
+      "pri": 2,
+      "slice": 3
+    },
+    {
+      "kind": "trace",
+      "tick": 29,
+      "pid": 3,
+      "pri": 0,
+      "slice": 0
+    },
+    {
+      "kind": "trace",
+      "tick": 29,
+      "pid": 5,
+      "pri": 2,
+      "slice": 0
+    },
+    {
+      "kind": "trace",
+      "tick": 30,
+      "pid": 5,
+      "pri": 2,
+      "slice": 1
+    },
+    {
+      "kind": "trace",
+      "tick": 30,
+      "pid": 3,
+      "pri": 0,
+      "slice": 0
+    },
+    {
+      "kind": "trace",
+      "tick": 30,
+      "pid": 6,
+      "pri": 2,
+      "slice": 0
+    },
+    {
+      "kind": "trace",
+      "tick": 31,
+      "pid": 6,
+      "pri": 2,
+      "slice": 1
+    },
+    {
+      "kind": "trace",
+      "tick": 32,
+      "pid": 3,
+      "pri": 0,
+      "slice": 0
+    },
+    {
+      "kind": "trace",
+      "tick": 32,
+      "pid": 7,
+      "pri": 2,
+      "slice": 0
+    },
+    {
+      "kind": "trace",
+      "tick": 33,
+      "pid": 7,
+      "pri": 2,
+      "slice": 1
+    },
+    {
+      "kind": "trace",
+      "tick": 33,
+      "pid": 3,
+      "pri": 0,
+      "slice": 0
+    },
+    {
+      "kind": "trace",
+      "tick": 33,
+      "pid": 8,
+      "pri": 2,
+      "slice": 0
+    },
+    {
+      "kind": "trace",
+      "tick": 34,
+      "pid": 8,
+      "pri": 2,
+      "slice": 1
+    },
+    {
+      "kind": "trace",
+      "tick": 34,
+      "pid": 3,
+      "pri": 0,
+      "slice": 0
+    },
+    {
+      "kind": "trace",
+      "tick": 35,
+      "pid": 3,
+      "pri": 0,
+      "slice": 1
+    },
+    {
+      "kind": "exit",
+      "pid": 4,
+      "name": "cpu_burner",
+      "arrival": 25,
+      "completion": 28,
+      "run": 2,
+      "ioblock": 4,
+      "final_pri": 2
+    },
+    {
+      "kind": "exit",
+      "pid": 5,
+      "name": "cpu_burner",
+      "arrival": 25,
+      "completion": 30,
+      "run": 1,
+      "ioblock": 1,
+      "final_pri": 2
+    },
+    {
+      "kind": "exit",
+      "pid": 6,
+      "name": "cpu_burner",
+      "arrival": 27,
+      "completion": 31,
+      "run": 1,
+      "ioblock": 0,
+      "final_pri": 2
+    },
+    {
+      "kind": "exit",
+      "pid": 7,
+      "name": "cpu_burner",
+      "arrival": 27,
+      "completion": 32,
+      "run": 0,
+      "ioblock": 0,
+      "final_pri": 2
+    },
+    {
+      "kind": "exit",
+      "pid": 8,
+      "name": "cpu_burner",
+      "arrival": 28,
+      "completion": 34,
+      "run": 1,
+      "ioblock": 0,
+      "final_pri": 2
+    },
+    {
+      "kind": "exit",
+      "pid": 3,
+      "name": "wrunner",
+      "arrival": 23,
+      "completion": 34,
+      "run": 2,
+      "ioblock": 7,
+      "final_pri": 0
+    }
+  ],
+  "n_traces": 29,
+  "n_exits": 6
+}

@@ -51,7 +51,7 @@ GitHub 원본 브랜치는 한 번도 수정되지 않았으며, push/commit 없
 
 | 충돌 영역 | 승자 | 사유 |
 |---|---|---|
-| `kernel/proc.c` MLFQ 스케줄러 | **hyunsung** | W12 정량 평가에서 검증, haneol 의 0..20 priority 시스템보다 더 정교한 3-단계 큐 |
+| `kernel/proc.c` MLFQ 스케줄러 | **hyunsung** | 정량 평가에서 검증, haneol 의 0..20 priority 시스템보다 더 정교한 3-단계 큐 |
 | `kernel/proc.c` `kthread_*` 함수 | **jinhwan** | Thread 슬라이스 고유, MLFQ 와 별도 영역에 append |
 | `kernel/syscall.c` 후킹 (`p->syscall_count[]`) | **minju** | hyunsung 의 dispatch 위에 trace 후킹 patch |
 | `kernel/syscall.h` 번호 영역 | **위 §1 표** | 4팀 합의된 분배 |
@@ -166,7 +166,7 @@ WSL/QEMU 환경에서 `make qemu CPUS=2` 로 빌드/부팅/슬라이스 데모 �
 
 ### 5.1 1차(5/26) 실행이 무효였던 사유
 
-`run_w12_matrix.sh` 호출 시 venv 비활성 + `.env` 미배치 → `llm_hint.py`가 `import dotenv` 단계에서 즉시 종료(`ModuleNotFoundError`). 스크립트의 `>/dev/null 2>&1` 때문에 에러는 가려지고 `[warn] heuristic hint generation failed` 한 줄만 남음. 결과적으로:
+`run_eval_matrix.sh` 호출 시 venv 비활성 + `.env` 미배치 → `llm_hint.py`가 `import dotenv` 단계에서 즉시 종료(`ModuleNotFoundError`). 스크립트의 `>/dev/null 2>&1` 때문에 에러는 가려지고 `[warn] heuristic hint generation failed` 한 줄만 남음. 결과적으로:
 
 - `heuristic_hints.txt`, `solar_hints.txt` 미생성
 - 후속 `cp -f` 실패 → `$XV6_DIR/hints.txt`는 이전 baseline의 `# empty (baseline)` 그대로
@@ -177,7 +177,7 @@ WSL/QEMU 환경에서 `make qemu CPUS=2` 로 빌드/부팅/슬라이스 데모 �
 
 - venv: `/root/smart-mlfq-host/venv` (dotenv 1.2.2, openai 2.38.0)
 - `.env`: `/root/smart-mlfq-host/.env`를 `integration/host/.env`로 복사 (gitignored, `.gitignore` 루트 규칙 확인)
-- 명령: `XV6_DIR=../xv6-riscv OUT_ROOT=../../docs/charts/integration ./run_w12_matrix.sh`
+- 명령: `XV6_DIR=../xv6-riscv OUT_ROOT=../../docs/charts/integration ./run_eval_matrix.sh`
 
 ### 5.3 결과 요약 (avg_turnaround 기준)
 
@@ -192,7 +192,7 @@ WSL/QEMU 환경에서 `make qemu CPUS=2` 로 빌드/부팅/슬라이스 데모 �
 ### 5.4 환경 아티팩트
 
 - `io_heavy` 전 모드 + `mixed/baseline`에서 `no ALL_DONE` (QEMU_TIMEOUT=45s 한계)
-- /mnt/c 경로 QEMU가 /root 대비 느려 W12 절대값과 직접 비교는 불가 — 모드 간 상대 비교만 의미
+- /mnt/c 경로 QEMU가 /root 대비 느려 단독 슬라이스 절대값과 직접 비교는 불가 — 모드 간 상대 비교만 의미
 
 산출물: `docs/charts/integration/{cpu_heavy,io_heavy,mixed,three_way,realprog}/*` + `combined_report.txt`.
 
@@ -203,10 +203,10 @@ WSL/QEMU 환경에서 `make qemu CPUS=2` 로 빌드/부팅/슬라이스 데모 �
 | 위험 | 영향 | 완화 |
 |---|---|---|
 | `ps` 의 priority 출력은 0..2 (MLFQ 큐) | haneol 원본은 0..20 | 출력 포맷 유지, 의미만 변경 |
-| host adapters 가 nl_shell.py 와 import 통합되어 있지 않음 | 단일 진입점 보장 정도가 약함 | W14 정리 |
-| jinhwan 의 thread 라이브러리(thread.c, mutex.c 등) 는 통합 안 함 | userspace 추상화, xv6 안에서는 syscall 만으로 충분 | W14 단독 시연용으로 _sources/ 에 보존 |
+| host adapters 가 nl_shell.py 와 import 통합되어 있지 않음 | 단일 진입점 보장 정도가 약함 | 다음 단계 정리 |
+| jinhwan 의 thread 라이브러리(thread.c, mutex.c 등) 는 통합 안 함 | userspace 추상화, xv6 안에서는 syscall 만으로 충분 | 단독 시연용으로 _sources/ 에 보존 |
 | haneol 의 `mlfq_bench.c`, `priority_test.c`, `spin.c`, `trace_test.c`, `sysinfo_test.c` | 단독 테스트 프로그램 | 통합 트리엔 미포함, _sources/ 보존 |
-| `run_w12_matrix.sh`가 `>/dev/null 2>&1`로 에러 가림 | 5.1 같은 무음 실패 재발 가능 | W14에서 stderr는 살리는 패치 검토 |
+| `run_eval_matrix.sh`가 `>/dev/null 2>&1`로 에러 가림 | 5.1 같은 무음 실패 재발 가능 | stderr 패치 적용 완료 (2026-05-27) |
 
 ### 6.1 갭 메우기 추가 (2026-05-27)
 

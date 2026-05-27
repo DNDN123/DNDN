@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# run_w12_matrix.sh — Smart-MLFQ W12 experiment matrix runner.
+# run_eval_matrix.sh — Smart-MLFQ 3-way evaluation matrix runner.
 #
 # For each workload W in {cpu_heavy, io_heavy, mixed} and each mode M in
 # {baseline, heuristic, solar}, this script:
@@ -15,9 +15,9 @@
 #   - $XV6_DIR pointing at a built xv6-riscv tree (default: ~/xv6-riscv)
 #
 # Usage:
-#   ./run_w12_matrix.sh                         # full matrix
-#   ./run_w12_matrix.sh --skip-solar            # baseline + heuristic only
-#   XV6_DIR=/other/xv6 ./run_w12_matrix.sh
+#   ./run_eval_matrix.sh                         # full matrix
+#   ./run_eval_matrix.sh --skip-solar            # baseline + heuristic only
+#   XV6_DIR=/other/xv6 ./run_eval_matrix.sh
 #
 # Total runtime: ~6 minutes on a typical machine (9 QEMU runs × ~30s each).
 
@@ -26,13 +26,16 @@ set -uo pipefail
 # ---- Config -----------------------------------------------------------------
 XV6_DIR="${XV6_DIR:-$HOME/xv6-riscv}"
 HOST_DIR="${HOST_DIR:-$(cd "$(dirname "$0")" && pwd)}"
-OUT_ROOT="${OUT_ROOT:-$HOME/mlfq-experiments/w12_$(date +%Y%m%d-%H%M%S)}"
-QEMU_TIMEOUT="${QEMU_TIMEOUT:-45}"     # seconds, generous to let workload finish
+OUT_ROOT="${OUT_ROOT:-$HOME/mlfq-experiments/eval_$(date +%Y%m%d-%H%M%S)}"
+QEMU_TIMEOUT="${QEMU_TIMEOUT:-90}"     # bumped from 45 — integrated tree
+                                       # is bigger; rebuild + boot + workload
+                                       # easily ate the old limit.
 SLEEP_BEFORE_CMD=4
-SLEEP_AFTER_CMD=25
+SLEEP_AFTER_CMD=40                     # bumped from 25 to let longer
+                                       # workloads (cpu_heavy, realprog) finish.
 
 # Default = full 5-workload matrix. Override with WORKLOADS env var, e.g.
-#   WORKLOADS="three_way realprog" ./run_w12_matrix.sh
+#   WORKLOADS="three_way realprog" ./run_eval_matrix.sh
 WORKLOADS=(${WORKLOADS:-cpu_heavy io_heavy mixed three_way realprog})
 MODES=(baseline heuristic solar)
 
@@ -45,8 +48,8 @@ for arg in "$@"; do
 done
 
 mkdir -p "$OUT_ROOT"
-echo "[w12] output root: $OUT_ROOT"
-echo "[w12] xv6 tree:    $XV6_DIR"
+echo "[matrix] output root: $OUT_ROOT"
+echo "[matrix] xv6 tree:    $XV6_DIR"
 
 if [ ! -f "$XV6_DIR/kernel/kernel" ]; then
   echo "ERROR: $XV6_DIR has no built kernel — run 'make' there first." >&2
@@ -59,15 +62,23 @@ run_xv6() {
   # $3 = output log path
   local wl="$1" hints="$2" log="$3"
   local cmd="wrunner $wl"
+  # Fix: hints.txt must live at workloads/hints.txt because that path is in
+  # the Makefile's WORKLOADS list — only files there get packaged into fs.img.
+  # Writing to $XV6_DIR/hints.txt (top level) does NOT reach the xv6 filesystem.
   if [ -n "$hints" ]; then
-    cp -f "$hints" "$XV6_DIR/hints.txt"
+    cp -f "$hints" "$XV6_DIR/workloads/hints.txt"
     cmd="wrunner $wl hints.txt"
   else
-    echo "# empty (baseline)" > "$XV6_DIR/hints.txt"
+    echo "# empty (baseline)" > "$XV6_DIR/workloads/hints.txt"
   fi
 
   (
     cd "$XV6_DIR" || exit 1
+    # Rebuild fs.img EXPLICITLY before the timed pipe.
+    # Putting `rm -f fs.img` inside the pipe makes make rebuild during the
+    # SLEEP_BEFORE_CMD window, so the wrunner command arrives before qemu
+    # boots and gets eaten. Building first avoids that race entirely.
+    make CPUS=1 fs.img >/dev/null 2>"${log}.build.stderr"
     ( sleep "$SLEEP_BEFORE_CMD"; printf '%s\n' "$cmd"; sleep "$SLEEP_AFTER_CMD"; printf '\x01x' ) \
       | timeout "$QEMU_TIMEOUT" make CPUS=1 qemu 2>&1
   ) > "$log"
@@ -81,56 +92,62 @@ run_xv6() {
 
 parse_log() {
   local log="$1" json="$2"
-  python "$HOST_DIR/parse_trace.py" "$log" --output "$json" >/dev/null 2>&1
+  # stderr → sibling .stderr file so silent runs are recoverable when
+  # something goes wrong (MERGE_NOTES §5.1 — prior `2>&1` silencing of
+  # ModuleNotFoundError invalidated the whole eval).
+  python3 "$HOST_DIR/parse_trace.py" "$log" --output "$json" \
+    >/dev/null 2>"${json%.json}.parse.stderr"
 }
 
 # ---- Matrix run -------------------------------------------------------------
 for wl in "${WORKLOADS[@]}"; do
   echo
   echo "=============================================================="
-  echo "[w12] WORKLOAD: $wl"
+  echo "[matrix] WORKLOAD: $wl"
   echo "=============================================================="
   wl_dir="$OUT_ROOT/$wl"
   mkdir -p "$wl_dir"
 
   # 1) Baseline ---------------------------------------------------------------
-  echo "[w12]   → mode: baseline"
+  echo "[matrix]   → mode: baseline"
   run_xv6 "$wl.txt" "" "$wl_dir/baseline.log"
   parse_log "$wl_dir/baseline.log" "$wl_dir/baseline.json"
 
   # 2) Heuristic --------------------------------------------------------------
-  echo "[w12]   → mode: heuristic (generating hints.txt without API key)"
-  UPSTAGE_API_KEY="" python "$HOST_DIR/llm_hint.py" \
+  echo "[matrix]   → mode: heuristic (generating hints.txt without API key)"
+  UPSTAGE_API_KEY="" python3 "$HOST_DIR/llm_hint.py" \
       "$wl_dir/baseline.json" \
       --output "$wl_dir/heuristic_hints.txt" \
-      >/dev/null 2>&1 || echo "    [warn] heuristic hint generation failed"
+      >/dev/null 2>"$wl_dir/heuristic_hint.stderr" \
+    || echo "    [warn] heuristic hint gen failed — see $wl_dir/heuristic_hint.stderr"
   run_xv6 "$wl.txt" "$wl_dir/heuristic_hints.txt" "$wl_dir/heuristic.log"
   parse_log "$wl_dir/heuristic.log" "$wl_dir/heuristic.json"
 
   # 3) Solar ------------------------------------------------------------------
   if [ "$SKIP_SOLAR" = "0" ]; then
-    echo "[w12]   → mode: solar (querying Solar Pro 3)"
-    python "$HOST_DIR/llm_hint.py" \
+    echo "[matrix]   → mode: solar (querying Solar Pro 3)"
+    python3 "$HOST_DIR/llm_hint.py" \
         "$wl_dir/baseline.json" \
         --output "$wl_dir/solar_hints.txt" \
-        >/dev/null 2>&1 || echo "    [warn] solar hint generation failed"
+        >/dev/null 2>"$wl_dir/solar_hint.stderr" \
+      || echo "    [warn] solar hint gen failed — see $wl_dir/solar_hint.stderr"
     run_xv6 "$wl.txt" "$wl_dir/solar_hints.txt" "$wl_dir/solar.log"
     parse_log "$wl_dir/solar.log" "$wl_dir/solar.json"
   else
-    echo "[w12]   → mode: solar SKIPPED (--skip-solar)"
+    echo "[matrix]   → mode: solar SKIPPED (--skip-solar)"
   fi
 
   # 4) Evaluate this workload -------------------------------------------------
-  echo "[w12]   → evaluating $wl"
+  echo "[matrix]   → evaluating $wl"
   if [ "$SKIP_SOLAR" = "0" ]; then
-    python "$HOST_DIR/evaluator.py" \
+    python3 "$HOST_DIR/evaluator.py" \
         --baseline  "$wl_dir/baseline.json" \
         --heuristic "$wl_dir/heuristic.json" \
         --llm       "$wl_dir/solar.json" \
         --output    "$wl_dir/metrics.json" \
         > "$wl_dir/report.txt"
   else
-    python "$HOST_DIR/evaluator.py" \
+    python3 "$HOST_DIR/evaluator.py" \
         --baseline  "$wl_dir/baseline.json" \
         --heuristic "$wl_dir/heuristic.json" \
         --output    "$wl_dir/metrics.json" \
@@ -138,26 +155,28 @@ for wl in "${WORKLOADS[@]}"; do
   fi
 
   # 5) Charts -----------------------------------------------------------------
-  echo "[w12]   → charts for $wl"
+  echo "[matrix]   → charts for $wl"
   if [ "$SKIP_SOLAR" = "0" ]; then
-    python "$HOST_DIR/viz.py" \
+    python3 "$HOST_DIR/viz.py" \
         --baseline "$wl_dir/baseline.json" \
         --llm      "$wl_dir/solar.json" \
-        --out-dir  "$wl_dir/charts" >/dev/null 2>&1
+        --out-dir  "$wl_dir/charts" \
+        >/dev/null 2>"$wl_dir/viz.stderr"
   else
-    python "$HOST_DIR/viz.py" \
+    python3 "$HOST_DIR/viz.py" \
         --baseline "$wl_dir/baseline.json" \
         --llm      "$wl_dir/heuristic.json" \
-        --out-dir  "$wl_dir/charts" >/dev/null 2>&1
+        --out-dir  "$wl_dir/charts" \
+        >/dev/null 2>"$wl_dir/viz.stderr"
   fi
 
-  echo "[w12]   ✓ $wl done — see $wl_dir/report.txt"
+  echo "[matrix]   ✓ $wl done — see $wl_dir/report.txt"
 done
 
 # ---- Summary ----------------------------------------------------------------
 echo
 echo "=============================================================="
-echo "[w12] MATRIX COMPLETE — combined report"
+echo "[matrix] MATRIX COMPLETE — combined report"
 echo "=============================================================="
 {
   for wl in "${WORKLOADS[@]}"; do
@@ -169,5 +188,5 @@ echo "=============================================================="
 cat "$OUT_ROOT/combined_report.txt"
 
 echo
-echo "[w12] All artefacts in: $OUT_ROOT"
-echo "[w12] Combined report : $OUT_ROOT/combined_report.txt"
+echo "[matrix] All artefacts in: $OUT_ROOT"
+echo "[matrix] Combined report : $OUT_ROOT/combined_report.txt"

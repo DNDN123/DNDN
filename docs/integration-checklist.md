@@ -107,10 +107,10 @@ OK pid=4 prio=5
 cd smart-mlfq-host
 XV6_DIR=/path/to/integration/xv6-riscv \
     OUT_ROOT=docs/charts/integration \
-    ./run_w12_matrix.sh
+    ./run_eval_matrix.sh
 ```
 
-- [ ] W12와 동등하거나 더 좋은 결과 (다른 슬라이스가 스케줄러를 망가뜨리지 않았는지 확인)
+- [ ] 단독 슬라이스와 동등하거나 더 좋은 결과 (다른 슬라이스가 스케줄러를 망가뜨리지 않았는지 확인)
 - [ ] `docs/charts/integration/combined_report.txt` commit
 
 ---
@@ -134,7 +134,7 @@ git branch -D integration
 ```
 
 본인 브랜치 단독 시연이 항상 가능하도록 유지하는 게 통합 최후 안전망. 시연 영상
-(`docs/w11-hello-world.md §5`)을 미리 녹화해두면 통합 실패 시 라이브 데모 대신 영상으로 대체 가능.
+(`docs/hello-world.md §5`)을 미리 녹화해두면 통합 실패 시 라이브 데모 대신 영상으로 대체 가능.
 
 ---
 

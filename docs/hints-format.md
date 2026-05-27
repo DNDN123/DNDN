@@ -54,7 +54,7 @@ mixed_burner 1
   잘못된 LLM 응답에 데모가 깨지지 않게 하는 안전망입니다.
 - `llm_hint.py` 측에서도 LLM 출력이 정수가 아니거나 범위 밖이면 `1` (MID) 로 clamp.
 
-## 호환 (W11 자연어 모드와 차이)
+## 호환 (자연어 모드와 차이)
 
-W11 의 `nlrun <level> <prog> <args>` 는 **단일 spec 을 명령행 인자**로 받기 때문에
-`hints.txt` 를 쓰지 않습니다. 본 파일은 **W10 batch hint 모드 전용**.
+`nlrun <level> <prog> <args>` 는 **단일 spec 을 명령행 인자**로 받기 때문에
+`hints.txt` 를 쓰지 않습니다. 본 파일은 **batch hint 모드 전용**.
