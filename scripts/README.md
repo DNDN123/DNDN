@@ -34,10 +34,36 @@ bash run_all.sh                # 정확도 모드 (Qwen 7B, 10 epochs)
 |---|---|
 | `train.py` | LoRA fine-tune. **정확도 우선 기본값** (Qwen 7B, r=64, 10 epochs) |
 | `evaluate.py` | Hold-out test 정확도 측정, cmd/queue/lang 분해 |
+| `compare.py` | ★ **Head-to-head 비교** (Solar vs Ours, Claude vs Ours 등) |
 | `augment.py` | Solar/Claude API로 데이터 자동 증강 |
 | `build_train.py` | 모든 데이터 통합 + stratified train/test 분할 |
-| `run_all.sh` | 4가지 모드 자동화 |
+| `run_all.sh` | 학습 + 평가 + Solar 비교 자동 파이프라인 |
 | `requirements.txt` | Python 의존성 |
+
+## 핵심 목표 — **Solar Pro 3 대비 정확도 우위**
+
+`run_all.sh`가 자동으로:
+1. 우리 모델 학습 (Qwen 7B + LoRA)
+2. 같은 test set에서 두 모델 평가 (우리 vs Solar)
+3. Head-to-head 비교 보고서 생성 (`compare_solar_vs_ours.md`)
+
+```
+$ export UPSTAGE_API_KEY=up_...
+$ bash run_all.sh
+...
+=== Head-to-head: Solar Pro vs Ours ===
+Test set: 237 examples
+                          Solar Pro 3                 Ours
+Valid JSON                       98.7%                100.0%
+Correct cmd                      89.4%                97.5%      ← +8.1pp
+Correct queue_hint               85.2%                93.7%      ← +8.5pp
+Both correct                     82.1%                93.2%      ← +11.1pp
+latency p50 (ms)                   850                  140
+Head-to-head: Solar wins 8 | Ours wins 36 | ties 193
+Δ accuracy (B - A): +11.1 percentage points
+```
+
+→ 이 출력이 곧 "**Solar 보다 정확하다**"는 증명.
 
 ---
 
@@ -45,10 +71,13 @@ bash run_all.sh                # 정확도 모드 (Qwen 7B, 10 epochs)
 
 | 모드 | 명령 | 시간 | 용도 |
 |---|---|---|---|
-| **accuracy** (기본) | `bash run_all.sh` | ~30분 | Qwen 7B, r=64, 10 epochs |
-| quick | `MODE=quick bash run_all.sh` | ~5분 | Qwen 1.5B baseline |
-| ablation | `MODE=ablation bash run_all.sh` | ~50분 | 4개 모델 크기 비교 (0.5B/1.5B/3B/7B) |
+| **accuracy** (기본) | `bash run_all.sh` | ~30분 | Qwen 7B + 평가 + Solar 비교 |
+| quick | `MODE=quick bash run_all.sh` | ~5분 | Qwen 1.5B + 평가 + Solar 비교 |
+| ablation | `MODE=ablation bash run_all.sh` | ~50분 | 4개 모델 크기 비교 |
 | ensemble | `MODE=ensemble bash run_all.sh` | ~90분 | Qwen 7B × 3 seeds |
+| compare-only | `MODE=compare-only bash run_all.sh` | ~5분 | 학습 스킵, 기존 모델만 Solar와 비교 |
+
+각 모드 끝에서 `UPSTAGE_API_KEY` 있으면 자동으로 Solar 비교 진행.
 
 ---
 

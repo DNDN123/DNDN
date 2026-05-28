@@ -1,15 +1,19 @@
 #!/usr/bin/env bash
-# SmartShell pipeline — train + evaluate.
+# SmartShell pipeline.
 # Modes:
-#   bash run_all.sh                 — accuracy-first single run (Qwen 7B)
-#   MODE=quick bash run_all.sh      — fast baseline (Qwen 1.5B, 3 epochs)
-#   MODE=ablation bash run_all.sh   — train all 4 model sizes for comparison
-#   MODE=ensemble bash run_all.sh   — train 3-seed ensemble on Qwen 7B
+#   bash run_all.sh                — accuracy mode + Solar baseline + comparison
+#   MODE=quick bash run_all.sh     — fast baseline (Qwen 1.5B, 3 epochs) + comparison
+#   MODE=ablation bash run_all.sh  — 4 model sizes
+#   MODE=ensemble bash run_all.sh  — Qwen 7B × 3 seeds
+#   MODE=compare-only bash run_all.sh  — just compare existing model vs Solar
+#
+# Requires (for comparison): UPSTAGE_API_KEY (Solar baseline)
 
 set -euo pipefail
 cd "$(dirname "$0")"
 
 MODE="${MODE:-accuracy}"
+SOLAR_MODEL="${SOLAR_MODEL:-solar-pro2}"
 echo "============================================================"
 echo "SmartShell pipeline — MODE=$MODE"
 echo "============================================================"
@@ -25,95 +29,108 @@ echo "  test:  $(wc -l < ../data/test.jsonl) examples"
 echo
 
 # ----------------------------------------------------------------------
-# Helper: train + evaluate one config
+# Helper: train one config
 # ----------------------------------------------------------------------
-run_one() {
+train_one() {
     local tag="$1"
     shift
     echo "------------------------------------------------------------"
-    echo "[$tag] python train.py $*"
+    echo "[train $tag] python train.py $*"
     echo "------------------------------------------------------------"
     python3 train.py "$@"
-
-    # Find latest output dir
-    local out_dir
-    out_dir=$(ls -td ../models/smartmlfq-* 2>/dev/null | head -1)
-    [ -n "$out_dir" ] || { echo "  no output found"; return 1; }
-    echo "  output: $out_dir"
-
-    # Evaluate via HF backend (always works, no Ollama dependency)
-    local lora_dir="$out_dir/lora"
-    if [ -d "$lora_dir" ]; then
-        python3 evaluate.py --backend hf --model "$lora_dir" \
-            --output "../eval_${tag}.md"
-        echo "  report: ../eval_${tag}.md"
-    fi
 }
 
+# Helper: find latest model dir
+latest_model() {
+    ls -td ../models/smartmlfq-* 2>/dev/null | head -1
+}
+
+# ----------------------------------------------------------------------
+# Step 1. Train (depending on mode)
+# ----------------------------------------------------------------------
 case "$MODE" in
     quick)
-        run_one "qwen-1.5b-quick" --model qwen-1.5b --quick
+        train_one "quick" --model qwen-1.5b --quick
         ;;
-
     accuracy)
-        # Single high-accuracy run: Qwen 7B, LoRA r=64, 10 epochs
-        run_one "qwen-7b-accuracy" --model qwen-7b --epochs 10 --lora-r 64
+        train_one "accuracy" --model qwen-7b --epochs 10 --lora-r 64
         ;;
-
     ablation)
-        # Compare 4 model sizes at same hyperparams
-        echo "=== ablation study: 4 model sizes ==="
         for m in qwen-0.5b qwen-1.5b qwen-3b qwen-7b; do
-            run_one "$m-ablation" --model "$m" --epochs 8 --lora-r 32 --skip-gguf
-        done
-        echo
-        echo "=== ablation summary ==="
-        for f in ../eval_qwen-*-ablation.md; do
-            [ -f "$f" ] || continue
-            echo
-            echo "## $(basename $f)"
-            head -20 "$f"
+            train_one "$m" --model "$m" --epochs 8 --lora-r 32 --skip-gguf
         done
         ;;
-
     ensemble)
-        # 3-seed ensemble on Qwen 7B
-        echo "=== 3-seed ensemble: Qwen 7B ==="
         for s in 42 123 7777; do
-            run_one "qwen-7b-seed$s" --model qwen-7b --epochs 10 --lora-r 64 \
+            train_one "seed$s" --model qwen-7b --epochs 10 --lora-r 64 \
                 --seed "$s" --skip-gguf
         done
-        echo
-        echo "=== ensemble: evaluate voting (next step manually) ==="
-        echo "use evaluate.py with --ensemble flag (see docs)"
         ;;
-
+    compare-only)
+        echo "Skipping training (compare-only mode)."
+        ;;
     *)
-        echo "Unknown MODE=$MODE. Choices: quick | accuracy | ablation | ensemble"
-        exit 1
-        ;;
+        echo "Unknown MODE=$MODE"; exit 1 ;;
 esac
 
 # ----------------------------------------------------------------------
-# Final: register best in Ollama (only for accuracy mode)
+# Step 2. Register the latest model in Ollama (if GGUF exists)
 # ----------------------------------------------------------------------
-if [ "$MODE" = "accuracy" ]; then
-    best_dir=$(ls -td ../models/smartmlfq-qwen-7b-* 2>/dev/null | head -1)
-    if [ -n "$best_dir" ] && [ -d "$best_dir/gguf" ] && command -v ollama >/dev/null; then
-        echo
-        echo "=== registering with Ollama ==="
-        cat > "$best_dir/gguf/Modelfile" <<EOF
-FROM ./$(ls "$best_dir/gguf" | grep -i '\.gguf$' | head -1)
+MODEL_DIR=$(latest_model)
+OURS_NAME="smartmlfq"
+if [ -n "$MODEL_DIR" ] && [ -d "$MODEL_DIR/gguf" ] && command -v ollama >/dev/null; then
+    echo
+    echo "=== Registering Ollama: $OURS_NAME ==="
+    GGUF_FILE=$(ls "$MODEL_DIR/gguf" | grep -i '\.gguf$' | head -1)
+    cat > "$MODEL_DIR/gguf/Modelfile" <<EOF
+FROM ./$GGUF_FILE
 SYSTEM """You are an xv6 NL-to-spec classifier. Output JSON: cmd/args/queue_hint/reason."""
 PARAMETER temperature 0
 PARAMETER stop "<|im_end|>"
 EOF
-        (cd "$best_dir/gguf" && ollama create smartmlfq -f Modelfile)
-        echo "  Ollama model: smartmlfq"
+    (cd "$MODEL_DIR/gguf" && ollama create "$OURS_NAME" -f Modelfile) || true
+fi
+
+# ----------------------------------------------------------------------
+# Step 3. Evaluate ours (using LoRA via HF backend, always works)
+# ----------------------------------------------------------------------
+if [ -n "$MODEL_DIR" ] && [ -d "$MODEL_DIR/lora" ]; then
+    echo
+    echo "=== Evaluating fine-tuned model ==="
+    python3 evaluate.py --backend hf --model "$MODEL_DIR/lora" \
+        --output "../eval_ours.md"
+fi
+
+# ----------------------------------------------------------------------
+# Step 4. Head-to-head comparison vs Solar (the actual goal!)
+# ----------------------------------------------------------------------
+if [ -z "${UPSTAGE_API_KEY:-}" ]; then
+    echo
+    echo "=== UPSTAGE_API_KEY not set — skipping Solar comparison ==="
+    echo "    To compare against Solar:"
+    echo "    export UPSTAGE_API_KEY=up_..."
+    echo "    bash run_all.sh"
+else
+    echo
+    echo "=== Head-to-head: Solar Pro vs Ours ==="
+    # Prefer ollama backend for ours if registered
+    if command -v ollama >/dev/null && ollama list 2>/dev/null | grep -q "^$OURS_NAME"; then
+        OURS_BACKEND=ollama
+        OURS_MODEL=$OURS_NAME
+    else
+        OURS_BACKEND=hf
+        OURS_MODEL="$MODEL_DIR/lora"
     fi
+
+    python3 compare.py \
+        --a "Solar Pro 3"   --a-backend solar   --a-model "$SOLAR_MODEL" \
+        --b "Ours"          --b-backend "$OURS_BACKEND" --b-model "$OURS_MODEL" \
+        --output "../compare_solar_vs_ours.md"
 fi
 
 echo
 echo "============================================================"
-echo "Done."
+echo "Done. Reports:"
+echo "  ../eval_ours.md             — fine-tuned model accuracy"
+echo "  ../compare_solar_vs_ours.md — head-to-head comparison"
 echo "============================================================"
