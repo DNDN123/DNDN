@@ -1,0 +1,6 @@
+# Smart-MLFQ hints file (example)
+# Format: <program_name> <priority_level>
+# Levels: 0 = HIGH, 1 = MID, 2 = LOW
+cpu_burner   2
+mixed_burner 1
+io_burner    0

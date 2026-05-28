@@ -1,18 +1,29 @@
 # === Secrets (NEVER commit) ===
 .env
+.env.local
+*.env
+!.env.example
 **/.env
-host/.env
+!**/.env.example
 
-# === macOS ===
+# === macOS / Windows ===
 .DS_Store
 **/.DS_Store
+Thumbs.db
 
 # === Python ===
 __pycache__/
 **/__pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
 
 # === xv6 build artifacts ===
 *.o
@@ -21,20 +32,16 @@ __pycache__/
 *.sym
 *.out
 
-# xv6 kernel build outputs
-xv6-riscv/kernel/kernel
-xv6-riscv/fs.img
-
-# xv6 mkfs binary
-xv6-riscv/mkfs/mkfs
+# xv6 kernel + filesystem images
+**/kernel/kernel
+**/fs.img
+**/mkfs/mkfs
 
 # xv6 generated user files
-xv6-riscv/user/usys.S
-xv6-riscv/user/initcode
-xv6-riscv/user/initcode.out
-
-# Built user programs (_<name>)
-xv6-riscv/user/_*
+**/user/usys.S
+**/user/initcode
+**/user/initcode.out
+**/user/_*
 
 # === Editor / IDE ===
 .vscode/
@@ -42,3 +49,7 @@ xv6-riscv/user/_*
 *.swp
 *.swo
 *~
+
+# === Claude Code / local tooling ===
+.claude/
+.sixth/
