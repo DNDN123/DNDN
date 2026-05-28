@@ -1,0 +1,50 @@
+{"user": "echo hello quickly", "spec": {"cmd": "echo", "args": ["hello"], "queue_hint": 0, "reason": "short interactive print"}}
+{"user": "print hello fast", "spec": {"cmd": "echo", "args": ["hello"], "queue_hint": 0, "reason": "short interactive print"}}
+{"user": "quick echo test", "spec": {"cmd": "echo", "args": ["test"], "queue_hint": 0, "reason": "short interactive print"}}
+{"user": "just print ok", "spec": {"cmd": "echo", "args": ["ok"], "queue_hint": 0, "reason": "short print"}}
+{"user": "echo ready", "spec": {"cmd": "echo", "args": ["ready"], "queue_hint": 0, "reason": "short status print"}}
+{"user": "say hi please", "spec": {"cmd": "echo", "args": ["hi"], "queue_hint": 0, "reason": "short print"}}
+{"user": "print done immediately", "spec": {"cmd": "echo", "args": ["done"], "queue_hint": 0, "reason": "latency-sensitive print"}}
+{"user": "echo world fast", "spec": {"cmd": "echo", "args": ["world"], "queue_hint": 0, "reason": "short interactive print"}}
+{"user": "give me a quick hello", "spec": {"cmd": "echo", "args": ["hello"], "queue_hint": 0, "reason": "short print"}}
+{"user": "one-shot echo alive", "spec": {"cmd": "echo", "args": ["alive"], "queue_hint": 0, "reason": "status print"}}
+{"user": "print 'pong' interactively", "spec": {"cmd": "echo", "args": ["pong"], "queue_hint": 0, "reason": "short interactive output"}}
+{"user": "echo something short", "spec": {"cmd": "echo", "args": ["short"], "queue_hint": 0, "reason": "trivial print"}}
+{"user": "fast print test123", "spec": {"cmd": "echo", "args": ["test123"], "queue_hint": 0, "reason": "fast interactive print"}}
+{"user": "echo a single line now", "spec": {"cmd": "echo", "args": ["line"], "queue_hint": 0, "reason": "single-line interactive print"}}
+{"user": "low-latency echo hi there", "spec": {"cmd": "echo", "args": ["hi"], "queue_hint": 0, "reason": "latency-sensitive print"}}
+{"user": "ls please", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "interactive directory listing"}}
+{"user": "show me the directory", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "what's in this folder", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "list files quickly", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "fast directory listing"}}
+{"user": "do an ls", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "ls now", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "interactive directory listing"}}
+{"user": "show directory contents", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "dir listing", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "list the current dir", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "ls", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "cat README", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "show README contents", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "open README fast", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small interactive file read"}}
+{"user": "read the README please", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "display README", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "quickly cat the README", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small interactive file read"}}
+{"user": "I want to see README", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "print README", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "cat the init file", "spec": {"cmd": "cat", "args": ["init"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "show init", "spec": {"cmd": "cat", "args": ["init"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "read console", "spec": {"cmd": "cat", "args": ["console"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "open README interactively", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "interactive file read"}}
+{"user": "tiny file read README", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "give me the README", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "cat README right now", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "low-latency file read"}}
+{"user": "io_burner 10 quick", "spec": {"cmd": "io_burner", "args": ["10"], "queue_hint": 0, "reason": "short I/O burst, HIGH queue"}}
+{"user": "small io_burner 20", "spec": {"cmd": "io_burner", "args": ["20"], "queue_hint": 0, "reason": "small I/O workload"}}
+{"user": "io_burner 15 interactive", "spec": {"cmd": "io_burner", "args": ["15"], "queue_hint": 0, "reason": "small I/O workload, interactive"}}
+{"user": "run io_burner with 30", "spec": {"cmd": "io_burner", "args": ["30"], "queue_hint": 0, "reason": "I/O-bound, HIGH queue"}}
+{"user": "io_burner 50 latency sensitive", "spec": {"cmd": "io_burner", "args": ["50"], "queue_hint": 0, "reason": "latency-sensitive I/O"}}
+{"user": "tiny io burst 5", "spec": {"cmd": "io_burner", "args": ["5"], "queue_hint": 0, "reason": "very short I/O burst"}}
+{"user": "io_burner 25 fast", "spec": {"cmd": "io_burner", "args": ["25"], "queue_hint": 0, "reason": "small I/O workload"}}
+{"user": "quick io job 40", "spec": {"cmd": "io_burner", "args": ["40"], "queue_hint": 0, "reason": "small I/O workload"}}
+{"user": "short io_burner 12", "spec": {"cmd": "io_burner", "args": ["12"], "queue_hint": 0, "reason": "small I/O workload"}}
+{"user": "io_burner 35 HIGH queue", "spec": {"cmd": "io_burner", "args": ["35"], "queue_hint": 0, "reason": "I/O bound, HIGH queue requested"}}

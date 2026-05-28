@@ -1,0 +1,50 @@
+{"user": "echo hello 빠르게", "spec": {"cmd": "echo", "args": ["hello"], "queue_hint": 0, "reason": "short interactive output"}}
+{"user": "hello 출력 좀", "spec": {"cmd": "echo", "args": ["hello"], "queue_hint": 0, "reason": "short interactive output"}}
+{"user": "안녕하세요 한번 찍어줘", "spec": {"cmd": "echo", "args": ["hello"], "queue_hint": 0, "reason": "short interactive print"}}
+{"user": "ok 라고 출력해", "spec": {"cmd": "echo", "args": ["ok"], "queue_hint": 0, "reason": "short text print"}}
+{"user": "테스트 메시지 짧게 보여줘", "spec": {"cmd": "echo", "args": ["test"], "queue_hint": 0, "reason": "tiny interactive print"}}
+{"user": "echo로 done 찍어줘 빨리", "spec": {"cmd": "echo", "args": ["done"], "queue_hint": 0, "reason": "short interactive print"}}
+{"user": "hi 한번 출력", "spec": {"cmd": "echo", "args": ["hi"], "queue_hint": 0, "reason": "short text"}}
+{"user": "그냥 hello 찍어", "spec": {"cmd": "echo", "args": ["hello"], "queue_hint": 0, "reason": "short print"}}
+{"user": "world 출력해줘", "spec": {"cmd": "echo", "args": ["world"], "queue_hint": 0, "reason": "short text print"}}
+{"user": "ready 찍어줘", "spec": {"cmd": "echo", "args": ["ready"], "queue_hint": 0, "reason": "short interactive print"}}
+{"user": "echo hi 즉시", "spec": {"cmd": "echo", "args": ["hi"], "queue_hint": 0, "reason": "latency-sensitive print"}}
+{"user": "echo로 ping이라고 한번", "spec": {"cmd": "echo", "args": ["ping"], "queue_hint": 0, "reason": "short print"}}
+{"user": "그냥 한 줄 출력만 빠르게", "spec": {"cmd": "echo", "args": ["test"], "queue_hint": 0, "reason": "quick single-line print"}}
+{"user": "짧게 hello 한번", "spec": {"cmd": "echo", "args": ["hello"], "queue_hint": 0, "reason": "short interactive print"}}
+{"user": "alive 출력 부탁", "spec": {"cmd": "echo", "args": ["alive"], "queue_hint": 0, "reason": "short status print"}}
+{"user": "ls 한번 보여줘", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing, interactive"}}
+{"user": "디렉토리 목록 좀", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "파일 뭐 있는지 보자", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "여기 뭐 있어?", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "ls 빠르게", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing, interactive"}}
+{"user": "현재 폴더 내용 보여주세요", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "ls 좀 쳐줘", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "여기 디렉토리 풀어봐", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "파일 리스트 한번 띄워줘", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "ls", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "README 좀 열어줘", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read, interactive"}}
+{"user": "리드미 보여줘", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "cat README 빠르게", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read, interactive"}}
+{"user": "README 내용 한번 봐줘", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "리드미 파일 출력", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "README.md 열기", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "README 뭐라고 적혀있는지", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "초기 파일 좀 cat", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "init 파일 출력", "spec": {"cmd": "cat", "args": ["init"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "cat init", "spec": {"cmd": "cat", "args": ["init"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "console 내용 좀", "spec": {"cmd": "cat", "args": ["console"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "README 살짝만 보여줘", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small interactive file read"}}
+{"user": "리드미 즉시 출력 부탁", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "latency-sensitive small file read"}}
+{"user": "파일 하나 출력해줘 README로", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "README 보여줘 인터랙티브하게", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "interactive small file read"}}
+{"user": "io_burner 10번만 빠르게", "spec": {"cmd": "io_burner", "args": ["10"], "queue_hint": 0, "reason": "I/O-bound small workload, HIGH queue"}}
+{"user": "io_burner 짧게 20번", "spec": {"cmd": "io_burner", "args": ["20"], "queue_hint": 0, "reason": "I/O-bound short workload"}}
+{"user": "io_burner 가볍게 한번", "spec": {"cmd": "io_burner", "args": ["15"], "queue_hint": 0, "reason": "light I/O workload, interactive"}}
+{"user": "io_burner 50번 정도 응답성 챙겨서", "spec": {"cmd": "io_burner", "args": ["50"], "queue_hint": 0, "reason": "I/O-bound, latency-sensitive"}}
+{"user": "io 워크로드 살짝만", "spec": {"cmd": "io_burner", "args": ["20"], "queue_hint": 0, "reason": "small I/O workload"}}
+{"user": "io_burner 5번 즉시", "spec": {"cmd": "io_burner", "args": ["5"], "queue_hint": 0, "reason": "very short I/O burst"}}
+{"user": "io_burner 30번 인터랙티브", "spec": {"cmd": "io_burner", "args": ["30"], "queue_hint": 0, "reason": "I/O-bound, HIGH queue"}}
+{"user": "디스크 살짝 만져봐 io_burner 25", "spec": {"cmd": "io_burner", "args": ["25"], "queue_hint": 0, "reason": "small I/O workload"}}
+{"user": "io_burner 짧고 빠르게 40", "spec": {"cmd": "io_burner", "args": ["40"], "queue_hint": 0, "reason": "short I/O workload, interactive"}}
+{"user": "가벼운 io 작업 하나 io_burner 12", "spec": {"cmd": "io_burner", "args": ["12"], "queue_hint": 0, "reason": "light I/O workload"}}

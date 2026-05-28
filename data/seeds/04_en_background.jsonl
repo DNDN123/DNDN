@@ -1,0 +1,50 @@
+{"user": "run heavy computation in the background", "spec": {"cmd": "cpu_burner", "args": ["2000000"], "queue_hint": 2, "reason": "Heavy CPU work backgrounded"}}
+{"user": "cpu_burner 10 million iterations", "spec": {"cmd": "cpu_burner", "args": ["10000000"], "queue_hint": 2, "reason": "Very heavy CPU workload"}}
+{"user": "long background job cpu_burner 5M", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Long CPU work backgrounded"}}
+{"user": "heavy task in the back", "spec": {"cmd": "cpu_burner", "args": ["3000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "compute-heavy workload, low priority", "spec": {"cmd": "cpu_burner", "args": ["3000000"], "queue_hint": 2, "reason": "Compute heavy task in LOW queue"}}
+{"user": "cpu_burner long run", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Long CPU run"}}
+{"user": "run a batch CPU job 4M", "spec": {"cmd": "cpu_burner", "args": ["4000000"], "queue_hint": 2, "reason": "Batch CPU job"}}
+{"user": "cpu_burner 2 million backgrounded", "spec": {"cmd": "cpu_burner", "args": ["2000000"], "queue_hint": 2, "reason": "CPU work backgrounded"}}
+{"user": "background-only cpu_burner 1M", "spec": {"cmd": "cpu_burner", "args": ["1000000"], "queue_hint": 2, "reason": "Background CPU work"}}
+{"user": "send this big calc to the back: cpu_burner 6M", "spec": {"cmd": "cpu_burner", "args": ["6000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "non-urgent cpu_burner 4500000", "spec": {"cmd": "cpu_burner", "args": ["4500000"], "queue_hint": 2, "reason": "Non-urgent CPU work"}}
+{"user": "heavy long-running cpu_burner 7M", "spec": {"cmd": "cpu_burner", "args": ["7000000"], "queue_hint": 2, "reason": "Long heavy CPU"}}
+{"user": "cpu_burner 15 million, batch", "spec": {"cmd": "cpu_burner", "args": ["15000000"], "queue_hint": 2, "reason": "Very heavy batch CPU"}}
+{"user": "throughput-oriented cpu_burner 8M", "spec": {"cmd": "cpu_burner", "args": ["8000000"], "queue_hint": 2, "reason": "Throughput-oriented heavy work"}}
+{"user": "LOW queue cpu_burner 3M", "spec": {"cmd": "cpu_burner", "args": ["3000000"], "queue_hint": 2, "reason": "LOW queue placement requested"}}
+{"user": "kick off long compute 12 million", "spec": {"cmd": "cpu_burner", "args": ["12000000"], "queue_hint": 2, "reason": "Very long CPU workload"}}
+{"user": "background-friendly cpu_burner 9M", "spec": {"cmd": "cpu_burner", "args": ["9000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "huge cpu workload cpu_burner 20M", "spec": {"cmd": "cpu_burner", "args": ["20000000"], "queue_hint": 2, "reason": "Extremely heavy CPU"}}
+{"user": "give me a long CPU burn 6500000", "spec": {"cmd": "cpu_burner", "args": ["6500000"], "queue_hint": 2, "reason": "Long CPU burn"}}
+{"user": "queue this batch cpu_burner 11000000", "spec": {"cmd": "cpu_burner", "args": ["11000000"], "queue_hint": 2, "reason": "Batch CPU queued"}}
+{"user": "extremely heavy cpu_burner 25M", "spec": {"cmd": "cpu_burner", "args": ["25000000"], "queue_hint": 2, "reason": "Extremely heavy CPU workload"}}
+{"user": "cpu_burner 16M throughput", "spec": {"cmd": "cpu_burner", "args": ["16000000"], "queue_hint": 2, "reason": "Throughput-oriented heavy work"}}
+{"user": "cpu_burner 18M overnight", "spec": {"cmd": "cpu_burner", "args": ["18000000"], "queue_hint": 2, "reason": "Very long CPU work, non-urgent"}}
+{"user": "background CPU burn long", "spec": {"cmd": "cpu_burner", "args": ["10000000"], "queue_hint": 2, "reason": "Long background CPU"}}
+{"user": "let it run slowly: cpu_burner 4M", "spec": {"cmd": "cpu_burner", "args": ["4000000"], "queue_hint": 2, "reason": "Non-urgent heavy task"}}
+{"user": "big io batch io_burner 500", "spec": {"cmd": "io_burner", "args": ["500"], "queue_hint": 2, "reason": "Large I/O batch"}}
+{"user": "io_burner 1000 batch", "spec": {"cmd": "io_burner", "args": ["1000"], "queue_hint": 2, "reason": "Large I/O batch"}}
+{"user": "long io_burner 1500", "spec": {"cmd": "io_burner", "args": ["1500"], "queue_hint": 2, "reason": "Long I/O workload"}}
+{"user": "bulk disk job io_burner 800", "spec": {"cmd": "io_burner", "args": ["800"], "queue_hint": 2, "reason": "Bulk I/O"}}
+{"user": "io_burner 2000 backgrounded", "spec": {"cmd": "io_burner", "args": ["2000"], "queue_hint": 2, "reason": "Very large I/O batch"}}
+{"user": "lots of io operations 1200", "spec": {"cmd": "io_burner", "args": ["1200"], "queue_hint": 2, "reason": "Large I/O workload"}}
+{"user": "io_burner LOW queue 900", "spec": {"cmd": "io_burner", "args": ["900"], "queue_hint": 2, "reason": "Large I/O LOW queue"}}
+{"user": "background io_burner 600", "spec": {"cmd": "io_burner", "args": ["600"], "queue_hint": 2, "reason": "Background I/O"}}
+{"user": "big io workload 750", "spec": {"cmd": "io_burner", "args": ["750"], "queue_hint": 2, "reason": "Large I/O job"}}
+{"user": "long-running io 1300", "spec": {"cmd": "io_burner", "args": ["1300"], "queue_hint": 2, "reason": "Long-running I/O"}}
+{"user": "mixed_burner large 5000", "spec": {"cmd": "mixed_burner", "args": ["5000"], "queue_hint": 2, "reason": "Large mixed workload"}}
+{"user": "mixed_burner 8000 background", "spec": {"cmd": "mixed_burner", "args": ["8000"], "queue_hint": 2, "reason": "Large mixed work backgrounded"}}
+{"user": "heavy mixed 10000", "spec": {"cmd": "mixed_burner", "args": ["10000"], "queue_hint": 2, "reason": "Heavy mixed workload"}}
+{"user": "long mixed_burner 7000", "spec": {"cmd": "mixed_burner", "args": ["7000"], "queue_hint": 2, "reason": "Long mixed workload"}}
+{"user": "mixed_burner 6000 batch", "spec": {"cmd": "mixed_burner", "args": ["6000"], "queue_hint": 2, "reason": "Batch mixed workload"}}
+{"user": "stress the CPU cpu_burner 14M", "spec": {"cmd": "cpu_burner", "args": ["14000000"], "queue_hint": 2, "reason": "Heavy CPU stress"}}
+{"user": "max load cpu_burner 30000000", "spec": {"cmd": "cpu_burner", "args": ["30000000"], "queue_hint": 2, "reason": "Maximal CPU workload"}}
+{"user": "background heavy 5M", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "cpu_burner low pri 3M", "spec": {"cmd": "cpu_burner", "args": ["3000000"], "queue_hint": 2, "reason": "LOW priority CPU work"}}
+{"user": "off-peak cpu_burner 8M", "spec": {"cmd": "cpu_burner", "args": ["8000000"], "queue_hint": 2, "reason": "Off-peak heavy CPU"}}
+{"user": "io_burner 1100 long", "spec": {"cmd": "io_burner", "args": ["1100"], "queue_hint": 2, "reason": "Long I/O workload"}}
+{"user": "schedule background compute 7M", "spec": {"cmd": "cpu_burner", "args": ["7000000"], "queue_hint": 2, "reason": "Background scheduled compute"}}
+{"user": "long-running batch io 1700", "spec": {"cmd": "io_burner", "args": ["1700"], "queue_hint": 2, "reason": "Long batch I/O"}}
+{"user": "cpu_burner big run 13000000", "spec": {"cmd": "cpu_burner", "args": ["13000000"], "queue_hint": 2, "reason": "Big CPU run"}}
+{"user": "background only heavy cpu_burner 22M", "spec": {"cmd": "cpu_burner", "args": ["22000000"], "queue_hint": 2, "reason": "Very heavy backgrounded CPU"}}

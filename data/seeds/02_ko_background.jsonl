@@ -1,0 +1,50 @@
+{"user": "백그라운드로 무거운 계산 돌려줘", "spec": {"cmd": "cpu_burner", "args": ["2000000"], "queue_hint": 2, "reason": "Heavy CPU work backgrounded"}}
+{"user": "cpu_burner 천만번 돌려", "spec": {"cmd": "cpu_burner", "args": ["10000000"], "queue_hint": 2, "reason": "Very heavy CPU workload"}}
+{"user": "큰 계산 하나 백 쳐서 돌려", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Heavy CPU work backgrounded"}}
+{"user": "헤비한 작업 뒤에서", "spec": {"cmd": "cpu_burner", "args": ["3000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "무거운 거 하나 돌려놓고 다른 거 해", "spec": {"cmd": "cpu_burner", "args": ["3000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "cpu_burner 길게 한번", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Long CPU workload"}}
+{"user": "오래 걸리는 계산 백그라운드", "spec": {"cmd": "cpu_burner", "args": ["8000000"], "queue_hint": 2, "reason": "Long CPU workload, LOW queue"}}
+{"user": "배치 작업 하나 cpu_burner 200만", "spec": {"cmd": "cpu_burner", "args": ["2000000"], "queue_hint": 2, "reason": "Batch CPU workload"}}
+{"user": "cpu_burner 100만번 백그라운드", "spec": {"cmd": "cpu_burner", "args": ["1000000"], "queue_hint": 2, "reason": "CPU workload backgrounded"}}
+{"user": "긴 계산 뒤로 보내", "spec": {"cmd": "cpu_burner", "args": ["4000000"], "queue_hint": 2, "reason": "Long CPU backgrounded"}}
+{"user": "compute heavy 작업 cpu_burner 6000000", "spec": {"cmd": "cpu_burner", "args": ["6000000"], "queue_hint": 2, "reason": "Compute heavy task"}}
+{"user": "cpu_burner 천오백만 무겁게", "spec": {"cmd": "cpu_burner", "args": ["15000000"], "queue_hint": 2, "reason": "Very heavy CPU workload"}}
+{"user": "백그라운드에서 cpu_burner 5백만", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "느리게 돌려도 되는 큰 작업", "spec": {"cmd": "cpu_burner", "args": ["3000000"], "queue_hint": 2, "reason": "Non-urgent heavy work, LOW queue"}}
+{"user": "cpu_burner 천만 background로", "spec": {"cmd": "cpu_burner", "args": ["10000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "큰 거 뒤에서 천천히 돌려", "spec": {"cmd": "cpu_burner", "args": ["4000000"], "queue_hint": 2, "reason": "Long-running CPU work"}}
+{"user": "긴 burner 작업 800만번", "spec": {"cmd": "cpu_burner", "args": ["8000000"], "queue_hint": 2, "reason": "Long CPU burn"}}
+{"user": "cpu_burner 헤비하게 3M", "spec": {"cmd": "cpu_burner", "args": ["3000000"], "queue_hint": 2, "reason": "Heavy CPU workload"}}
+{"user": "burner 큰 거 한판 cpu 2000000", "spec": {"cmd": "cpu_burner", "args": ["2000000"], "queue_hint": 2, "reason": "Heavy CPU workload"}}
+{"user": "오래 가는 계산 하나 더 cpu_burner 7M", "spec": {"cmd": "cpu_burner", "args": ["7000000"], "queue_hint": 2, "reason": "Long CPU workload"}}
+{"user": "cpu_burner 매우 길게 1200만번", "spec": {"cmd": "cpu_burner", "args": ["12000000"], "queue_hint": 2, "reason": "Very long CPU workload"}}
+{"user": "처리량 위주 무거운 작업 6M", "spec": {"cmd": "cpu_burner", "args": ["6000000"], "queue_hint": 2, "reason": "Throughput-oriented heavy task"}}
+{"user": "backgrounded compute cpu_burner 4500000", "spec": {"cmd": "cpu_burner", "args": ["4500000"], "queue_hint": 2, "reason": "Background CPU compute"}}
+{"user": "오래걸리는 burner 천만번", "spec": {"cmd": "cpu_burner", "args": ["10000000"], "queue_hint": 2, "reason": "Long CPU workload"}}
+{"user": "느긋한 큰 작업 cpu_burner 5M", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Non-urgent heavy work"}}
+{"user": "백 5백만 헤비", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "low 큐로 cpu_burner 2백만", "spec": {"cmd": "cpu_burner", "args": ["2000000"], "queue_hint": 2, "reason": "LOW queue placement requested"}}
+{"user": "백그라운드 batch job cpu_burner 9000000", "spec": {"cmd": "cpu_burner", "args": ["9000000"], "queue_hint": 2, "reason": "Background batch job"}}
+{"user": "큰 io 작업 io_burner 500", "spec": {"cmd": "io_burner", "args": ["500"], "queue_hint": 2, "reason": "Large I/O batch job"}}
+{"user": "io_burner 천번 백그라운드", "spec": {"cmd": "io_burner", "args": ["1000"], "queue_hint": 2, "reason": "Large I/O batch"}}
+{"user": "io 무겁게 800번", "spec": {"cmd": "io_burner", "args": ["800"], "queue_hint": 2, "reason": "Large I/O workload"}}
+{"user": "io_burner 대량 1500", "spec": {"cmd": "io_burner", "args": ["1500"], "queue_hint": 2, "reason": "Bulk I/O job"}}
+{"user": "io 큰 거 백그라운드 600", "spec": {"cmd": "io_burner", "args": ["600"], "queue_hint": 2, "reason": "Background large I/O"}}
+{"user": "io_burner 오래 돌리기 2000", "spec": {"cmd": "io_burner", "args": ["2000"], "queue_hint": 2, "reason": "Very large I/O job"}}
+{"user": "long-running io 750", "spec": {"cmd": "io_burner", "args": ["750"], "queue_hint": 2, "reason": "Long-running I/O"}}
+{"user": "io_burner 백그라 1200", "spec": {"cmd": "io_burner", "args": ["1200"], "queue_hint": 2, "reason": "Large background I/O"}}
+{"user": "큰 디스크 작업 io_burner 900", "spec": {"cmd": "io_burner", "args": ["900"], "queue_hint": 2, "reason": "Large I/O batch"}}
+{"user": "io batch 1000번", "spec": {"cmd": "io_burner", "args": ["1000"], "queue_hint": 2, "reason": "I/O batch job"}}
+{"user": "디스크 작업 길게 io_burner 1300", "spec": {"cmd": "io_burner", "args": ["1300"], "queue_hint": 2, "reason": "Long I/O workload"}}
+{"user": "오래 도는 io 500번", "spec": {"cmd": "io_burner", "args": ["500"], "queue_hint": 2, "reason": "Long I/O batch"}}
+{"user": "mixed_burner 길게 5천", "spec": {"cmd": "mixed_burner", "args": ["5000"], "queue_hint": 2, "reason": "Long mixed workload, mostly CPU"}}
+{"user": "mixed 작업 백그라운드 8000", "spec": {"cmd": "mixed_burner", "args": ["8000"], "queue_hint": 2, "reason": "Large mixed workload"}}
+{"user": "mixed_burner 만번 무겁게", "spec": {"cmd": "mixed_burner", "args": ["10000"], "queue_hint": 2, "reason": "Heavy mixed workload"}}
+{"user": "긴 mixed 7천번", "spec": {"cmd": "mixed_burner", "args": ["7000"], "queue_hint": 2, "reason": "Long mixed workload"}}
+{"user": "mixed 큰거 6000", "spec": {"cmd": "mixed_burner", "args": ["6000"], "queue_hint": 2, "reason": "Large mixed workload"}}
+{"user": "엄청 큰 cpu 작업 cpu_burner 20M", "spec": {"cmd": "cpu_burner", "args": ["20000000"], "queue_hint": 2, "reason": "Extremely heavy CPU workload"}}
+{"user": "cpu_burner 가장 무겁게 30000000", "spec": {"cmd": "cpu_burner", "args": ["30000000"], "queue_hint": 2, "reason": "Maximal CPU workload"}}
+{"user": "터지게 cpu_burner 25M", "spec": {"cmd": "cpu_burner", "args": ["25000000"], "queue_hint": 2, "reason": "Very heavy CPU workload"}}
+{"user": "백 큰 거 cpu_burner 1800만", "spec": {"cmd": "cpu_burner", "args": ["18000000"], "queue_hint": 2, "reason": "Very heavy CPU workload"}}
+{"user": "처리량용 헤비 cpu_burner 16000000", "spec": {"cmd": "cpu_burner", "args": ["16000000"], "queue_hint": 2, "reason": "Heavy throughput-oriented work"}}
