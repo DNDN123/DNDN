@@ -1,0 +1,29 @@
+# SmartShell LLM training requirements (5070 Ti / Blackwell + CUDA 12.6)
+#
+# Install order matters — torch first (with CUDA index), then the rest.
+#
+#   pip install torch --index-url https://download.pytorch.org/whl/cu126
+#   pip install -r requirements.txt
+#
+# If Unsloth doesn't support Blackwell yet, comment it out and use plain
+# transformers + peft (slower but works).
+
+# Core ML
+torch>=2.5.0
+transformers>=4.45.0
+peft>=0.13.0
+trl>=0.11.0
+accelerate>=1.0.0
+datasets>=3.0.0
+bitsandbytes>=0.44.0
+sentencepiece>=0.2.0
+protobuf>=4.25.0
+
+# Unsloth (fast LoRA on CUDA). If Blackwell unsupported, comment out:
+unsloth>=2024.10.0
+
+# Evaluation
+requests>=2.31.0
+
+# Optional: tensorboard for loss curves
+# tensorboard>=2.15.0
