@@ -11,26 +11,30 @@
 ```
 integration/
 ├── README.md            ← 이 파일 (개요)
-├── MERGE_NOTES.md       ← 충돌 결정 / 머지 결정 기록 (상세)
+├── MERGE_NOTES.md       ← 충돌 결정 / 머지 결정 기록 (상세, K1~K7)
+├── sanity_check.sh      ← ⚡ 자동 회귀 (build + boot + 8 케이스 grep)
 ├── _sources/            ← 각 브랜치 원본 파일 (읽기 참조용, 변경 안 됨)
 │   ├── hyunsung/        ← Scheduler 슬라이스 원본
 │   ├── minju/           ← Syscall(trace) 슬라이스 원본
 │   ├── jinhwan/         ← Thread 슬라이스 원본
 │   └── haneol/          ← Process 슬라이스 원본
 ├── xv6-riscv/           ← ⭐ 통합 결과 — 빌드 대상
-│   ├── kernel/          (proc.c, proc.h, syscall.{c,h}, sysproc.c, vm.c, kalloc.c, defs.h,
-│   │                     procinfo.h, sysinfo.h, trap.c …)
+│   ├── kernel/          (proc.c+K1/K3/K5, proc.h+K2, syscall.{c,h}, sysproc.c, vm.c,
+│   │                     kalloc.c, defs.h, procinfo.h, sysinfo.h, trap.c …)
 │   ├── user/            (init, sh, ls, … + nlrun, wrunner, cpu/io/mixed_burner, rrunner,
-│   │                     diagprog, tracetool, threadtest, ps, setprio, …)
-│   ├── workloads/       (cpu_heavy, io_heavy, mixed, three_way, realprog, stress, hints_example)
+│   │                     diagprog, tracetool, threadtest, ps, setprio, bgq, forkstress,
+│   │                     thread_race ← K5 회귀 재현)
+│   ├── workloads/       (bgq, cpu_heavy, hints, io_heavy, mixed, realprog, stress, three_way)
 │   └── Makefile
-├── host/                ← 통합 호스트 Python
-│   ├── README.md
-│   ├── nl_shell.py      ⭐ 단일 진입점 (hyunsung)
-│   └── adapters/
-│       ├── process_bridge.py  (haneol)
-│       └── thread_bridge.py   (jinhwan, API 키 sanitize 완료)
-└── docs/                ← 통합 트리 전용 docs (현재 비어있음)
+└── host/                ← 통합 호스트 Python (3-레이어)
+    ├── README.md
+    ├── nl_shell.py      ⭐ Hot path — 자연어 → MLFQ 큐 (hyunsung)
+    ├── adapters/        ⭐ Hot path 어댑터 (K4/K6/K7: priority + newline injection 가드)
+    │   ├── process_bridge.py  (haneol)
+    │   └── thread_bridge.py   (jinhwan, API 키 sanitize + whitelist)
+    ├── ops/             ⭐ Cold path — Supervisor LLM (OS-grounded 감사)
+    │   ├── supervisor.py, tools.py, README.md
+    └── dev_chat.py      ⚠️ Dev path — 자유 대화 (평가 경로 밖)
 ```
 
 ---
@@ -60,6 +64,29 @@ integration/
 | Solar API 키 하드코딩 (jinhwan) | 환경변수로 sanitize |
 
 상세 결정 근거는 `MERGE_NOTES.md §2` 참조.
+
+---
+
+## ⚡ 자동 회귀 검증 — 30초 한 줄
+
+```bash
+XV6_DIR=~/xv6-build bash integration/sanity_check.sh
+```
+
+빌드 → QEMU 부팅 → 4팀 슬라이스 데모 + K5 race + threadtest 후속 = **8/8 PASS** 이면 통합 트리 건강.
+실패하면 마지막 30줄 QEMU 출력이 자동 첨부됨. CI/cron 에 그대로 꽂을 수 있는 종료 코드.
+
+---
+
+## 호스트 도구 3-레이어 정리
+
+| 레이어 | 도구 | 역할 | 평가 등장 |
+|---|---|---|---|
+| **Hot path** ⭐ | `host/nl_shell.py`, `host/adapters/{process,thread}_bridge.py` | 자연어 → MLFQ 큐 정수 축약 (메인 데모) | ✅ |
+| **Cold path** | `host/ops/supervisor.py` | OS-grounded 감사 (MERGE_NOTES/eval/K-fix/syscall 자연어 질의) | ✅ 보조 |
+| **Dev path** | `host/dev_chat.py` | 자유 대화 REPL — 개발자 편의 | ❌ 의도적 |
+
+세 도구 모두 같은 `UPSTAGE_API_KEY` 사용. Supervisor 는 5중 가드 (로컬 패턴 / 시스템 프롬프트 / JSON 강제 / 도구호출 강제 / evidence 없는 답변 거부) 로 *"thin LLM wrapper"* 가 되지 않게 분리됨.
 
 ---
 

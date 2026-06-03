@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>xv6 4-Slice 통합 프로젝트 보고서</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --bg-card: #1e293b;
+    --bg-soft: #334155;
+    --fg: #e2e8f0;
+    --fg-muted: #94a3b8;
+    --accent: #38bdf8;
+    --accent-2: #a78bfa;
+    --good: #34d399;
+    --warn: #fbbf24;
+    --bad: #f87171;
+    --code-bg: #0b1220;
+    --border: #334155;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans KR', sans-serif;
+    background: linear-gradient(180deg, #0a0f1e 0%, #0f172a 100%);
+    color: var(--fg);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  /* ─── Hero ─── */
+  .hero {
+    padding: 100px 24px 80px;
+    background: radial-gradient(ellipse at top, rgba(56, 189, 248, 0.15), transparent 60%),
+                radial-gradient(ellipse at bottom right, rgba(167, 139, 250, 0.12), transparent 50%);
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero .eyebrow {
+    display: inline-block;
+    padding: 6px 14px;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 999px;
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-size: clamp(32px, 5vw, 52px);
+    line-height: 1.15;
+    margin: 0 0 20px;
+    background: linear-gradient(135deg, #38bdf8 0%, #a78bfa 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hero .sub {
+    font-size: 18px;
+    color: var(--fg-muted);
+    max-width: 720px;
+    margin: 0 auto 40px;
+  }
+  .hero .meta {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    flex-wrap: wrap;
+    font-size: 14px;
+    color: var(--fg-muted);
+  }
+  .hero .meta span strong { color: var(--fg); margin-left: 6px; }
+
+  /* ─── Nav ─── */
+  nav.toc {
+    position: sticky; top: 0;
+    background: rgba(15, 23, 42, 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    z-index: 100;
+    padding: 12px 0;
+  }
+  nav.toc .container {
+    display: flex; gap: 6px; overflow-x: auto;
+    scrollbar-width: none;
+  }
+  nav.toc .container::-webkit-scrollbar { display: none; }
+  nav.toc a {
+    padding: 6px 12px;
+    color: var(--fg-muted);
+    text-decoration: none;
+    font-size: 14px;
+    border-radius: 6px;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  nav.toc a:hover { color: var(--accent); background: rgba(56,189,248,0.08); }
+
+  /* ─── Sections ─── */
+  section { padding: 72px 0; border-bottom: 1px solid rgba(51, 65, 85, 0.5); }
+  section h2 {
+    font-size: 32px;
+    margin: 0 0 8px;
+    color: var(--fg);
+    display: flex; align-items: center; gap: 16px;
+  }
+  section h2 .num {
+    color: var(--accent);
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 22px;
+    font-weight: 500;
+  }
+  section .lead {
+    color: var(--fg-muted);
+    font-size: 17px;
+    margin: 0 0 32px;
+    max-width: 800px;
+  }
+  section h3 {
+    font-size: 20px;
+    margin: 32px 0 12px;
+    color: var(--accent-2);
+  }
+
+  /* ─── Cards / grid ─── */
+  .grid { display: grid; gap: 16px; }
+  .grid-2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px;
+    transition: transform 0.15s, border-color 0.15s;
+  }
+  .card:hover { transform: translateY(-2px); border-color: rgba(56,189,248,0.4); }
+  .card h4 {
+    margin: 0 0 8px; font-size: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .tag-hyunsung { background: rgba(56,189,248,0.15); color: #38bdf8; border: 1px solid rgba(56,189,248,0.3); }
+  .tag-minju    { background: rgba(167,139,250,0.15); color: #a78bfa; border: 1px solid rgba(167,139,250,0.3); }
+  .tag-jinhwan  { background: rgba(52,211,153,0.15); color: #34d399; border: 1px solid rgba(52,211,153,0.3); }
+  .tag-haneol   { background: rgba(251,191,36,0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
+
+  .card p { margin: 8px 0; font-size: 14px; color: var(--fg-muted); }
+  .card ul { margin: 8px 0; padding-left: 20px; font-size: 14px; color: var(--fg-muted); }
+  .card ul li { margin: 2px 0; }
+
+  /* ─── Code ─── */
+  pre, code {
+    font-family: 'JetBrains Mono', 'Consolas', 'Courier New', monospace;
+    font-size: 13px;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    line-height: 1.55;
+    color: #cbd5e1;
+  }
+  p code, li code, td code {
+    background: rgba(56,189,248,0.1);
+    color: var(--accent);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.92em;
+  }
+  pre .c { color: #64748b; font-style: italic; }
+  pre .k { color: #f87171; }
+  pre .s { color: #fbbf24; }
+  pre .p { color: #34d399; }
+
+  /* ─── Tables ─── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 14px;
+  }
+  thead tr { background: var(--bg-soft); }
+  th, td {
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  th { font-weight: 600; color: var(--fg); font-size: 13px; }
+  td { color: var(--fg-muted); }
+  td strong, td b { color: var(--fg); }
+  tbody tr:hover { background: rgba(56,189,248,0.04); }
+
+  /* ─── Pill / badge ─── */
+  .pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 4px;
+  }
+  .pill-ok { background: rgba(52,211,153,0.15); color: var(--good); }
+  .pill-warn { background: rgba(251,191,36,0.15); color: var(--warn); }
+  .pill-bad { background: rgba(248,113,113,0.15); color: var(--bad); }
+  .pill-info { background: rgba(56,189,248,0.15); color: var(--accent); }
+
+  /* ─── Step list (Quick start) ─── */
+  .steps { counter-reset: step; padding: 0; list-style: none; margin: 0; }
+  .steps > li {
+    position: relative;
+    padding: 20px 24px 20px 70px;
+    margin: 0 0 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    counter-increment: step;
+  }
+  .steps > li::before {
+    content: counter(step);
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+    color: #0f172a;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 16px;
+  }
+  .steps > li h4 { margin: 0 0 8px; color: var(--fg); font-size: 17px; }
+  .steps > li p { margin: 4px 0; color: var(--fg-muted); font-size: 14px; }
+  .steps > li pre { margin-top: 10px; }
+
+  /* ─── Callout boxes ─── */
+  .callout {
+    border-left: 4px solid;
+    padding: 16px 20px;
+    border-radius: 0 8px 8px 0;
+    margin: 16px 0;
+    background: var(--bg-card);
+  }
+  .callout-info { border-color: var(--accent); }
+  .callout-warn { border-color: var(--warn); }
+  .callout-bad  { border-color: var(--bad); }
+  .callout-ok   { border-color: var(--good); }
+  .callout strong { color: var(--fg); }
+  .callout p:first-child { margin-top: 0; }
+  .callout p:last-child { margin-bottom: 0; }
+
+  /* ─── Folder tree ─── */
+  .tree {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 24px;
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 13px;
+    line-height: 1.85;
+    color: #cbd5e1;
+    overflow-x: auto;
+  }
+  .tree .dir { color: var(--accent); }
+  .tree .file { color: var(--fg-muted); }
+  .tree .star { color: var(--warn); font-weight: 700; }
+  .tree .cmt { color: #64748b; font-style: italic; }
+
+  /* ─── Metric tiles ─── */
+  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin: 16px 0; }
+  .metric {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    text-align: center;
+  }
+  .metric .v { font-size: 28px; font-weight: 700; margin: 4px 0; color: var(--accent); }
+  .metric .v.pos { color: var(--good); }
+  .metric .v.neg { color: var(--bad); }
+  .metric .l { font-size: 12px; color: var(--fg-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .metric .d { font-size: 12px; color: var(--fg-muted); margin-top: 4px; }
+
+  /* ─── Footer ─── */
+  footer {
+    padding: 60px 24px 80px;
+    text-align: center;
+    color: var(--fg-muted);
+    font-size: 14px;
+  }
+  footer .credit { margin-top: 16px; font-size: 12px; }
+
+  @media (max-width: 640px) {
+    .hero { padding: 60px 20px 50px; }
+    section { padding: 50px 0; }
+    section h2 { font-size: 24px; }
+    table { font-size: 12px; }
+    th, td { padding: 8px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ HERO ═══════════════════ -->
+<header class="hero">
+  <div class="eyebrow">OS PROJECT · INTEGRATION REPORT</div>
+  <h1>xv6 4-Slice 통합 프로젝트<br>발표 보고서</h1>
+  <p class="sub">
+    Scheduler · Syscall · Thread · Process — 네 명의 슬라이스를
+    단일 <code>xv6-riscv</code> 트리로 합쳐 빌드 / 부팅 / 정량 평가까지 통과시킨 통합 작업 결과
+  </p>
+  <div class="meta">
+    <span>팀:<strong>hyunsung · minju · jinhwan · haneol</strong></span>
+    <span>통합 일자:<strong>2026-05-26</strong></span>
+    <span>평가 재실행:<strong>2026-05-27</strong></span>
+    <span>플랫폼:<strong>xv6-riscv / QEMU / WSL2</strong></span>
+  </div>
+</header>
+
+<!-- ═══════════════════ NAV ═══════════════════ -->
+<nav class="toc">
+  <div class="container">
+    <a href="#overview">01. 개요</a>
+    <a href="#structure">02. 구조</a>
+    <a href="#slices">03. 슬라이스</a>
+    <a href="#syscalls">04. Syscall 분배</a>
+    <a href="#conflicts">05. 충돌 해결</a>
+    <a href="#fixes">06. K1~K4 Fix</a>
+    <a href="#eval">07. 정량 평가</a>
+    <a href="#quickstart">08. 실행 방법</a>
+    <a href="#risks">09. 알려진 이슈</a>
+  </div>
+</nav>
+
+<!-- ═══════════════════ 01 OVERVIEW ═══════════════════ -->
+<section id="overview">
+  <div class="container">
+    <h2><span class="num">01</span> 프로젝트 개요</h2>
+    <p class="lead">
+      4명의 팀원이 각자 GitHub 브랜치(<code>origin/hyunsung</code>, <code>origin/minju</code>,
+      <code>origin/jinhwan</code>, <code>origin/haneol</code>)에서 개발한 xv6 슬라이스를
+      <strong>단일 빌드 가능 트리</strong>로 합치는 것이 목표였습니다.
+      원본 브랜치는 <code>git archive</code> 로 읽기만 하고 <strong>단 1바이트도 수정하지 않은 상태</strong>를 유지합니다.
+    </p>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <h4>핵심 원칙</h4>
+        <ul>
+          <li><strong>원본 보호</strong> — push / commit / 새 브랜치 생성 금지</li>
+          <li><strong>단일 진입점</strong> — host NL은 <code>nl_shell.py</code> 한 개</li>
+          <li><strong>API 키 sanitize</strong> — 환경변수만 사용, 하드코딩 금지</li>
+          <li><strong>roll-back 가능</strong> — <code>_sources/</code> 에 원본 보존</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>최종 산출물</h4>
+        <ul>
+          <li><code>xv6-riscv/</code> — 통합 빌드 트리 (kernel + user + workloads)</li>
+          <li><code>host/</code> — Solar Pro 3 LLM 연동 Python 브리지</li>
+          <li><code>MERGE_NOTES.md</code> — 281줄 충돌 결정 기록</li>
+          <li><code>docs/charts/integration/</code> — 5 워크로드 × 3 모드 평가 결과</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>한눈에 보는 검증 상태</h3>
+    <div class="metrics">
+      <div class="metric"><div class="l">빌드/부팅</div><div class="v pos">PASS</div><div class="d">2026-05-26 / WSL+QEMU</div></div>
+      <div class="metric"><div class="l">라이브 데모</div><div class="v pos">4 / 4</div><div class="d">슬라이스 전부 동작</div></div>
+      <div class="metric"><div class="l">정량 평가</div><div class="v pos">PASS</div><div class="d">three_way Δturnaround −7.3%</div></div>
+      <div class="metric"><div class="l">통합 Syscall</div><div class="v">14개</div><div class="d">22~35 충돌 없이 공존</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ 02 STRUCTURE ═══════════════════ -->
+<section id="structure">
+  <div class="container">
+    <h2><span class="num">02</span> 폴더 구조</h2>
+    <p class="lead">
+      <code>integration/</code> 는 6개 항목으로 구성됩니다. <span class="pill pill-info">⭐ 빌드 대상</span>
+      은 <code>xv6-riscv/</code>, <span class="pill pill-info">⭐ 진입점</span> 은
+      <code>host/nl_shell.py</code> 단 하나입니다.
+    </p>
+
+    <div class="tree">
+<span class="dir">integration/</span>
+├── <span class="file">README.md</span>            <span class="cmt"># 개요 + Quick Start + 정량 평가 결과</span>
+├── <span class="file">MERGE_NOTES.md</span>       <span class="cmt"># 충돌 결정 / 머지 결정 기록 (281줄, 8섹션)</span>
+├── <span class="dir">_sources/</span>             <span class="cmt"># 각 브랜치 원본 파일 (읽기 참조용, 변경 금지)</span>
+│   ├── <span class="dir">hyunsung/</span>         <span class="cmt"># Scheduler 슬라이스 (smart-mlfq-xv6-patches, smart-mlfq-host)</span>
+│   ├── <span class="dir">minju/</span>            <span class="cmt"># Syscall trace 슬라이스 (xv6-riscv 트리 통째)</span>
+│   ├── <span class="dir">jinhwan/</span>          <span class="cmt"># Thread/futex 슬라이스 (한글 자료 다수)</span>
+│   └── <span class="dir">haneol/</span>           <span class="cmt"># Process(ps/sysinfo) 슬라이스</span>
+├── <span class="dir">xv6-riscv/</span>            <span class="star">⭐</span> <span class="cmt"># 통합 결과 — 빌드 대상</span>
+│   ├── <span class="dir">kernel/</span>           <span class="cmt"># proc.c/h, syscall.{c,h}, sysproc.c, vm.c, kalloc.c,</span>
+│   │                       <span class="cmt"># procinfo.h, sysinfo.h, trap.c, defs.h …</span>
+│   ├── <span class="dir">user/</span>             <span class="cmt"># init/sh/ls + nlrun, wrunner, cpu/io/mixed_burner,</span>
+│   │                       <span class="cmt"># rrunner, diagprog, tracetool, threadtest, ps, setprio,</span>
+│   │                       <span class="cmt"># bgq, forkstress, dorphan, logstress …</span>
+│   ├── <span class="dir">workloads/</span>        <span class="cmt"># bgq, cpu_heavy, io_heavy, mixed, three_way,</span>
+│   │                       <span class="cmt"># realprog, stress, hints (총 8종)</span>
+│   ├── <span class="dir">mkfs/</span>             <span class="cmt"># mkfs.c (path stripping 로직 통합 시 수정됨)</span>
+│   └── <span class="file">Makefile, fs.img, hints.txt, test-xv6.py</span>
+└── <span class="dir">host/</span>                 <span class="cmt"># 통합 호스트 Python (Solar Pro 3 연동)</span>
+    ├── <span class="file">nl_shell.py</span>      <span class="star">⭐</span> <span class="cmt"># 단일 진입점 (--mode {process,thread})</span>
+    ├── <span class="file">prompts.py, parse_trace.py, llm_hint.py</span>
+    ├── <span class="file">evaluator.py, viz.py, hello_solar.py</span>
+    ├── <span class="file">run_eval_matrix.sh, requirements.txt</span>
+    └── <span class="dir">adapters/</span>
+        ├── <span class="file">process_bridge.py</span>    <span class="cmt"># haneol — ps/setprio 자연어 처리</span>
+        └── <span class="file">thread_bridge.py</span>     <span class="cmt"># jinhwan — API 키 sanitize 완료</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ 03 SLICES ═══════════════════ -->
+<section id="slices">
+  <div class="container">
+    <h2><span class="num">03</span> 4팀 슬라이스 — 기여 내역</h2>
+    <p class="lead">
+      각 팀의 슬라이스는 서로 다른 영역을 다루지만 같은 <code>struct proc</code>, <code>syscall.c</code>,
+      <code>sysproc.c</code> 를 건드리기 때문에 충돌이 불가피했습니다. 다음은 통합에 채택된 기여입니다.
+    </p>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <h4><span class="tag tag-hyunsung">hyunsung</span> Scheduler / MLFQ</h4>
+        <p><strong>역할:</strong> 베이스 트리, 3단계 MLFQ 스케줄러, NL 기반 우선순위 힌트.</p>
+        <ul>
+          <li>커널: 3-level MLFQ (HIGH / MID / LOW), aging, demote</li>
+          <li>유저: <code>nlrun</code>, <code>wrunner</code>, <code>cpu/io/mixed_burner</code>, <code>rrunner</code>, <code>diagprog</code></li>
+          <li>워크로드: 6종 (<code>cpu_heavy</code>, <code>io_heavy</code>, <code>mixed</code>, <code>three_way</code>, <code>realprog</code>, <code>stress</code>)</li>
+          <li>호스트: <code>nl_shell.py</code> 단일 진입점 + Solar 프롬프트</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h4><span class="tag tag-minju">minju</span> Syscall Trace</h4>
+        <p><strong>역할:</strong> 모든 syscall 의 단일 후킹 포인트에서 per-pid / per-syscall 통계 수집.</p>
+        <ul>
+          <li><code>struct proc</code>에 <code>traced</code>, <code>syscall_count[64]</code>, <code>syscall_errors[64]</code> 추가</li>
+          <li><code>sys_trace_on / off / stats</code> 3개 syscall</li>
+          <li>유저: <code>tracetool on / off / dump</code> 명령</li>
+          <li>dump 출력은 JSON 형식 → 호스트 LLM 분석과 자연 연동</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h4><span class="tag tag-jinhwan">jinhwan</span> Thread / Futex</h4>
+        <p><strong>역할:</strong> 커널 레벨 스레드 + 사용자 공간 동기화 프리미티브.</p>
+        <ul>
+          <li><code>kthread_create / join / exit</code>, <code>kfutex_wait / wake</code></li>
+          <li>페이지 테이블 공유: <code>uvmshare</code>, <code>thread_freepagetable</code> (vm.c)</li>
+          <li>전역 <code>futex_lock</code> + <code>is_thread</code>, <code>tgroup</code> 필드</li>
+          <li>유저: <code>threadtest</code> (shared mem / 4-thread / mutex / condvar 4가지 시나리오)</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h4><span class="tag tag-haneol">haneol</span> Process (ps / sysinfo)</h4>
+        <p><strong>역할:</strong> 시스템 가시성 도구. priority 슬라이스는 hyunsung 과 중복되어 DROP.</p>
+        <ul>
+          <li><code>sys_ps</code> — pid/ppid/state/prio/sz/name 6열 출력</li>
+          <li><code>sys_sysinfo</code> — freemem + nproc</li>
+          <li><code>setprio.c</code> 재작성 — <code>setpri(pid, 0..2)</code> 호출하도록 변경</li>
+          <li>DROP: <code>sys_trace</code>, <code>sys_setpriority</code>, <code>sys_getpriority</code></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ 04 SYSCALLS ═══════════════════ -->
+<section id="syscalls">
+  <div class="container">
+    <h2><span class="num">04</span> Syscall 번호 최종 분배</h2>
+    <p class="lead">
+      4팀 슬라이스가 모두 <code>22~25</code> 영역을 쓰려고 해서 가장 큰 충돌이었습니다.
+      합의된 분배는 다음과 같습니다 (모두 <code>NELEM(syscalls)=64</code> 안에 들어감).
+    </p>
+
+    <table>
+      <thead>
+        <tr><th style="width:80px">번호</th><th>이름</th><th>슬라이스</th><th>비고</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1~21</td><td><i>(stock xv6)</i></td><td>—</td><td>미수정</td></tr>
+        <tr><td>22</td><td><code>trace_on</code></td><td><span class="tag tag-minju">minju</span></td><td>per-syscall 카운트 시작</td></tr>
+        <tr><td>23</td><td><code>trace_off</code></td><td><span class="tag tag-minju">minju</span></td><td>카운트 종료 (통계 보존)</td></tr>
+        <tr><td>24</td><td><code>trace_stats</code></td><td><span class="tag tag-minju">minju</span></td><td>JSON dump</td></tr>
+        <tr><td>25</td><td><code>thread_create</code></td><td><span class="tag tag-jinhwan">jinhwan</span></td><td>원본 22 → 25 재번호</td></tr>
+        <tr><td>26</td><td><code>thread_join</code></td><td><span class="tag tag-jinhwan">jinhwan</span></td><td>원본 23 → 26 재번호</td></tr>
+        <tr><td>27</td><td><code>thread_exit</code></td><td><span class="tag tag-jinhwan">jinhwan</span></td><td>원본 24 → 27 재번호</td></tr>
+        <tr><td>28</td><td><code>futex_wait</code></td><td><span class="tag tag-jinhwan">jinhwan</span></td><td>원본 25 → 28 재번호</td></tr>
+        <tr><td>29</td><td><code>futex_wake</code></td><td><span class="tag tag-jinhwan">jinhwan</span></td><td>원본 26 → 29 재번호</td></tr>
+        <tr><td>30</td><td><code>setpri</code></td><td><span class="tag tag-hyunsung">hyunsung</span></td><td>원본 22 → 30 재번호</td></tr>
+        <tr><td>31</td><td><code>getstats</code></td><td><span class="tag tag-hyunsung">hyunsung</span></td><td>원본 23 → 31 재번호</td></tr>
+        <tr><td>32</td><td><code>settrace</code></td><td><span class="tag tag-hyunsung">hyunsung</span></td><td>원본 24 → 32 (MLFQ trace ON/OFF)</td></tr>
+        <tr><td>33</td><td><code>forkpri</code></td><td><span class="tag tag-hyunsung">hyunsung</span></td><td>원본 25 → 33 재번호</td></tr>
+        <tr><td>34</td><td><code>ps</code></td><td><span class="tag tag-haneol">haneol</span></td><td>원본 26 → 34 재번호</td></tr>
+        <tr><td>35</td><td><code>sysinfo</code></td><td><span class="tag tag-haneol">haneol</span></td><td>원본 23 → 35 재번호</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-info">
+      <p><strong>문서 vs 코드 불일치 발견 — 통합 시 코드 수정으로 해결.</strong></p>
+      <p>hyunsung 원본 <code>docs/syscall-allocation.md</code> 는 "30~33 으로 이동 완료"라고 적혀있었지만
+      실제 <code>kernel/syscall.h</code> 는 여전히 22~25 였습니다. 통합 트리에서는 코드를 문서에 맞게 정렬했습니다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ 05 CONFLICTS ═══════════════════ -->
+<section id="conflicts">
+  <div class="container">
+    <h2><span class="num">05</span> 핵심 충돌 결정</h2>
+    <p class="lead">
+      파일 단위 충돌은 단순 머지로 풀리지만, 의미가 겹치는 충돌은 한쪽을 선택해야 합니다.
+      각 결정의 근거는 정량 검증 또는 기능 풍부도였습니다.
+    </p>
+
+    <table>
+      <thead>
+        <tr><th>충돌 영역</th><th style="width:130px">승자</th><th>사유</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>MLFQ 스케줄러</td>
+          <td><span class="tag tag-hyunsung">hyunsung</span></td>
+          <td>정량 평가 검증, 3-단계 큐가 haneol 의 0..20 priority 보다 정교</td>
+        </tr>
+        <tr>
+          <td>0..20 priority (haneol)</td>
+          <td><span class="pill pill-bad">DROP</span></td>
+          <td>hyunsung 의 <code>setpri(0..2)</code> 로 통일. <code>setprio.c</code> 는 재작성</td>
+        </tr>
+        <tr>
+          <td>trace syscall (minju vs haneol)</td>
+          <td><span class="tag tag-minju">minju</span></td>
+          <td>per-syscall 통계가 더 풍부, JSON 출력 형식</td>
+        </tr>
+        <tr>
+          <td><code>kernel/syscall.c</code> 후킹</td>
+          <td><span class="tag tag-minju">minju</span></td>
+          <td>hyunsung dispatch 위에 trace 후킹 patch 형태로 추가</td>
+        </tr>
+        <tr>
+          <td><code>kthread_*</code> 함수</td>
+          <td><span class="tag tag-jinhwan">jinhwan</span></td>
+          <td>고유 기능, MLFQ 와 별도 영역에 append</td>
+        </tr>
+        <tr>
+          <td>host NL 진입점</td>
+          <td><span class="tag tag-hyunsung">hyunsung</span></td>
+          <td><code>nl_shell.py</code> 단일 entry, 나머지는 <code>adapters/</code> 로 모듈화</td>
+        </tr>
+        <tr>
+          <td>Solar API 키 (jinhwan 원본 평문)</td>
+          <td><span class="pill pill-warn">sanitize</span></td>
+          <td>환경변수 <code>UPSTAGE_API_KEY</code> 로 전환, 키 없을 때 폴백 추가</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>haneol 슬라이스에서 DROP 된 항목</h3>
+    <div class="grid grid-3">
+      <div class="card">
+        <h4>sys_trace (22)</h4>
+        <p>minju 의 trace_on/off/stats 와 의미 중복, 기능도 더 약함.</p>
+      </div>
+      <div class="card">
+        <h4>sys_setpriority (24)</h4>
+        <p>0..20 체계가 MLFQ 와 안 맞음. <code>setpri(0..2)</code> 로 대체.</p>
+      </div>
+      <div class="card">
+        <h4>sys_getpriority (25)</h4>
+        <p>hyunsung 의 <code>getstats</code> 가 더 풍부한 정보 제공.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ 06 FIXES ═══════════════════ -->
+<section id="fixes">
+  <div class="container">
+    <h2><span class="num">06</span> 빌드 중 K1~K4 Fix</h2>
+    <p class="lead">
+      통합 빌드 중 잡은 4종 fix는 코드 안에 <code>K1~K4 fix</code> 라벨로 태깅되어 있습니다.
+      모두 슬라이스가 단독일 땐 안 보이고 합치는 순간 드러난 버그들입니다.
+    </p>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <h4><span class="pill pill-info">K1</span> allocproc 필드 누수</h4>
+        <p><strong>증상:</strong> <code>tracetool dump</code> 가 쓰레기 출력 — 직전 입주자의 trace 상태 누수.</p>
+        <p><strong>원인:</strong> proc-table 슬롯 재사용 시 <code>traced</code>, <code>syscall_count[]</code>,
+        <code>syscall_errors[]</code>, <code>is_thread</code>, <code>tgroup</code> 초기화 안 됨.</p>
+        <p><strong>위치:</strong> <code>kernel/proc.c:170, 177</code></p>
+      </div>
+
+      <div class="card">
+        <h4><span class="pill pill-info">K2</span> syscall_count 배열 오버플로</h4>
+        <p><strong>증상:</strong> <code>SYS_settrace=32</code> 부터 인덱스 오버플로.</p>
+        <p><strong>원인:</strong> minju 원본은 SYS_close=21 까지 가정해 배열 크기 <strong>32</strong>.
+        통합 후 35번까지 늘어남.</p>
+        <p><strong>패치:</strong> 32 → <strong>64</strong> 로 확장 (5개 파일).</p>
+      </div>
+
+      <div class="card">
+        <h4><span class="pill pill-info">K3</span> fork 시 traced 플래그 미상속</h4>
+        <p><strong>증상:</strong> 셸에서 <code>tracetool on</code> 후 실행한 자식 프로세스가 추적 안 됨.</p>
+        <p><strong>패치:</strong> <code>fork()</code> 와 <code>forkpri()</code> 둘 다에서
+        <code>np-&gt;traced = p-&gt;traced</code> 명시.</p>
+        <p><strong>위치:</strong> <code>kernel/proc.c:327, 935</code></p>
+      </div>
+
+      <div class="card">
+        <h4><span class="pill pill-info">K4</span> host 어댑터 priority 범위</h4>
+        <p><strong>증상:</strong> <code>process_bridge.py</code> 가 <code>setpriority(pid, 0..20)</code> 가정.</p>
+        <p><strong>패치:</strong> 0..2 범위로 정렬, <code>SPAWN_WHITELIST</code> 도 통합 트리에 없는
+        <code>priority_test</code>, <code>trace_test</code>, <code>sysinfo_test</code> 빼고 갱신.</p>
+        <p><strong>위치:</strong> <code>host/adapters/process_bridge.py:55, 85, 155</code></p>
+      </div>
+    </div>
+
+    <h3>빌드 환경 문제도 5가지 잡음</h3>
+    <table>
+      <thead><tr><th>#</th><th>증상</th><th>원인</th><th>패치</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><code>No rule to make target 'mkfs/mkfs.c'</code></td><td>mkfs/ 디렉토리 누락</td><td>lecture-repo 에서 복사</td></tr>
+        <tr><td>2</td><td><code>redefinition of 'struct procstats'</code></td><td>umutex.h 가 user.h 재include → 이중 정의</td><td>user.h 에 include guard 추가</td></tr>
+        <tr><td>3</td><td><code>wrunner: cannot open cpu_heavy.txt</code></td><td>fs.img 에 workloads/*.txt 미포함</td><td>Makefile 에 WORKLOADS 변수 추가</td></tr>
+        <tr><td>4</td><td><code>mkfs: assertion failed</code></td><td>stock mkfs.c 는 <code>user/</code> prefix 만 strip — workloads/ 의 / 가 assert 깸</td><td>strrchr 기반 일반 로직으로 교체</td></tr>
+        <tr><td>5</td><td><code>hints_example.txt</code> 가 DIRSIZ(14) 초과</td><td>xv6 FS 디렉토리 이름 길이 제한</td><td><code>hints.txt</code> 로 rename</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════════ 07 EVAL ═══════════════════ -->
+<section id="eval">
+  <div class="container">
+    <h2><span class="num">07</span> 정량 평가 결과 (2026-05-27 재실행)</h2>
+    <p class="lead">
+      <span class="pill pill-warn">중요</span> 5/26 1차 실행은 venv 미활성화로 <code>llm_hint.py</code> 가
+      import 단계에서 죽어 hints 파일이 안 생긴 채 돌아갔습니다 — 사실상 baseline 과 동일 입력.
+      5/27 재실행은 venv + <code>.env</code> 로 hints 정상 생성 확인 후 수행했습니다.
+    </p>
+
+    <h3>워크로드별 핵심 Δ (avg_turnaround 기준)</h3>
+    <table>
+      <thead>
+        <tr><th>워크로드</th><th>Δheur%</th><th>Δllm%</th><th>해석</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>cpu_heavy</code></td>
+          <td><span class="pill pill-bad">+283%</span></td>
+          <td><span class="pill pill-bad">+550%</span></td>
+          <td>단일 프로그램 → 우선순위 낮추면 손해 (예상된 역효과)</td>
+        </tr>
+        <tr>
+          <td><code>io_heavy</code></td>
+          <td><span class="pill pill-warn">+2.8%</span></td>
+          <td><span class="pill pill-warn">+15.8%</span></td>
+          <td>단일 프로그램 + 부분 timeout, 변화 미미</td>
+        </tr>
+        <tr>
+          <td><code>mixed</code></td>
+          <td><span class="pill pill-warn">+17.1%</span></td>
+          <td><span class="pill pill-warn">+14.3%</span></td>
+          <td>평균 ↑ 지만 fairness <strong>+155%</strong>, max_TT <strong>−53%</strong></td>
+        </tr>
+        <tr>
+          <td><code>three_way</code></td>
+          <td><span class="pill pill-ok">−7.3%</span></td>
+          <td><span class="pill pill-ok">−5.8%</span></td>
+          <td><strong>다중 프로그램에서 heur/llm 모두 turnaround 개선</strong></td>
+        </tr>
+        <tr>
+          <td><code>realprog</code></td>
+          <td><span class="pill pill-warn">+6.8%</span></td>
+          <td><span class="pill pill-ok">−0.2%</span></td>
+          <td>heur avg_response <strong>−26%</strong> — 대화형 응답 개선</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-ok">
+      <p><strong>결론:</strong> 다중 프로그램 워크로드 (<code>three_way</code>, <code>mixed</code>, <code>realprog</code>) 에서
+      hints 효과가 측정됐고 회귀 없음 → 체크리스트 §6 통과.
+      단일 프로그램 역효과는 hints 시스템의 본질적 특성으로 새 발견이 아닙니다.</p>
+    </div>
+
+    <h3>환경 아티팩트</h3>
+    <ul>
+      <li><code>io_heavy</code> 전 모드 + <code>mixed/baseline</code> 에서 <code>no ALL_DONE</code> (QEMU_TIMEOUT=45s 한계). 부분 trace 로 평가 수행</li>
+      <li><code>/mnt/c</code> 경로 QEMU 가 <code>/root</code> 대비 느려 단독 슬라이스 환경과 직접 비교 불가 — 모드 간 상대 비교만 의미</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════════════ 08 QUICKSTART ═══════════════════ -->
+<section id="quickstart">
+  <div class="container">
+    <h2><span class="num">08</span> 실행 방법 (Cold-start)</h2>
+    <p class="lead">
+      통합 트리를 처음 받은 사람도 그대로 따라할 수 있도록 정리한 절차입니다.
+      WSL2 Ubuntu 또는 native Linux 가 필요합니다.
+    </p>
+
+    <ol class="steps">
+
+      <li>
+        <h4>Prerequisites 설치</h4>
+        <p>riscv 툴체인 + qemu + python3 venv 가 필요합니다.</p>
+<pre>sudo apt update
+sudo apt install -y gcc-riscv64-unknown-elf qemu-system-misc python3-venv</pre>
+      </li>
+
+      <li>
+        <h4>호스트 Python 환경 (한 번만)</h4>
+        <p><code>integration/host</code> 에 venv 를 만들고 Solar API 키를 <code>.env</code> 에 채웁니다.</p>
+<pre>cd integration/host
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+cp .env.example .env
+# .env 안의 your_api_key_here 를 실제 Upstage Solar 키로 교체</pre>
+      </li>
+
+      <li>
+        <h4>xv6 빌드</h4>
+        <p>약 30초 소요. <code>kernel/kernel</code> 과 <code>fs.img</code> 둘 다 생성되면 빌드 OK.</p>
+<pre>cd integration/xv6-riscv
+make clean && make
+ls kernel/kernel fs.img</pre>
+      </li>
+
+      <li>
+        <h4>QEMU 부팅 후 4팀 라이브 데모</h4>
+        <p>단일 QEMU 세션 안에서 4 슬라이스 모두 연속 시연.</p>
+<pre>make qemu CPUS=2          <span class="c"># 부팅 후 $ 프롬프트</span>
+
+<span class="c"># [hyunsung] Scheduler — 자연어 힌트가 큐 레벨로 전달됨</span>
+$ nlrun 2 cpu_burner 50000
+TRACE tick=… pri=2 …
+EXIT  … final_pri=2
+
+<span class="c"># [minju] Syscall trace — 모든 syscall이 한 지점에서 후킹됨</span>
+$ tracetool on
+$ ls
+$ tracetool dump
+{"pid":…,"traced":1,"total":…,"calls":{"fork":…,"exec":…,…}}
+
+<span class="c"># [jinhwan] Thread — kthread + futex 정상 동작</span>
+$ threadtest
+test 1: shared memory ... OK (counter=200000)
+test 2: 4 threads ... OK
+test 3: mutex exclusion ... OK
+test 4: condvar producer/consumer ... OK (sum=499500)
+
+<span class="c"># [haneol] Process — sys_ps + setpri 통합</span>
+$ ps
+PID  PPID  STATE    PRIO  SZ        NAME
+1    0     sleep    1     12288     init
+…
+$ setprio 1 2
+OK pid=1 level=2
+
+<span class="c"># [통합] 백그라운드 큐 + LOW 우선순위 + 좀비 회수</span>
+$ bgq bgq.txt
+BGQ start echo
+job1_started
+BGQ done echo pid=4 exit=0
+…
+BGQ all_done 3
+
+<span class="c"># QEMU 종료: Ctrl-A x</span></pre>
+      </li>
+
+      <li>
+        <h4>호스트 LLM 분석 — Solar Pro 3 연동</h4>
+        <p>xv6 출력을 호스트로 옮겨와 Solar 가 분석하도록 흘려보냅니다.</p>
+<pre><span class="c"># (a) 시스템 진단 — diagprog 출력 → starvation 식별</span>
+$ python nl_shell.py --diagnose-from /tmp/diag.txt
+  summary    : 3 processes healthy, 1 stuck at LOW
+  ⚠ concern  : pid=5 stuck at priority=2 with run=200
+  → action   : setpri 5 0
+
+<span class="c"># (b) tracetool dump → 프로세스 성격 패턴 분류</span>
+$ python nl_shell.py --analyze-tracetool /tmp/tracedump.json
+  verdict : spawner
+  summary : Process performed many fork/exec — shell-like
+  → suggested queue: 0 (interactive launchers benefit from HIGH)
+
+<span class="c"># (c) 자연어 → xv6 명령 dry-run</span>
+$ python nl_shell.py --once "Run a heavy job in background"
+[nl_shell] → xv6 명령: nlrun 2 cpu_burner 2000000
+
+<span class="c"># (d) 풀 자동 시연 (process adapter, stdin 자동 주입)</span>
+$ python nl_shell.py --mode process
+> show processes
+[xv6 응답] PID …
+> set process 5 to low priority
+[xv6 응답] OK pid=5 level=2</pre>
+      </li>
+
+      <li>
+        <h4>정량 평가 매트릭스 재실행 (선택)</h4>
+        <p>5 워크로드 × 3 모드, 약 8분 소요. 결과는 <code>docs/charts/integration/</code> 아래.</p>
+<pre>cd integration/host
+source venv/bin/activate
+XV6_DIR=../xv6-riscv \
+OUT_ROOT=../../docs/charts/integration \
+  ./run_eval_matrix.sh
+
+cat ../../docs/charts/integration/combined_report.txt</pre>
+      </li>
+
+    </ol>
+
+    <div class="callout callout-warn">
+      <p><strong>⚠️ /mnt/c 경로 주의:</strong> Windows mount 위에서 QEMU 를 돌리면
+      <code>/root</code> (ext4) 대비 느려서 일부 워크로드가 <code>no ALL_DONE</code> timeout 합니다.
+      <code>QEMU_TIMEOUT</code> 환경변수로 늘리거나, 평가는 <code>/root/integration-test</code> 같은
+      Linux native FS 에서 실행을 권장합니다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ 09 RISKS ═══════════════════ -->
+<section id="risks">
+  <div class="container">
+    <h2><span class="num">09</span> 알려진 위험 / 환경 의존성</h2>
+    <p class="lead">
+      통합 코드 자체의 결함은 아니지만, 평가 환경에 따라 결과가 달라질 수 있는 항목들입니다.
+    </p>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <h4>usertests reparent2 — 환경 차이</h4>
+        <p><strong>현상:</strong> <code>usertests -q</code> 에서 #27 <code>reparent2</code> 가
+        <code>/mnt/c</code> 에서 <code>fork failed</code>, <code>/root</code> 에서는 <code>ALL TESTS PASSED</code>.</p>
+        <p><strong>원인:</strong> /mnt/c 의 9P FS + virtio-blk 가 fork bomb cleanup 100ms window 안에 못 끝냄.</p>
+        <p><strong>대응:</strong> 평가/시연은 <code>/root/integration-test</code> 같은 ext4 에서 실행 권고.</p>
+      </div>
+
+      <div class="card">
+        <h4>jinhwan thread userspace 라이브러리 미통합</h4>
+        <p>thread.c / mutex.c 등 userspace 추상화는 통합 트리에 포함 안 됨.
+        xv6 안에서는 syscall 만으로 충분하다는 판단. <code>_sources/jinhwan/</code> 에는 보존됨.</p>
+      </div>
+
+      <div class="card">
+        <h4>haneol 단독 테스트 프로그램 미포함</h4>
+        <p><code>mlfq_bench.c</code>, <code>priority_test.c</code>, <code>trace_test.c</code>,
+        <code>sysinfo_test.c</code> 는 단독 테스트용 — 통합 트리엔 미포함, <code>_sources/</code> 에 보존.</p>
+      </div>
+
+      <div class="card">
+        <h4>run_eval_matrix.sh stderr 가림 → 패치 완료</h4>
+        <p>이전엔 <code>&gt;/dev/null 2&gt;&amp;1</code> 로 에러를 가렸지만 (5/26 무음 실패 원인),
+        2026-05-27 패치로 stderr 분리 캡처. 같은 무음 실패는 재발 안 함.</p>
+      </div>
+    </div>
+
+    <h3>진행 상황 체크리스트</h3>
+    <ul>
+      <li><span class="pill pill-ok">DONE</span> 폴더 구조 생성</li>
+      <li><span class="pill pill-ok">DONE</span> 각 브랜치 원본 파일 <code>_sources/</code> 로 추출</li>
+      <li><span class="pill pill-ok">DONE</span> 베이스 xv6 트리 + 4팀 슬라이스 머지</li>
+      <li><span class="pill pill-ok">DONE</span> host/ Python 통합 (단일 nl_shell.py + adapters)</li>
+      <li><span class="pill pill-ok">DONE</span> MERGE_NOTES.md 완성 (281줄, 8섹션)</li>
+      <li><span class="pill pill-ok">DONE</span> 빌드/부팅 검증 (WSL/QEMU, 2026-05-26)</li>
+      <li><span class="pill pill-ok">DONE</span> 슬라이스별 라이브 데모 4종 + 통합 bgq 시연</li>
+      <li><span class="pill pill-ok">DONE</span> 정량 평가 재실행 (2026-05-27)</li>
+      <li><span class="pill pill-info">DEFERRED</span> 통합 PR 작성 — 원본 보호 원칙 유지 차원에서 연기</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<footer>
+  <div class="container">
+    <p><strong>xv6 4-Slice Integration Report</strong></p>
+    <p>Scheduler(hyunsung) · Syscall(minju) · Thread(jinhwan) · Process(haneol)</p>
+    <p class="credit">통합 작업: 2026-05-26 / 정량 평가 재실행: 2026-05-27<br>
+    참고 문서: <code>integration/README.md</code>, <code>integration/MERGE_NOTES.md</code></p>
+  </div>
+</footer>
+
+</body>
+</html>

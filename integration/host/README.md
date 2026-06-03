@@ -23,9 +23,17 @@ host/
 ├── hello_solar.py          ← Solar API 연결 sanity 체크
 ├── run_eval_matrix.sh      ← 3-way 평가 자동 실행 스크립트
 │
-└── adapters/               ← 다른 팀원 슬라이스 고유 Intent (선택적)
-    ├── process_bridge.py   ← haneol — Process 슬라이스 NL 브리지 (sys_ps 등)
-    └── thread_bridge.py    ← jinhwan — Thread 슬라이스 NL 브리지 (thread/futex)
+├── adapters/               ← 다른 팀원 슬라이스 고유 Intent (선택적)
+│   ├── process_bridge.py   ← haneol — Process 슬라이스 NL 브리지 (sys_ps 등)
+│   └── thread_bridge.py    ← jinhwan — Thread 슬라이스 NL 브리지 (thread/futex)
+│
+├── ops/                    ← Supervisor LLM (OS-grounded audit/diagnosis)
+│   ├── supervisor.py       ← MERGE_NOTES / eval JSON / K-fix / syscall 자연어 감사
+│   ├── tools.py            ← 7가지 read-only 도구
+│   └── README.md
+│
+└── dev_chat.py             ← ⚠️ 개발자 편의 도구 (자유 대화 REPL).
+                              평가 / 데모 / 발표 경로 밖. 그냥 Solar 쪽 디버깅용.
 ```
 
 ---

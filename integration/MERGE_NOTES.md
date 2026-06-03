@@ -270,11 +270,14 @@ FS 에서 실행. 통합 트리 자체에는 추가 fix 필요 없음.
 
 ## 8. 코드 내 `K1~K4 fix` 라벨 매핑
 
-통합 빌드 중 잡은 커널·호스트 4종 fix를 코드 주석에 `K1`~`K4 fix` 로 태깅했음. 본 표가 정식 매핑이며, 새 fix 추가 시 K5~ 로 확장.
+통합 빌드 중 잡은 커널·호스트 fix 를 코드 주석에 `K1`~`K7 fix` 로 태깅했음. 본 표가 정식 매핑이며, 새 fix 추가 시 K8~ 로 확장. K1~K4 는 1차 통합 (2026-05-26), K5 는 2차 코드 리뷰 (2026-05-28, thread teardown), K6/K7 은 2차 보안 리뷰 (2026-05-29, prompt-injection 우회).
 
 | 라벨 | 의미 | 등장 위치 |
 |---|---|---|
 | **K1** | proc-table 슬롯 재사용 시 누락된 필드 초기화 — `allocproc()` 에서 `traced=0`, `syscall_count[]=0`, `syscall_errors[]=0` (minju), `is_thread=0`, `tgroup=0` (jinhwan). 안 하면 직전 입주자의 trace 상태가 새 프로세스로 누수됨 → `tracetool dump` 가 쓰레기 출력. | `xv6-riscv/kernel/proc.c:170, 177` |
 | **K2** | `syscall_count[]` / `syscall_errors[]` 배열 크기를 **32 → 64** 로 확장. minju 원본은 SYS_close=21까지 가정해 32였지만 통합 후 SYS_settrace=32, SYS_forkpri=33, SYS_ps=34, SYS_sysinfo=35 가 들어와 32 인덱스 오버플로 발생. | `xv6-riscv/kernel/proc.h:135`, `kernel/syscall.c:172`, `kernel/sysproc.c:207`, `user/user.h:30`, `user/tracetool.c × 4` |
 | **K3** | `fork`/`forkpri` 경로에서 자식이 부모의 `traced` 플래그를 상속하도록 명시. 안 하면 셸에서 `tracetool on` 후 실행한 자식 프로세스가 추적 안 됨 → 데모 시나리오 깨짐. | `xv6-riscv/kernel/proc.c:327, 935` |
-| **K4** | 호스트 NL 어댑터의 우선순위 범위 정렬. haneol 원본 `setpriority(pid, 0..20)` 을 가정했지만 통합 후엔 hyunsung MLFQ `setpri(pid, 0..2)` 만 유효. `SPAWN_WHITELIST` 도 통합 트리에 없는 `priority_test`/`trace_test`/`sysinfo_test` 빼고 갱신. | `host/adapters/process_bridge.py:55, 85, 155` |
+| **K4** | 호스트 NL 어댑터의 우선순위 범위 정렬. haneol 원본 `setpriority(pid, 0..20)` 을 가정했지만 통합 후엔 hyunsung MLFQ `setpri(pid, 0..2)` 만 유효. `SPAWN_WHITELIST` 도 통합 트리에 없는 `priority_test`/`trace_test`/`sysinfo_test` 빼고 갱신. | `host/adapters/process_bridge.py:57, 87, 157` |
+| **K5** | thread / main 종료 순서 race. main process (`is_thread=0`) 가 자식 thread 들보다 먼저 `freeproc` 되면 `proc_freepagetable → kfree` 가 살아있는 thread 가 참조 중인 공유 페이지를 해제 → page-use-after-free. `freeproc` 에 같은 tgroup live thread 스캔 추가, 발견 시 `thread_freepagetable` 로 다운그레이드 (unmap 만, kfree 안 함). 메모리 leak 은 가능하지만 corruption 보다 strictly 안전. 2026-05-28 통합 단계에서 코드 리뷰로 발견·수정. 회귀 재현 테스트는 `user/thread_race.c` + `sanity_check.sh` K5 케이스. | `xv6-riscv/kernel/proc.c:206-243` (freeproc) |
+| **K6** | thread_bridge 의 Solar 응답이 `shlex.split` 으로 파싱되는데, 개행 `\n` 이 공백으로 처리됨. Solar 가 `"ls\nkill 1"` 출력하면 whitelist 가 `parts[0]="ls"` 만 검증하고 `send_to_xv6(cmd + "\n")` 가 두 줄을 xv6 stdin 에 그대로 흘림 → prompt-injection 으로 init kill 우회. `guard_cmd` 에서 `\n \r ; & \| ` `` ` `` `$(` 모두 차단. 2026-05-28~29 2차 코드 리뷰로 발견. | `host/adapters/thread_bridge.py:69-80` (guard_cmd) |
+| **K7** | process_bridge SPAWN intent 에서 같은 newline injection 패턴 — `cmd.split()` 이 `\n` 으로 분리되어 첫 토큰만 검증하고 뒤 명령은 `send_to_xv6` 가 그대로 실행. SETPRIO/KILL 은 정수만 받아 안전했지만 SPAWN 만 노출. `guard()` 의 SPAWN 분기에 동일 metacharacter 차단. K6 와 의미적으로 같은 결함이 별도 어댑터에 존재한 경우 — 통합 보안 가드 패턴이 두 어댑터에 일관 적용되지 않았음을 드러냄. | `host/adapters/process_bridge.py:174-184` (guard SPAWN) |
