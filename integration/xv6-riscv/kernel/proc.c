@@ -206,8 +206,43 @@ freeproc(struct proc *p)
     kfree((void*)p->trapframe);
   p->trapframe = 0;
   if(p->pagetable){
+    // === K5 fix: thread/main teardown ordering ===
+    // If a main process (is_thread=0) is being freed but a thread of this
+    // tgroup is still RUNNING/SLEEPING/RUNNABLE, proc_freepagetable would
+    // kfree() the shared physical pages while the thread is still executing
+    // on them — page-use-after-free. Detect it and downgrade to
+    // thread_freepagetable (unmap only, no kfree); the surviving thread's
+    // freeproc will free the pagetable itself when it exits. The shared
+    // physical pages may leak in this path — strictly safer than corruption.
+    //
+    // NOTE on locking: this walk reads tp->state/is_thread/tgroup without
+    // acquiring tp->lock. freeproc() callers (kwait, allocproc on init
+    // failure, kthread_join) hold either the victim's p->lock or wait_lock,
+    // not the locks of OTHER procs. A concurrent thread on another CPU may
+    // transition between RUNNING/SLEEPING/RUNNABLE and ZOMBIE between our
+    // read and our pagetable-free. The fix is best-effort:
+    //   • False positive  (we see a thread that becomes ZOMBIE right after) →
+    //     downgrade to thread_freepagetable → safe (leak only).
+    //   • False negative  (thread becomes RUNNABLE after we scan) → impossible:
+    //     a new RUNNABLE thread of this tgroup can only be created by this
+    //     process itself, which is already exiting and holds its own lock,
+    //     so no NEW threads spawn during freeproc.
+    // Conclusion: race window only widens the leak set, never the corruption
+    // set. Acceptable for an educational kernel. A correct fix would hold
+    // wait_lock throughout freeproc and per-proc lock during scan.
+    int has_live_thread = 0;
+    if(!p->is_thread && p->pid > 0){
+      for(struct proc *tp = proc; tp < &proc[NPROC]; tp++){
+        if(tp == p) continue;
+        if(tp->is_thread && tp->tgroup == p &&
+           tp->state != UNUSED && tp->state != ZOMBIE){
+          has_live_thread = 1;
+          break;
+        }
+      }
+    }
     // === jinhwan: thread vs process page-table free ===
-    if(p->is_thread)
+    if(p->is_thread || has_live_thread)
       thread_freepagetable(p->pagetable, p->sz);   // don't free shared physical pages
     else
       proc_freepagetable(p->pagetable, p->sz);

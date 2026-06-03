@@ -4,7 +4,7 @@ struct procinfo {
   int pid;
   int ppid;
   int state;        // procstate enum value (UNUSED..ZOMBIE)
-  int priority;     // 0=highest .. 20=lowest
+  int priority;     // MLFQ queue level: 0=HIGH .. 2=LOW (integrated kernel; was 0..20 in haneol's original — see MERGE_NOTES §2.1)
   uint64 sz;        // process memory size (bytes)
   char name[16];    // process name (debugging)
 };
