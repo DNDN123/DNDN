@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>xv6 4-Slice Integration Project Report</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --bg-card: #1e293b;
+    --bg-soft: #334155;
+    --fg: #e2e8f0;
+    --fg-muted: #94a3b8;
+    --accent: #38bdf8;
+    --accent-2: #a78bfa;
+    --good: #34d399;
+    --warn: #fbbf24;
+    --bad: #f87171;
+    --code-bg: #0b1220;
+    --border: #334155;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans KR', sans-serif;
+    background: linear-gradient(180deg, #0a0f1e 0%, #0f172a 100%);
+    color: var(--fg);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  /* ─── Hero ─── */
+  .hero {
+    padding: 100px 24px 80px;
+    background: radial-gradient(ellipse at top, rgba(56, 189, 248, 0.15), transparent 60%),
+                radial-gradient(ellipse at bottom right, rgba(167, 139, 250, 0.12), transparent 50%);
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero .eyebrow {
+    display: inline-block;
+    padding: 6px 14px;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 999px;
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-size: clamp(32px, 5vw, 52px);
+    line-height: 1.15;
+    margin: 0 0 20px;
+    background: linear-gradient(135deg, #38bdf8 0%, #a78bfa 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hero .sub {
+    font-size: 18px;
+    color: var(--fg-muted);
+    max-width: 720px;
+    margin: 0 auto 40px;
+  }
+  .hero .meta {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    flex-wrap: wrap;
+    font-size: 14px;
+    color: var(--fg-muted);
+  }
+  .hero .meta span strong { color: var(--fg); margin-left: 6px; }
+
+  /* ─── Nav ─── */
+  nav.toc {
+    position: sticky; top: 0;
+    background: rgba(15, 23, 42, 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    z-index: 100;
+    padding: 12px 0;
+  }
+  nav.toc .container {
+    display: flex; gap: 6px; overflow-x: auto;
+    scrollbar-width: none;
+  }
+  nav.toc .container::-webkit-scrollbar { display: none; }
+  nav.toc a {
+    padding: 6px 12px;
+    color: var(--fg-muted);
+    text-decoration: none;
+    font-size: 14px;
+    border-radius: 6px;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  nav.toc a:hover { color: var(--accent); background: rgba(56,189,248,0.08); }
+
+  /* ─── Sections ─── */
+  section { padding: 72px 0; border-bottom: 1px solid rgba(51, 65, 85, 0.5); }
+  section h2 {
+    font-size: 32px;
+    margin: 0 0 8px;
+    color: var(--fg);
+    display: flex; align-items: center; gap: 16px;
+  }
+  section h2 .num {
+    color: var(--accent);
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 22px;
+    font-weight: 500;
+  }
+  section .lead {
+    color: var(--fg-muted);
+    font-size: 17px;
+    margin: 0 0 32px;
+    max-width: 800px;
+  }
+  section h3 {
+    font-size: 20px;
+    margin: 32px 0 12px;
+    color: var(--accent-2);
+  }
+
+  /* ─── Cards / grid ─── */
+  .grid { display: grid; gap: 16px; }
+  .grid-2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px;
+    transition: transform 0.15s, border-color 0.15s;
+  }
+  .card:hover { transform: translateY(-2px); border-color: rgba(56,189,248,0.4); }
+  .card h4 {
+    margin: 0 0 8px; font-size: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .tag-hyunsung { background: rgba(56,189,248,0.15); color: #38bdf8; border: 1px solid rgba(56,189,248,0.3); }
+  .tag-minju    { background: rgba(167,139,250,0.15); color: #a78bfa; border: 1px solid rgba(167,139,250,0.3); }
+  .tag-jinhwan  { background: rgba(52,211,153,0.15); color: #34d399; border: 1px solid rgba(52,211,153,0.3); }
+  .tag-haneol   { background: rgba(251,191,36,0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
+
+  .card p { margin: 8px 0; font-size: 14px; color: var(--fg-muted); }
+  .card ul { margin: 8px 0; padding-left: 20px; font-size: 14px; color: var(--fg-muted); }
+  .card ul li { margin: 2px 0; }
+
+  /* ─── Code ─── */
+  pre, code {
+    font-family: 'JetBrains Mono', 'Consolas', 'Courier New', monospace;
+    font-size: 13px;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    line-height: 1.55;
+    color: #cbd5e1;
+  }
+  p code, li code, td code {
+    background: rgba(56,189,248,0.1);
+    color: var(--accent);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.92em;
+  }
+  pre .c { color: #64748b; font-style: italic; }
+  pre .k { color: #f87171; }
+  pre .s { color: #fbbf24; }
+  pre .p { color: #34d399; }
+
+  /* ─── Tables ─── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 14px;
+  }
+  thead tr { background: var(--bg-soft); }
+  th, td {
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  th { font-weight: 600; color: var(--fg); font-size: 13px; }
+  td { color: var(--fg-muted); }
+  td strong, td b { color: var(--fg); }
+  tbody tr:hover { background: rgba(56,189,248,0.04); }
+
+  /* ─── Pill / badge ─── */
+  .pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 4px;
+  }
+  .pill-ok { background: rgba(52,211,153,0.15); color: var(--good); }
+  .pill-warn { background: rgba(251,191,36,0.15); color: var(--warn); }
+  .pill-bad { background: rgba(248,113,113,0.15); color: var(--bad); }
+  .pill-info { background: rgba(56,189,248,0.15); color: var(--accent); }
+
+  /* ─── Step list (Quick start) ─── */
+  .steps { counter-reset: step; padding: 0; list-style: none; margin: 0; }
+  .steps > li {
+    position: relative;
+    padding: 20px 24px 20px 70px;
+    margin: 0 0 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    counter-increment: step;
+  }
+  .steps > li::before {
+    content: counter(step);
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+    color: #0f172a;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 16px;
+  }
+  .steps > li h4 { margin: 0 0 8px; color: var(--fg); font-size: 17px; }
+  .steps > li p { margin: 4px 0; color: var(--fg-muted); font-size: 14px; }
+  .steps > li pre { margin-top: 10px; }
+
+  /* ─── Callout boxes ─── */
+  .callout {
+    border-left: 4px solid;
+    padding: 16px 20px;
+    border-radius: 0 8px 8px 0;
+    margin: 16px 0;
+    background: var(--bg-card);
+  }
+  .callout-info { border-color: var(--accent); }
+  .callout-warn { border-color: var(--warn); }
+  .callout-bad  { border-color: var(--bad); }
+  .callout-ok   { border-color: var(--good); }
+  .callout strong { color: var(--fg); }
+  .callout p:first-child { margin-top: 0; }
+  .callout p:last-child { margin-bottom: 0; }
+
+  /* ─── Folder tree ─── */
+  .tree {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 24px;
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 13px;
+    line-height: 1.85;
+    color: #cbd5e1;
+    overflow-x: auto;
+  }
+  .tree .dir { color: var(--accent); }
+  .tree .file { color: var(--fg-muted); }
+  .tree .star { color: var(--warn); font-weight: 700; }
+  .tree .cmt { color: #64748b; font-style: italic; }
+
+  /* ─── Metric tiles ─── */
+  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin: 16px 0; }
+  .metric {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    text-align: center;
+  }
+  .metric .v { font-size: 28px; font-weight: 700; margin: 4px 0; color: var(--accent); }
+  .metric .v.pos { color: var(--good); }
+  .metric .v.neg { color: var(--bad); }
+  .metric .l { font-size: 12px; color: var(--fg-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .metric .d { font-size: 12px; color: var(--fg-muted); margin-top: 4px; }
+
+  /* ─── Footer ─── */
+  footer {
+    padding: 60px 24px 80px;
+    text-align: center;
+    color: var(--fg-muted);
+    font-size: 14px;
+  }
+  footer .credit { margin-top: 16px; font-size: 12px; }
+
+  @media (max-width: 640px) {
+    .hero { padding: 60px 20px 50px; }
+    section { padding: 50px 0; }
+    section h2 { font-size: 24px; }
+    table { font-size: 12px; }
+    th, td { padding: 8px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ HERO ═══════════════════ -->
+<header class="hero">
+  <div class="eyebrow">OS PROJECT · INTEGRATION REPORT</div>
+  <h1>xv6 4-Slice Integration Project<br>Presentation Report</h1>
+  <p class="sub">
+    Scheduler · Syscall · Thread · Process — the integration work that merged four members' slices
+    into a single <code>xv6-riscv</code> tree and carried it all the way through build / boot / quantitative evaluation
+  </p>
+  <div class="meta">
+    <span>Team:<strong>hyunsung · minju · jinhwan · haneol</strong></span>
+    <span>Integration date:<strong>2026-05-26</strong></span>
+    <span>Evaluation re-run:<strong>2026-05-27</strong></span>
+    <span>Platform:<strong>xv6-riscv / QEMU / WSL2</strong></span>
+  </div>
+</header>
+
+<!-- ═══════════════════ NAV ═══════════════════ -->
+<nav class="toc">
+  <div class="container">
+    <a href="#overview">01. Overview</a>
+    <a href="#structure">02. Structure</a>
+    <a href="#slices">03. Slices</a>
+    <a href="#syscalls">04. Syscall Allocation</a>
+    <a href="#conflicts">05. Conflict Resolution</a>
+    <a href="#fixes">06. K1~K7 Fix</a>
+    <a href="#eval">07. Quantitative Evaluation</a>
+    <a href="#quickstart">08. How to Run</a>
+    <a href="#risks">09. Known Issues</a>
+  </div>
+</nav>
+
+<!-- ═══════════════════ 01 OVERVIEW ═══════════════════ -->
+<section id="overview">
+  <div class="container">
+    <h2><span class="num">01</span> Project Overview</h2>
+    <p class="lead">
+      The goal was to merge the xv6 slices that four team members developed on their respective GitHub branches
+      (<code>origin/hyunsung</code>, <code>origin/minju</code>,
+      <code>origin/jinhwan</code>, <code>origin/haneol</code>) into a
+      <strong>single buildable tree</strong>.
+      The original branches are only read via <code>git archive</code> and are kept in a state where <strong>not a single byte was modified</strong>.
+    </p>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <h4>Core Principles</h4>
+        <ul>
+          <li><strong>Original-branch protection</strong> — no push / commit / new-branch creation</li>
+          <li><strong>Single entry point</strong> — the host NL interface is one file, <code>nl_shell.py</code></li>
+          <li><strong>API-key sanitize</strong> — environment variables only, no hardcoding</li>
+          <li><strong>Roll-back capable</strong> — originals preserved under <code>_sources/</code></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Final Deliverables</h4>
+        <ul>
+          <li><code>xv6-riscv/</code> — integrated build tree (kernel + user + workloads)</li>
+          <li><code>host/</code> — Python bridge for Solar Pro 3 LLM integration</li>
+          <li><code>MERGE_NOTES.md</code> — 281-line record of conflict decisions</li>
+          <li><code>docs/charts/integration/</code> — evaluation results for 5 workloads × 3 modes</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Verification Status at a Glance</h3>
+    <div class="metrics">
+      <div class="metric"><div class="l">Build/Boot</div><div class="v pos">PASS</div><div class="d">2026-05-26 / WSL+QEMU</div></div>
+      <div class="metric"><div class="l">Live Demo</div><div class="v pos">4 / 4</div><div class="d">all slices working</div></div>
+      <div class="metric"><div class="l">Quantitative Eval</div><div class="v pos">PASS</div><div class="d">three_way Δturnaround −7.3%</div></div>
+      <div class="metric"><div class="l">Automated Regression</div><div class="v pos">8 / 8</div><div class="d">sanity_check.sh one-liner</div></div>
+      <div class="metric"><div class="l">Integrated Syscalls</div><div class="v">14</div><div class="d">22~35 coexisting without conflict</div></div>
+      <div class="metric"><div class="l">Integration Fixes</div><div class="v">K1~K7</div><div class="d">+ 2 security (newline injection)</div></div>
+    </div>
+
+    <h3>Live Demo (real QEMU session)</h3>
+    <figure style="margin:0;text-align:center;">
+      <img src="demo.gif" alt="xv6 Smart-MLFQ live demo"
+           style="max-width:760px;width:100%;border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.4);">
+      <figcaption style="color:var(--fg-muted);font-size:14px;margin-top:10px;">
+        <code>ps</code> → <code>tracetool dump</code> → <code>nlrun</code> → <code>threadtest</code> →
+        <code>bgq</code> → <code>setprio</code> exercised in a single boot session.
+        Output verified by <code>sanity_check.sh</code> <strong>8/8 PASS</strong> (ext4) on 2026-06-03.
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ═══════════════════ 02 STRUCTURE ═══════════════════ -->
+<section id="structure">
+  <div class="container">
+    <h2><span class="num">02</span> Folder Structure</h2>
+    <p class="lead">
+      <code>integration/</code> consists of 6 items. The <span class="pill pill-info">⭐ build target</span>
+      is <code>xv6-riscv/</code>, and the <span class="pill pill-info">⭐ entry point</span> is
+      the single file <code>host/nl_shell.py</code>.
+    </p>
+
+    <div class="tree">
+<span class="dir">integration/</span>
+├── <span class="file">README.md</span>            <span class="cmt"># overview + Quick Start + quantitative evaluation results</span>
+├── <span class="file">MERGE_NOTES.md</span>       <span class="cmt"># conflict / merge decision record (281 lines, 8 sections)</span>
+├── <span class="dir">_sources/</span>             <span class="cmt"># original files per branch (read-only reference, do not modify)</span>
+│   ├── <span class="dir">hyunsung/</span>         <span class="cmt"># Scheduler slice (smart-mlfq-xv6-patches, smart-mlfq-host)</span>
+│   ├── <span class="dir">minju/</span>            <span class="cmt"># Syscall trace slice (entire xv6-riscv tree)</span>
+│   ├── <span class="dir">jinhwan/</span>          <span class="cmt"># Thread/futex slice (much Korean material)</span>
+│   └── <span class="dir">haneol/</span>           <span class="cmt"># Process(ps/sysinfo) slice</span>
+├── <span class="dir">xv6-riscv/</span>            <span class="star">⭐</span> <span class="cmt"># integration result — build target</span>
+│   ├── <span class="dir">kernel/</span>           <span class="cmt"># proc.c/h, syscall.{c,h}, sysproc.c, vm.c, kalloc.c,</span>
+│   │                       <span class="cmt"># procinfo.h, sysinfo.h, trap.c, defs.h …</span>
+│   ├── <span class="dir">user/</span>             <span class="cmt"># init/sh/ls + nlrun, wrunner, cpu/io/mixed_burner,</span>
+│   │                       <span class="cmt"># rrunner, diagprog, tracetool, threadtest, ps, setprio,</span>
+│   │                       <span class="cmt"># bgq, forkstress, dorphan, logstress …</span>
+│   ├── <span class="dir">workloads/</span>        <span class="cmt"># bgq, cpu_heavy, io_heavy, mixed, three_way,</span>
+│   │                       <span class="cmt"># realprog, stress, hints (8 total)</span>
+│   ├── <span class="dir">mkfs/</span>             <span class="cmt"># mkfs.c (modified when integrating the path-stripping logic)</span>
+│   └── <span class="file">Makefile, fs.img, hints.txt, test-xv6.py</span>
+└── <span class="dir">host/</span>                 <span class="cmt"># integrated host Python (Solar Pro 3 integration)</span>
+    ├── <span class="file">nl_shell.py</span>      <span class="star">⭐</span> <span class="cmt"># single entry point (--mode {process,thread})</span>
+    ├── <span class="file">prompts.py, parse_trace.py, llm_hint.py</span>
+    ├── <span class="file">evaluator.py, viz.py, hello_solar.py</span>
+    ├── <span class="file">run_eval_matrix.sh, requirements.txt</span>
+    ├── <span class="dir">adapters/</span>            <span class="cmt"># ⭐ Hot path adapters (K4/K6/K7 guards)</span>
+    │   ├── <span class="file">process_bridge.py</span>    <span class="cmt"># haneol — natural-language handling for ps/setprio</span>
+    │   └── <span class="file">thread_bridge.py</span>     <span class="cmt"># jinhwan — API-key sanitize + whitelist</span>
+    ├── <span class="dir">ops/</span>                 <span class="cmt"># ⭐ Cold path — Supervisor LLM (OS-grounded)</span>
+    │   ├── <span class="file">supervisor.py, tools.py, README.md</span>
+    └── <span class="file">dev_chat.py</span>      <span class="cmt"># ⚠ Dev path — free-form chat (outside the evaluation path)</span>
+    </div>
+
+    <h3>Host 3-layer — hot / cold / dev path</h3>
+    <p>To keep the "LLM for OS" identity from being diluted by free-form chat, the host tooling is split into 3 role-based layers.</p>
+    <table>
+      <thead>
+        <tr><th style="width:120px">Layer</th><th>Tool</th><th>Role</th><th style="width:90px">In Eval</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="pill pill-info">Hot path</span></td>
+          <td><code>nl_shell.py</code> + <code>adapters/{process,thread}_bridge.py</code></td>
+          <td>natural language → MLFQ queue integer reduction (main demo)</td>
+          <td><span class="pill pill-ok">✅</span></td>
+        </tr>
+        <tr>
+          <td><span class="pill pill-info">Cold path</span></td>
+          <td><code>ops/supervisor.py</code></td>
+          <td>natural-language queries over MERGE_NOTES / eval JSON / K-fix / syscall tables (5-layer refusal gate)</td>
+          <td><span class="pill pill-ok">✅ auxiliary</span></td>
+        </tr>
+        <tr>
+          <td><span class="pill pill-warn">Dev path</span></td>
+          <td><code>dev_chat.py</code></td>
+          <td>free-form chat REPL — developer debugging convenience</td>
+          <td><span class="pill pill-bad">❌ intentional</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-ok">
+      <p><strong>⚡ Automated regression verification — one line:</strong> <code>XV6_DIR=~/xv6-build bash integration/sanity_check.sh</code></p>
+      <p>build → QEMU boot → 4-team slice demos + K5 race (<code>thread_race</code>) + threadtest follow-up = <strong>8/8 PASS</strong> means the integration tree is healthy.
+      On failure it automatically attaches the last 30 lines of QEMU output, and with exit code 0/1 it plugs directly into CI/cron.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ 03 SLICES ═══════════════════ -->
+<section id="slices">
+  <div class="container">
+    <h2><span class="num">03</span> 4-Team Slices — Contributions</h2>
+    <p class="lead">
+      Each team's slice covers a different area, but because they all touch the same <code>struct proc</code>, <code>syscall.c</code>,
+      and <code>sysproc.c</code>, conflicts were inevitable. The following are the contributions adopted into the integration.
+    </p>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <h4><span class="tag tag-hyunsung">hyunsung</span> Scheduler / MLFQ</h4>
+        <p><strong>Role:</strong> base tree, 3-level MLFQ scheduler, NL-based priority hints.</p>
+        <ul>
+          <li>Kernel: 3-level MLFQ (HIGH / MID / LOW), aging, demote</li>
+          <li>User: <code>nlrun</code>, <code>wrunner</code>, <code>cpu/io/mixed_burner</code>, <code>rrunner</code>, <code>diagprog</code></li>
+          <li>Workloads: 6 types (<code>cpu_heavy</code>, <code>io_heavy</code>, <code>mixed</code>, <code>three_way</code>, <code>realprog</code>, <code>stress</code>)</li>
+          <li>Host: <code>nl_shell.py</code> single entry point + Solar prompts</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h4><span class="tag tag-minju">minju</span> Syscall Trace</h4>
+        <p><strong>Role:</strong> collect per-pid / per-syscall statistics from a single hook point for all syscalls.</p>
+        <ul>
+          <li>Add <code>traced</code>, <code>syscall_count[64]</code>, <code>syscall_errors[64]</code> to <code>struct proc</code></li>
+          <li>3 syscalls: <code>sys_trace_on / off / stats</code></li>
+          <li>User: <code>tracetool on / off / dump</code> commands</li>
+          <li>dump output is JSON → integrates naturally with host LLM analysis</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h4><span class="tag tag-jinhwan">jinhwan</span> Thread / Futex</h4>
+        <p><strong>Role:</strong> kernel-level threads + user-space synchronization primitives.</p>
+        <ul>
+          <li><code>kthread_create / join / exit</code>, <code>kfutex_wait / wake</code></li>
+          <li>Page-table sharing: <code>uvmshare</code>, <code>thread_freepagetable</code> (vm.c)</li>
+          <li>Global <code>futex_lock</code> + <code>is_thread</code>, <code>tgroup</code> fields</li>
+          <li>User: <code>threadtest</code> (4 scenarios: shared mem / 4-thread / mutex / condvar)</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h4><span class="tag tag-haneol">haneol</span> Process (ps / sysinfo)</h4>
+        <p><strong>Role:</strong> system-visibility tools. The priority slice overlapped with hyunsung and was DROPped.</p>
+        <ul>
+          <li><code>sys_ps</code> — 6-column output: pid/ppid/state/prio/sz/name</li>
+          <li><code>sys_sysinfo</code> — freemem + nproc</li>
+          <li>Rewrote <code>setprio.c</code> — changed to call <code>setpri(pid, 0..2)</code></li>
+          <li>DROP: <code>sys_trace</code>, <code>sys_setpriority</code>, <code>sys_getpriority</code></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ 04 SYSCALLS ═══════════════════ -->
+<section id="syscalls">
+  <div class="container">
+    <h2><span class="num">04</span> Final Syscall Number Allocation</h2>
+    <p class="lead">
+      The biggest conflict was that all 4 team slices tried to use the <code>22~25</code> range.
+      The agreed allocation is as follows (all fit within <code>NELEM(syscalls)=64</code>).
+    </p>
+
+    <table>
+      <thead>
+        <tr><th style="width:80px">Number</th><th>Name</th><th>Slice</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1~21</td><td><i>(stock xv6)</i></td><td>—</td><td>unmodified</td></tr>
+        <tr><td>22</td><td><code>trace_on</code></td><td><span class="tag tag-minju">minju</span></td><td>start per-syscall counting</td></tr>
+        <tr><td>23</td><td><code>trace_off</code></td><td><span class="tag tag-minju">minju</span></td><td>stop counting (preserve statistics)</td></tr>
+        <tr><td>24</td><td><code>trace_stats</code></td><td><span class="tag tag-minju">minju</span></td><td>JSON dump</td></tr>
+        <tr><td>25</td><td><code>thread_create</code></td><td><span class="tag tag-jinhwan">jinhwan</span></td><td>renumbered 22 → 25</td></tr>
+        <tr><td>26</td><td><code>thread_join</code></td><td><span class="tag tag-jinhwan">jinhwan</span></td><td>renumbered 23 → 26</td></tr>
+        <tr><td>27</td><td><code>thread_exit</code></td><td><span class="tag tag-jinhwan">jinhwan</span></td><td>renumbered 24 → 27</td></tr>
+        <tr><td>28</td><td><code>futex_wait</code></td><td><span class="tag tag-jinhwan">jinhwan</span></td><td>renumbered 25 → 28</td></tr>
+        <tr><td>29</td><td><code>futex_wake</code></td><td><span class="tag tag-jinhwan">jinhwan</span></td><td>renumbered 26 → 29</td></tr>
+        <tr><td>30</td><td><code>setpri</code></td><td><span class="tag tag-hyunsung">hyunsung</span></td><td>renumbered 22 → 30</td></tr>
+        <tr><td>31</td><td><code>getstats</code></td><td><span class="tag tag-hyunsung">hyunsung</span></td><td>renumbered 23 → 31</td></tr>
+        <tr><td>32</td><td><code>settrace</code></td><td><span class="tag tag-hyunsung">hyunsung</span></td><td>22 → 32 originally (MLFQ trace ON/OFF)</td></tr>
+        <tr><td>33</td><td><code>forkpri</code></td><td><span class="tag tag-hyunsung">hyunsung</span></td><td>renumbered 25 → 33</td></tr>
+        <tr><td>34</td><td><code>ps</code></td><td><span class="tag tag-haneol">haneol</span></td><td>renumbered 26 → 34</td></tr>
+        <tr><td>35</td><td><code>sysinfo</code></td><td><span class="tag tag-haneol">haneol</span></td><td>renumbered 23 → 35</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-info">
+      <p><strong>Doc vs. code mismatch found — resolved by modifying the code during integration.</strong></p>
+      <p>hyunsung's original <code>docs/syscall-allocation.md</code> said "moved to 30~33, complete," but the actual
+      <code>kernel/syscall.h</code> was still 22~25. In the integration tree we aligned the code to match the doc.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ 05 CONFLICTS ═══════════════════ -->
+<section id="conflicts">
+  <div class="container">
+    <h2><span class="num">05</span> Key Conflict Decisions</h2>
+    <p class="lead">
+      File-level conflicts can be resolved by a simple merge, but conflicts whose semantics overlap require choosing one side.
+      Each decision's rationale was either quantitative verification or feature richness.
+    </p>
+
+    <table>
+      <thead>
+        <tr><th>Conflict Area</th><th style="width:130px">Winner</th><th>Reason</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>MLFQ scheduler</td>
+          <td><span class="tag tag-hyunsung">hyunsung</span></td>
+          <td>quantitatively verified; the 3-level queue is more refined than haneol's 0..20 priority</td>
+        </tr>
+        <tr>
+          <td>0..20 priority (haneol)</td>
+          <td><span class="pill pill-bad">DROP</span></td>
+          <td>unified to hyunsung's <code>setpri(0..2)</code>. <code>setprio.c</code> was rewritten</td>
+        </tr>
+        <tr>
+          <td>trace syscall (minju vs haneol)</td>
+          <td><span class="tag tag-minju">minju</span></td>
+          <td>richer per-syscall statistics, JSON output format</td>
+        </tr>
+        <tr>
+          <td><code>kernel/syscall.c</code> hooking</td>
+          <td><span class="tag tag-minju">minju</span></td>
+          <td>added as a trace-hook patch on top of the hyunsung dispatch</td>
+        </tr>
+        <tr>
+          <td><code>kthread_*</code> functions</td>
+          <td><span class="tag tag-jinhwan">jinhwan</span></td>
+          <td>unique functionality, appended in an area separate from MLFQ</td>
+        </tr>
+        <tr>
+          <td>host NL entry point</td>
+          <td><span class="tag tag-hyunsung">hyunsung</span></td>
+          <td><code>nl_shell.py</code> single entry, the rest modularized into <code>adapters/</code></td>
+        </tr>
+        <tr>
+          <td>Solar API key (jinhwan original plaintext)</td>
+          <td><span class="pill pill-warn">sanitize</span></td>
+          <td>switched to the <code>UPSTAGE_API_KEY</code> env var, added a fallback when the key is absent</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Items DROPped from the haneol slice</h3>
+    <div class="grid grid-3">
+      <div class="card">
+        <h4>sys_trace (22)</h4>
+        <p>Semantically overlaps with minju's trace_on/off/stats and is functionally weaker.</p>
+      </div>
+      <div class="card">
+        <h4>sys_setpriority (24)</h4>
+        <p>The 0..20 scheme doesn't fit MLFQ. Replaced with <code>setpri(0..2)</code>.</p>
+      </div>
+      <div class="card">
+        <h4>sys_getpriority (25)</h4>
+        <p>hyunsung's <code>getstats</code> provides richer information.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ 06 FIXES ═══════════════════ -->
+<section id="fixes">
+  <div class="container">
+    <h2><span class="num">06</span> K1~K7 Fixes During Integration / Review</h2>
+    <p class="lead">
+      The 7 fixes caught during integration and review are tagged in the code with <code>K1~K7 fix</code> labels.
+      All are bugs that were invisible while a slice stood alone and only surfaced the moment they were merged.
+      <strong>K1~K4</strong> came from the first integration (2026-05-26), <strong>K5</strong> from the second code review (thread teardown),
+      and <strong>K6/K7</strong> from the second security review (prompt-injection bypass).
+    </p>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <h4><span class="pill pill-info">K1</span> allocproc field leak</h4>
+        <p><strong>Symptom:</strong> <code>tracetool dump</code> produced garbage output — leaking the trace state of the previous slot occupant.</p>
+        <p><strong>Cause:</strong> when a proc-table slot is reused, <code>traced</code>, <code>syscall_count[]</code>,
+        <code>syscall_errors[]</code>, <code>is_thread</code>, <code>tgroup</code> were not initialized.</p>
+        <p><strong>Location:</strong> <code>kernel/proc.c:170, 177</code></p>
+      </div>
+
+      <div class="card">
+        <h4><span class="pill pill-info">K2</span> syscall_count array overflow</h4>
+        <p><strong>Symptom:</strong> index overflow starting at <code>SYS_settrace=32</code>.</p>
+        <p><strong>Cause:</strong> minju's original assumed up to SYS_close=21, so the array size was <strong>32</strong>.
+        After integration it extends up to number 35.</p>
+        <p><strong>Patch:</strong> expanded 32 → <strong>64</strong> (5 files).</p>
+      </div>
+
+      <div class="card">
+        <h4><span class="pill pill-info">K3</span> traced flag not inherited on fork</h4>
+        <p><strong>Symptom:</strong> after <code>tracetool on</code> in the shell, a child process launched afterward was not traced.</p>
+        <p><strong>Patch:</strong> explicitly set <code>np-&gt;traced = p-&gt;traced</code> in both
+        <code>fork()</code> and <code>forkpri()</code>.</p>
+        <p><strong>Location:</strong> <code>kernel/proc.c:327, 935</code></p>
+      </div>
+
+      <div class="card">
+        <h4><span class="pill pill-info">K4</span> host adapter priority range</h4>
+        <p><strong>Symptom:</strong> <code>process_bridge.py</code> assumed <code>setpriority(pid, 0..20)</code>.</p>
+        <p><strong>Patch:</strong> aligned to the 0..2 range, and updated <code>SPAWN_WHITELIST</code> by removing
+        <code>priority_test</code>, <code>trace_test</code>, <code>sysinfo_test</code> which are not in the integration tree.</p>
+        <p><strong>Location:</strong> <code>host/adapters/process_bridge.py:55, 85, 155</code></p>
+      </div>
+
+      <div class="card">
+        <h4><span class="pill pill-bad">K5</span> thread/main teardown-order race</h4>
+        <p><strong>Symptom:</strong> if main (<code>is_thread=0</code>) is <code>freeproc</code>'d before its child threads,
+        the shared pages get <code>kfree</code>'d, causing a <strong>page-use-after-free</strong>.</p>
+        <p><strong>Patch:</strong> added a scan for live threads in the same tgroup to <code>freeproc</code> →
+        when found, downgrade to <code>thread_freepagetable</code> (unmap only). A leak is possible but safer than corruption.</p>
+        <p><strong>Regression reproduction:</strong> <code>user/thread_race.c</code> + the K5 case in <code>sanity_check.sh</code>.</p>
+      </div>
+
+      <div class="card">
+        <h4><span class="pill pill-bad">K6</span> thread_bridge newline injection</h4>
+        <p><strong>Symptom:</strong> a Solar response <code>"ls\nkill 1"</code> — in <code>shlex.split</code> the <code>\n</code> is
+        treated as whitespace → the whitelist validates only <code>"ls"</code>, and both lines flow into xv6 stdin, bypassing init kill.</p>
+        <p><strong>Patch:</strong> in <code>guard_cmd</code>, block all of <code>\n \r ; &amp; | ` $(</code>.</p>
+        <p><strong>Location:</strong> <code>host/adapters/thread_bridge.py:guard_cmd</code></p>
+      </div>
+
+      <div class="card">
+        <h4><span class="pill pill-bad">K7</span> process_bridge same injection</h4>
+        <p><strong>Symptom:</strong> the same newline-splitting flaw in the SPAWN intent — the same defect class existed redundantly
+        in a separate adapter (the security guard was not applied consistently).</p>
+        <p><strong>Patch:</strong> block the same metacharacters in the SPAWN branch of <code>guard()</code>.</p>
+        <p><strong>Location:</strong> <code>host/adapters/process_bridge.py:guard SPAWN</code></p>
+      </div>
+    </div>
+
+    <h3>5 build-environment issues also caught</h3>
+    <table>
+      <thead><tr><th>#</th><th>Symptom</th><th>Cause</th><th>Patch</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><code>No rule to make target 'mkfs/mkfs.c'</code></td><td>mkfs/ directory missing</td><td>copied from lecture-repo</td></tr>
+        <tr><td>2</td><td><code>redefinition of 'struct procstats'</code></td><td>umutex.h re-includes user.h → double definition</td><td>added an include guard to user.h</td></tr>
+        <tr><td>3</td><td><code>wrunner: cannot open cpu_heavy.txt</code></td><td>workloads/*.txt not included in fs.img</td><td>added a WORKLOADS variable to the Makefile</td></tr>
+        <tr><td>4</td><td><code>mkfs: assertion failed</code></td><td>stock mkfs.c only strips the <code>user/</code> prefix — the / in workloads/ breaks the assert</td><td>replaced with a strrchr-based general logic</td></tr>
+        <tr><td>5</td><td><code>hints_example.txt</code> exceeds DIRSIZ(14)</td><td>xv6 FS directory-name length limit</td><td>renamed to <code>hints.txt</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════════ 07 EVAL ═══════════════════ -->
+<section id="eval">
+  <div class="container">
+    <h2><span class="num">07</span> Quantitative Evaluation Results (re-run 2026-05-27)</h2>
+    <p class="lead">
+      <span class="pill pill-warn">Important</span> The first run on 5/26 ran without the venv activated, so <code>llm_hint.py</code>
+      died at the import stage and the run proceeded with no hints file generated — effectively the same input as baseline.
+      The 5/27 re-run was performed after confirming that hints were generated normally with the venv + <code>.env</code>.
+    </p>
+
+    <h3>Key Δ per workload (based on avg_turnaround)</h3>
+    <table>
+      <thead>
+        <tr><th>Workload</th><th>Δheur%</th><th>Δllm%</th><th>Interpretation</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>cpu_heavy</code></td>
+          <td><span class="pill pill-bad">+283%</span></td>
+          <td><span class="pill pill-bad">+550%</span></td>
+          <td>single program → lowering priority hurts (expected adverse effect)</td>
+        </tr>
+        <tr>
+          <td><code>io_heavy</code></td>
+          <td><span class="pill pill-warn">+2.8%</span></td>
+          <td><span class="pill pill-warn">+15.8%</span></td>
+          <td>single program + partial timeout, negligible change</td>
+        </tr>
+        <tr>
+          <td><code>mixed</code></td>
+          <td><span class="pill pill-warn">+17.1%</span></td>
+          <td><span class="pill pill-warn">+14.3%</span></td>
+          <td>average ↑ but fairness <strong>+155%</strong>, max_TT <strong>−53%</strong></td>
+        </tr>
+        <tr>
+          <td><code>three_way</code></td>
+          <td><span class="pill pill-ok">−7.3%</span></td>
+          <td><span class="pill pill-ok">−5.8%</span></td>
+          <td><strong>both heur/llm improve turnaround on multi-program workloads</strong></td>
+        </tr>
+        <tr>
+          <td><code>realprog</code></td>
+          <td><span class="pill pill-warn">+6.8%</span></td>
+          <td><span class="pill pill-ok">−0.2%</span></td>
+          <td>heur avg_response <strong>−26%</strong> — improved interactive response</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-ok">
+      <p><strong>Conclusion:</strong> on multi-program workloads (<code>three_way</code>, <code>mixed</code>, <code>realprog</code>),
+      the hints effect was measured with no regression → checklist §6 passed.
+      The adverse effect on single programs is an inherent characteristic of the hints system, not a new finding.</p>
+    </div>
+
+    <h3>Environment Artifacts</h3>
+    <ul>
+      <li><code>no ALL_DONE</code> in all modes of <code>io_heavy</code> + <code>mixed/baseline</code> (QEMU_TIMEOUT=45s limit). Evaluation done on partial traces</li>
+      <li>QEMU on the <code>/mnt/c</code> path is slower than <code>/root</code>, so it can't be directly compared to the standalone-slice environment — only relative comparison across modes is meaningful</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════════════ 08 QUICKSTART ═══════════════════ -->
+<section id="quickstart">
+  <div class="container">
+    <h2><span class="num">08</span> How to Run (Cold-start)</h2>
+    <p class="lead">
+      A procedure laid out so that even someone receiving the integration tree for the first time can follow it directly.
+      WSL2 Ubuntu or native Linux is required.
+    </p>
+
+    <ol class="steps">
+
+      <li>
+        <h4>Install Prerequisites</h4>
+        <p>You need the riscv toolchain + qemu + python3 venv.</p>
+<pre>sudo apt update
+sudo apt install -y gcc-riscv64-unknown-elf qemu-system-misc python3-venv</pre>
+      </li>
+
+      <li>
+        <h4>Host Python Environment (one time only)</h4>
+        <p>Create a venv in <code>integration/host</code> and fill in the Solar API key in <code>.env</code>.</p>
+<pre>cd integration/host
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+cp .env.example .env
+# replace your_api_key_here in .env with your actual Upstage Solar key</pre>
+      </li>
+
+      <li>
+        <h4>Build xv6</h4>
+        <p>Takes about 30 seconds. The build is OK once both <code>kernel/kernel</code> and <code>fs.img</code> are generated.</p>
+<pre>cd integration/xv6-riscv
+make clean && make
+ls kernel/kernel fs.img</pre>
+      </li>
+
+      <li>
+        <h4>Live 4-team demo after QEMU boot</h4>
+        <p>Demonstrate all 4 slices consecutively within a single QEMU session.</p>
+<pre>make qemu CPUS=2          <span class="c"># $ prompt after boot</span>
+
+<span class="c"># [hyunsung] Scheduler — natural-language hint passed down to the queue level</span>
+$ nlrun 2 cpu_burner 50000
+TRACE tick=… pri=2 …
+EXIT  … final_pri=2
+
+<span class="c"># [minju] Syscall trace — all syscalls hooked at a single point</span>
+$ tracetool on
+$ ls
+$ tracetool dump
+{"pid":…,"traced":1,"total":…,"calls":{"fork":…,"exec":…,…}}
+
+<span class="c"># [jinhwan] Thread — kthread + futex working correctly</span>
+$ threadtest
+test 1: shared memory ... OK (counter=200000)
+test 2: 4 threads ... OK
+test 3: mutex exclusion ... OK
+test 4: condvar producer/consumer ... OK (sum=499500)
+
+<span class="c"># [haneol] Process — sys_ps + setpri integrated</span>
+$ ps
+PID  PPID  STATE    PRIO  SZ        NAME
+1    0     sleep    1     12288     init
+…
+$ setprio 1 2
+OK pid=1 level=2
+
+<span class="c"># [integration] background queue + LOW priority + zombie reaping</span>
+$ bgq bgq.txt
+BGQ start echo
+job1_started
+BGQ done echo pid=4 exit=0
+…
+BGQ all_done 3
+
+<span class="c"># Quit QEMU: Ctrl-A x</span></pre>
+      </li>
+
+      <li>
+        <h4>Host LLM analysis — Solar Pro 3 integration</h4>
+        <p>Move xv6 output to the host and stream it for Solar to analyze.</p>
+<pre><span class="c"># (a) system diagnosis — diagprog output → identify starvation</span>
+$ python nl_shell.py --diagnose-from /tmp/diag.txt
+  summary    : 3 processes healthy, 1 stuck at LOW
+  ⚠ concern  : pid=5 stuck at priority=2 with run=200
+  → action   : setpri 5 0
+
+<span class="c"># (b) tracetool dump → classify process-behavior patterns</span>
+$ python nl_shell.py --analyze-tracetool /tmp/tracedump.json
+  verdict : spawner
+  summary : Process performed many fork/exec — shell-like
+  → suggested queue: 0 (interactive launchers benefit from HIGH)
+
+<span class="c"># (c) natural language → xv6 command dry-run</span>
+$ python nl_shell.py --once "Run a heavy job in background"
+[nl_shell] → xv6 command: nlrun 2 cpu_burner 2000000
+
+<span class="c"># (d) full automated demo (process adapter, stdin auto-injected)</span>
+$ python nl_shell.py --mode process
+> show processes
+[xv6 response] PID …
+> set process 5 to low priority
+[xv6 response] OK pid=5 level=2</pre>
+      </li>
+
+      <li>
+        <h4>Re-run the quantitative evaluation matrix (optional)</h4>
+        <p>5 workloads × 3 modes, takes about 8 minutes. Results go under <code>docs/charts/integration/</code>.</p>
+<pre>cd integration/host
+source venv/bin/activate
+XV6_DIR=../xv6-riscv \
+OUT_ROOT=../../docs/charts/integration \
+  ./run_eval_matrix.sh
+
+cat ../../docs/charts/integration/combined_report.txt</pre>
+      </li>
+
+    </ol>
+
+    <div class="callout callout-warn">
+      <p><strong>⚠️ Note on the /mnt/c path:</strong> running QEMU on top of a Windows mount is slower than
+      <code>/root</code> (ext4), so some workloads time out with <code>no ALL_DONE</code>.
+      Increase the <code>QEMU_TIMEOUT</code> environment variable, or it is recommended to run evaluation on a
+      Linux-native FS such as <code>/root/integration-test</code>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ 09 RISKS ═══════════════════ -->
+<section id="risks">
+  <div class="container">
+    <h2><span class="num">09</span> Known Risks / Environment Dependencies</h2>
+    <p class="lead">
+      These are not defects in the integration code itself, but items whose results can vary depending on the evaluation environment.
+    </p>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <h4>usertests reparent2 — environment difference</h4>
+        <p><strong>Behavior:</strong> in <code>usertests -q</code>, #27 <code>reparent2</code>
+        gives <code>fork failed</code> on <code>/mnt/c</code> but <code>ALL TESTS PASSED</code> on <code>/root</code>.</p>
+        <p><strong>Cause:</strong> the 9P FS + virtio-blk on /mnt/c can't finish within the 100ms fork-bomb cleanup window.</p>
+        <p><strong>Response:</strong> recommend running evaluation/demos on ext4 such as <code>/root/integration-test</code>.</p>
+      </div>
+
+      <div class="card">
+        <h4>jinhwan thread userspace library not integrated</h4>
+        <p>userspace abstractions such as thread.c / mutex.c are not included in the integration tree.
+        The judgment was that within xv6 the syscalls alone are sufficient. They are preserved in <code>_sources/jinhwan/</code>.</p>
+      </div>
+
+      <div class="card">
+        <h4>haneol standalone test programs not included</h4>
+        <p><code>mlfq_bench.c</code>, <code>priority_test.c</code>, <code>trace_test.c</code>,
+        <code>sysinfo_test.c</code> are for standalone testing — not in the integration tree, preserved in <code>_sources/</code>.</p>
+      </div>
+
+      <div class="card">
+        <h4>run_eval_matrix.sh hid stderr → patched</h4>
+        <p>Previously it hid errors with <code>&gt;/dev/null 2&gt;&amp;1</code> (the cause of the 5/26 silent failure),
+        but a 2026-05-27 patch captures stderr separately. The same silent failure does not recur.</p>
+      </div>
+    </div>
+
+    <h3>Progress Checklist</h3>
+    <ul>
+      <li><span class="pill pill-ok">DONE</span> create folder structure</li>
+      <li><span class="pill pill-ok">DONE</span> extract each branch's original files into <code>_sources/</code></li>
+      <li><span class="pill pill-ok">DONE</span> merge base xv6 tree + 4-team slices</li>
+      <li><span class="pill pill-ok">DONE</span> integrate host/ Python (single nl_shell.py + adapters)</li>
+      <li><span class="pill pill-ok">DONE</span> complete MERGE_NOTES.md (281 lines, 8 sections)</li>
+      <li><span class="pill pill-ok">DONE</span> build/boot verification (WSL/QEMU, 2026-05-26)</li>
+      <li><span class="pill pill-ok">DONE</span> 4 per-slice live demos + integrated bgq demo</li>
+      <li><span class="pill pill-ok">DONE</span> quantitative evaluation re-run (2026-05-27)</li>
+      <li><span class="pill pill-ok">DONE</span> second code/security review — K5 (thread teardown) / K6·K7 (newline injection) fixes (2026-05-28~29)</li>
+      <li><span class="pill pill-ok">DONE</span> Cold-path Supervisor LLM (<code>ops/</code>) + dev REPL separation + <code>run.log</code></li>
+      <li><span class="pill pill-ok">DONE</span> automated regression <code>sanity_check.sh</code> 8/8 + report/slides localized to Korean</li>
+      <li><span class="pill pill-info">DEFERRED</span> writing the integration PR — deferred to maintain the original-branch protection principle</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<footer>
+  <div class="container">
+    <p><strong>xv6 4-Slice Integration Report</strong></p>
+    <p>Scheduler(hyunsung) · Syscall(minju) · Thread(jinhwan) · Process(haneol)</p>
+    <p class="credit">Integration work: 2026-05-26 / quantitative evaluation re-run: 2026-05-27 / second code &amp; security review: 2026-05-28~29<br>
+    Reference docs: <code>integration/README.md</code>, <code>integration/MERGE_NOTES.md</code>, <code>integration/sanity_check.sh</code></p>
+  </div>
+</footer>
+
+</body>
+</html>

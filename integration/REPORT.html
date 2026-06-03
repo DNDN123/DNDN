@@ -389,6 +389,17 @@
       <div class="metric"><div class="l">통합 Syscall</div><div class="v">14개</div><div class="d">22~35 충돌 없이 공존</div></div>
       <div class="metric"><div class="l">통합 Fix</div><div class="v">K1~K7</div><div class="d">+ 보안 2건 (newline injection)</div></div>
     </div>
+
+    <h3>라이브 데모 (실제 QEMU 세션)</h3>
+    <figure style="margin:0;text-align:center;">
+      <img src="demo.gif" alt="xv6 Smart-MLFQ 라이브 데모"
+           style="max-width:760px;width:100%;border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.4);">
+      <figcaption style="color:var(--fg-muted);font-size:14px;margin-top:10px;">
+        <code>ps</code> → <code>tracetool dump</code> → <code>nlrun</code> → <code>threadtest</code> →
+        <code>bgq</code> → <code>setprio</code> 를 단일 부팅 세션에서 시연.
+        2026-06-03 <code>sanity_check.sh</code> <strong>8/8 PASS</strong> (ext4) 로 검증된 출력.
+      </figcaption>
+    </figure>
   </div>
 </section>
 

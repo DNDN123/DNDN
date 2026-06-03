@@ -421,29 +421,15 @@
   <!-- 13 DEMO -->
   <section class="slide">
     <div class="eyebrow">08 · LIVE DEMO</div>
-    <h2><span class="num">11</span> 라이브 데모 시나리오</h2>
-    <div class="fill">
-      <pre>$ make qemu CPUS=2
-
-<span class="c"># [hyunsung] 자연어 힌트 → 큐 레벨</span>
-$ nlrun 2 cpu_burner 50000        → EXIT final_pri=2
-
-<span class="c"># [minju] 모든 syscall 단일 후킹</span>
-$ tracetool on; ls; tracetool dump
-  {"pid":…,"total":…,"calls":{"fork":…,"exec":…}}
-
-<span class="c"># [jinhwan] kthread + futex</span>
-$ threadtest        → test 1~4 OK (counter=200000, sum=499500)
-
-<span class="c"># [haneol] ps + setpri 통합</span>
-$ ps; setprio 1 2   → OK pid=1 level=2
-
-<span class="c"># [통합] 백그라운드 큐 + LOW + 좀비 회수</span>
-$ bgq bgq.txt       → BGQ all_done 3
-
-<span class="c"># [호스트 LLM] xv6 출력 → Solar 분석</span>
-$ python nl_shell.py --diagnose-from /tmp/diag.txt
-  → action: setpri 5 0   <span class="c"># starvation 식별</span></pre>
+    <h2><span class="num">11</span> 라이브 데모 — 실제 QEMU 세션</h2>
+    <div class="fill" style="align-items:center;justify-content:center;">
+      <img src="demo.gif" alt="xv6 Smart-MLFQ 라이브 데모"
+           style="max-height:64vh;max-width:90%;border:1px solid var(--border);border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,.5);">
+      <p style="margin-top:14px;text-align:center;">
+        <code>ps</code> → <code>tracetool dump</code> → <code>nlrun</code> → <code>threadtest</code> →
+        <code>bgq</code> → <code>setprio</code> — 4팀 슬라이스 + 통합을 한 세션에서 시연
+        <span class="pill p-ok" style="margin-left:8px;">sanity_check 8/8 검증</span>
+      </p>
     </div>
   </section>
 

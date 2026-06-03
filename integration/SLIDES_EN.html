@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>xv6 4-Slice Integration — Presentation Slides</title>
+<style>
+  :root{
+    --bg:#0a0f1e; --bg-card:#1e293b; --bg-soft:#334155;
+    --fg:#e2e8f0; --fg-muted:#94a3b8;
+    --accent:#38bdf8; --accent-2:#a78bfa;
+    --good:#34d399; --warn:#fbbf24; --bad:#f87171;
+    --code-bg:#0b1220; --border:#334155;
+    --hyunsung:#38bdf8; --minju:#34d399; --jinhwan:#a78bfa; --haneol:#fbbf24;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans KR',sans-serif;
+    background:linear-gradient(180deg,#070b16 0%,#0f172a 100%);
+    color:var(--fg); line-height:1.6; overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* ── slide frame ── */
+  .deck{position:relative;width:100vw;height:100vh;}
+  .slide{
+    position:absolute; inset:0;
+    display:none; flex-direction:column;
+    padding:6vh 8vw 9vh;
+    animation:fade .35s ease;
+  }
+  .slide.active{display:flex;}
+  @keyframes fade{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+
+  .eyebrow{
+    display:inline-block;align-self:flex-start;
+    padding:5px 13px;margin-bottom:18px;
+    background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.3);
+    border-radius:999px;color:var(--accent);
+    font-size:13px;font-weight:600;letter-spacing:.06em;
+  }
+  h1{font-size:clamp(30px,4.6vw,56px);line-height:1.12;margin-bottom:18px;
+     background:linear-gradient(135deg,#38bdf8 0%,#a78bfa 100%);
+     -webkit-background-clip:text;background-clip:text;color:transparent;}
+  h2{font-size:clamp(24px,3.2vw,40px);margin-bottom:24px;display:flex;align-items:center;gap:16px;}
+  h2 .num{font-size:.55em;color:var(--accent);font-variant-numeric:tabular-nums;
+          border:1px solid var(--border);border-radius:8px;padding:2px 12px;}
+  h3{font-size:clamp(17px,1.9vw,22px);color:var(--accent-2);margin:18px 0 12px;}
+  p{color:var(--fg-muted);font-size:clamp(15px,1.5vw,19px);}
+  .lead{font-size:clamp(16px,1.7vw,21px);color:var(--fg);max-width:46em;}
+  strong{color:var(--fg);}
+  code{font-family:'JetBrains Mono','SF Mono',Consolas,monospace;
+       background:var(--code-bg);border:1px solid var(--border);
+       padding:1px 6px;border-radius:5px;font-size:.86em;color:#bae6fd;}
+  ul{list-style:none;}
+  li{position:relative;padding-left:1.4em;margin:.5em 0;font-size:clamp(15px,1.5vw,19px);color:var(--fg-muted);}
+  li::before{content:"▸";position:absolute;left:0;color:var(--accent);}
+  li strong{color:var(--fg);}
+
+  /* ── title slide ── */
+  .title-slide{justify-content:center;align-items:center;text-align:center;}
+  .title-slide h1{font-size:clamp(38px,6vw,76px);}
+  .title-slide .sub{font-size:clamp(17px,2vw,24px);color:var(--fg-muted);max-width:40em;margin-bottom:34px;}
+  .title-slide .meta{display:flex;gap:22px;flex-wrap:wrap;justify-content:center;font-size:14px;color:var(--fg-muted);}
+  .title-slide .meta b{color:var(--fg);margin-left:6px;}
+
+  /* ── layout helpers ── */
+  .grid{display:grid;gap:18px;margin-top:8px;}
+  .g2{grid-template-columns:1fr 1fr;}
+  .g3{grid-template-columns:1fr 1fr 1fr;}
+  .g4{grid-template-columns:repeat(4,1fr);}
+  .fill{flex:1;display:flex;flex-direction:column;justify-content:center;}
+  .card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:18px 20px;}
+  .card h4{font-size:clamp(15px,1.6vw,19px);margin-bottom:8px;color:var(--fg);}
+  .card p,.card li{font-size:clamp(13px,1.25vw,16px);}
+  .card.accent{border-color:rgba(56,189,248,.45);}
+
+  /* tags */
+  .tag{display:inline-block;padding:2px 9px;border-radius:6px;font-size:.8em;font-weight:700;}
+  .t-hyunsung{background:rgba(56,189,248,.16);color:var(--hyunsung);}
+  .t-minju{background:rgba(52,211,153,.16);color:var(--minju);}
+  .t-jinhwan{background:rgba(167,139,250,.16);color:var(--jinhwan);}
+  .t-haneol{background:rgba(251,191,36,.16);color:var(--haneol);}
+  .pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:.78em;font-weight:700;}
+  .p-ok{background:rgba(52,211,153,.15);color:var(--good);}
+  .p-warn{background:rgba(251,191,36,.15);color:var(--warn);}
+  .p-bad{background:rgba(248,113,113,.15);color:var(--bad);}
+  .p-info{background:rgba(56,189,248,.15);color:var(--accent);}
+
+  /* metrics */
+  .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:10px;}
+  .metric{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:22px;text-align:center;}
+  .metric .l{font-size:14px;color:var(--fg-muted);}
+  .metric .v{font-size:clamp(30px,4vw,46px);font-weight:800;margin:6px 0;}
+  .metric .v.pos{color:var(--good);}
+  .metric .d{font-size:13px;color:var(--fg-muted);}
+
+  /* table */
+  table{width:100%;border-collapse:collapse;margin-top:8px;font-size:clamp(13px,1.35vw,17px);}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--border);}
+  th{color:var(--accent);font-weight:600;font-size:.92em;}
+  td code{font-size:.92em;}
+  tbody tr:hover{background:rgba(56,189,248,.04);}
+
+  /* callout */
+  .callout{border-radius:12px;padding:16px 20px;margin-top:16px;border-left:4px solid;}
+  .c-ok{background:rgba(52,211,153,.08);border-color:var(--good);}
+  .c-warn{background:rgba(251,191,36,.08);border-color:var(--warn);}
+  .c-info{background:rgba(56,189,248,.08);border-color:var(--accent);}
+  .callout p{color:var(--fg);}
+
+  pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;
+      padding:14px 16px;overflow:auto;font-family:'JetBrains Mono',Consolas,monospace;
+      font-size:clamp(12px,1.15vw,15px);color:#cbd5e1;line-height:1.55;margin-top:8px;}
+  pre .c{color:#64748b;}
+  pre .ok{color:var(--good);}
+
+  .big{font-size:clamp(20px,2.2vw,28px);color:var(--fg);}
+  .flow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:clamp(14px,1.5vw,19px);margin-top:14px;}
+  .flow .node{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:10px 16px;color:var(--fg);}
+  .flow .arr{color:var(--accent);font-weight:700;}
+
+  /* ── chrome (progress + counter + hint) ── */
+  .progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#38bdf8,#a78bfa);
+            z-index:50;transition:width .3s ease;}
+  .counter{position:fixed;bottom:18px;right:24px;font-size:13px;color:var(--fg-muted);
+           font-variant-numeric:tabular-nums;z-index:50;}
+  .counter b{color:var(--fg);}
+  .hint{position:fixed;bottom:18px;left:24px;font-size:12px;color:#475569;z-index:50;}
+  .brand{position:fixed;top:14px;right:24px;font-size:12px;color:#475569;z-index:50;letter-spacing:.05em;}
+  .dots{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:7px;z-index:50;}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--bg-soft);cursor:pointer;transition:.2s;}
+  .dot.active{background:var(--accent);transform:scale(1.25);}
+
+  /* ── print → one slide per page ── */
+  @media print{
+    body{overflow:visible;height:auto;background:#0a0f1e;}
+    .deck{height:auto;}
+    .slide{display:flex!important;position:relative;inset:auto;
+           height:100vh;page-break-after:always;animation:none;}
+    .progress,.counter,.hint,.brand,.dots{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<div class="brand">xv6 SMART-MLFQ · Integration Presentation</div>
+
+<div class="deck" id="deck">
+
+  <!-- 01 TITLE -->
+  <section class="slide title-slide active">
+    <div class="eyebrow" style="align-self:center;">OS PROJECT · INTEGRATION</div>
+    <h1>xv6 4-Slice Integration<br>Smart MLFQ Scheduler</h1>
+    <p class="sub">Scheduler · Syscall · Thread · Process — the integration result of merging four members' slices into a single
+      <code>xv6-riscv</code> tree and passing build · boot · quantitative evaluation · automated regression</p>
+    <div class="meta">
+      <span>Team:<b>hyunsung · minju · jinhwan · haneol</b></span>
+      <span>Integration:<b>2026-05-26</b></span>
+      <span>Evaluation:<b>2026-05-27</b></span>
+      <span>2nd review:<b>2026-05-28~29</b></span>
+    </div>
+  </section>
+
+  <!-- 02 OVERVIEW -->
+  <section class="slide">
+    <div class="eyebrow">01 · OVERVIEW</div>
+    <h2><span class="num">01</span> Project Overview</h2>
+    <p class="lead">The goal is to merge the xv6 slices that four people developed each on their own GitHub branch into a <strong>single buildable tree</strong>.
+      The original branches are only read via <code>git archive</code> and <strong>not a single byte is modified.</strong></p>
+    <div class="grid g2 fill">
+      <div class="card accent">
+        <h4>Core Principles</h4>
+        <ul>
+          <li><strong>Original-branch protection</strong> — no push / commit / new branches</li>
+          <li><strong>Single entry point</strong> — host NL is the single <code>nl_shell.py</code></li>
+          <li><strong>API key sanitize</strong> — environment variables only, no hardcoding</li>
+          <li><strong>Roll-back capable</strong> — originals preserved in <code>_sources/</code></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Final Deliverables</h4>
+        <ul>
+          <li><code>xv6-riscv/</code> — integrated build tree (kernel + user + workloads)</li>
+          <li><code>host/</code> — Solar Pro 3 LLM Python bridge (3 layers)</li>
+          <li><code>MERGE_NOTES.md</code> — conflict-decision record (K1~K7)</li>
+          <li><code>docs/charts/integration/</code> — 5 workloads × 3 modes evaluation</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 STATUS METRICS -->
+  <section class="slide">
+    <div class="eyebrow">STATUS</div>
+    <h2><span class="num">02</span> Verification Status at a Glance</h2>
+    <div class="fill">
+      <div class="metrics">
+        <div class="metric"><div class="l">Build / Boot</div><div class="v pos">PASS</div><div class="d">2026-05-26 · WSL+QEMU</div></div>
+        <div class="metric"><div class="l">Live Demo</div><div class="v pos">4 / 4</div><div class="d">all slices working</div></div>
+        <div class="metric"><div class="l">Quantitative Eval</div><div class="v pos">PASS</div><div class="d">three_way Δturnaround −7.3%</div></div>
+        <div class="metric"><div class="l">Automated Regression</div><div class="v pos">8 / 8</div><div class="d">sanity_check.sh one-liner</div></div>
+        <div class="metric"><div class="l">Integrated Syscalls</div><div class="v">14</div><div class="d">22~35 coexist without conflict</div></div>
+        <div class="metric"><div class="l">Integration·Security Fixes</div><div class="v">K1~K7</div><div class="d">+ 2 injection guards</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 ARCHITECTURE -->
+  <section class="slide">
+    <div class="eyebrow">02 · STRUCTURE</div>
+    <h2><span class="num">03</span> Integration Architecture</h2>
+    <div class="fill">
+      <div class="flow">
+        <span class="node">User natural language</span><span class="arr">→</span>
+        <span class="node">host/nl_shell.py ⭐</span><span class="arr">→</span>
+        <span class="node">Solar Pro 3 (translation only)</span><span class="arr">→</span>
+        <span class="node">xv6 command (queue integer)</span><span class="arr">→</span>
+        <span class="node">QEMU xv6 kernel</span>
+      </div>
+      <div class="grid g2" style="margin-top:22px;">
+        <div class="card">
+          <h4>⭐ Build target — <code>xv6-riscv/</code></h4>
+          <ul>
+            <li><strong>kernel/</strong> proc.c(+K1/K3/K5), proc.h(+K2), syscall.{c,h}, vm.c, kalloc.c</li>
+            <li><strong>user/</strong> nlrun, wrunner, *_burner, tracetool, threadtest, ps, setprio, bgq, <code>thread_race</code></li>
+            <li><strong>workloads/</strong> 8 kinds (cpu_heavy … three_way, hints)</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4>Host Python — <code>host/</code> (3 layers)</h4>
+          <ul>
+            <li><span class="pill p-info">Hot</span> nl_shell.py + adapters/ (process·thread)</li>
+            <li><span class="pill p-info">Cold</span> ops/supervisor.py — OS-grounded audit</li>
+            <li><span class="pill p-warn">Dev</span> dev_chat.py — free-form chat (outside evaluation)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 SLICES -->
+  <section class="slide">
+    <div class="eyebrow">03 · CONTRIBUTIONS</div>
+    <h2><span class="num">04</span> 4-Team Slices — Contribution Breakdown</h2>
+    <div class="grid g2 fill">
+      <div class="card">
+        <h4><span class="tag t-hyunsung">hyunsung</span> Scheduler / MLFQ</h4>
+        <ul>
+          <li>3-level MLFQ (HIGH/MID/LOW), aging, demote</li>
+          <li><code>nlrun</code>, <code>wrunner</code>, <code>*_burner</code>, <code>diagprog</code></li>
+          <li>Host <code>nl_shell.py</code> single entry point</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4><span class="tag t-minju">minju</span> Syscall Trace</h4>
+        <ul>
+          <li>Single hook on all syscalls → per-pid statistics</li>
+          <li><code>trace_on / off / stats</code> (JSON dump)</li>
+          <li>dump → naturally feeds host LLM analysis</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4><span class="tag t-jinhwan">jinhwan</span> Thread / Futex</h4>
+        <ul>
+          <li><code>kthread_create/join/exit</code>, <code>kfutex_wait/wake</code></li>
+          <li>Page sharing <code>uvmshare</code>, <code>thread_freepagetable</code></li>
+          <li><code>threadtest</code> 4 scenarios (mutex·condvar)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4><span class="tag t-haneol">haneol</span> Process (ps / sysinfo)</h4>
+        <ul>
+          <li><code>sys_ps</code> — 6-column process table</li>
+          <li><code>sys_sysinfo</code> — freemem + nproc</li>
+          <li>priority slice overlaps with hyunsung → DROP</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 SYSCALLS -->
+  <section class="slide">
+    <div class="eyebrow">04 · SYSCALL MAP</div>
+    <h2><span class="num">05</span> Final Syscall Number Allocation</h2>
+    <p class="lead">All four teams tried to use the <code>22~25</code> range — the biggest conflict; the agreed allocation lets them all coexist within <code>NELEM=64</code>.</p>
+    <div class="grid g4 fill" style="align-content:center;">
+      <div class="card"><h4><span class="tag t-minju">22~24</span></h4>
+        <p><code>trace_on / off / stats</code></p><p style="margin-top:6px;color:var(--minju);">minju · per-syscall statistics</p></div>
+      <div class="card"><h4><span class="tag t-jinhwan">25~29</span></h4>
+        <p><code>thread_create / join / exit</code><br><code>futex_wait / wake</code></p><p style="margin-top:6px;color:var(--jinhwan);">jinhwan · renumbered from original 22~26</p></div>
+      <div class="card"><h4><span class="tag t-hyunsung">30~33</span></h4>
+        <p><code>setpri / getstats</code><br><code>settrace / forkpri</code></p><p style="margin-top:6px;color:var(--hyunsung);">hyunsung · MLFQ control</p></div>
+      <div class="card"><h4><span class="tag t-haneol">34~35</span></h4>
+        <p><code>ps / sysinfo</code></p><p style="margin-top:6px;color:var(--haneol);">haneol · unique visibility tools</p></div>
+    </div>
+    <div class="callout c-info"><p><strong>Doc vs code mismatch found:</strong> hyunsung's original doc said "moved to 30~33 done", but
+      the actual <code>syscall.h</code> was 22~25 → during integration the code was aligned to match the doc.</p></div>
+  </section>
+
+  <!-- 07 CONFLICTS -->
+  <section class="slide">
+    <div class="eyebrow">05 · CONFLICT RESOLUTION</div>
+    <h2><span class="num">06</span> Key Conflict Decisions</h2>
+    <p class="lead">For conflicts with overlapping semantics, one side was chosen — the rationale is <strong>quantitative verification</strong> or <strong>feature richness</strong>.</p>
+    <div class="fill">
+      <table>
+        <thead><tr><th>Conflict area</th><th style="width:140px">Winner</th><th>Reason</th></tr></thead>
+        <tbody>
+          <tr><td>MLFQ scheduler</td><td><span class="tag t-hyunsung">hyunsung</span></td><td>Validated by quantitative evaluation; 3-level queue more refined than 0..20</td></tr>
+          <tr><td>0..20 priority (haneol)</td><td><span class="pill p-bad">DROP</span></td><td>Unified to <code>setpri(0..2)</code>, <code>setprio.c</code> rewritten</td></tr>
+          <tr><td>trace syscall</td><td><span class="tag t-minju">minju</span></td><td>per-syscall statistics richer, JSON output</td></tr>
+          <tr><td>kthread_* functions</td><td><span class="tag t-jinhwan">jinhwan</span></td><td>Unique feature, appended in a region separate from MLFQ</td></tr>
+          <tr><td>host NL entry point</td><td><span class="tag t-hyunsung">hyunsung</span></td><td>Single <code>nl_shell.py</code>, the rest go under adapters/</td></tr>
+          <tr><td>Solar API key (plaintext)</td><td><span class="pill p-warn">sanitize</span></td><td>Switched to environment variable + fallback when key missing</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 08 K1-K4 -->
+  <section class="slide">
+    <div class="eyebrow">06 · INTEGRATION FIXES</div>
+    <h2><span class="num">07</span> K1~K4 Found During Integration</h2>
+    <p class="lead">Bugs that were invisible for a standalone slice and surfaced <strong>the moment they were merged</strong> — labeled <code>K1~K4 fix</code> in the code.</p>
+    <div class="grid g2 fill">
+      <div class="card"><h4><span class="pill p-info">K1</span> allocproc field leak</h4>
+        <p>On slot reuse, <code>traced</code>/<code>syscall_count[]</code>/<code>is_thread</code> were left uninitialized → trace state of the previous occupant leaked, garbage dump.</p></div>
+      <div class="card"><h4><span class="pill p-info">K2</span> syscall_count overflow</h4>
+        <p>minju's original array of 32 → after integration it extended up to number 35. Expanded <strong>32 → 64</strong> (5 files).</p></div>
+      <div class="card"><h4><span class="pill p-info">K3</span> traced not inherited on fork</h4>
+        <p>After <code>tracetool on</code> the child process was not traced → both <code>fork()</code>/<code>forkpri()</code> now explicitly inherit traced.</p></div>
+      <div class="card"><h4><span class="pill p-info">K4</span> adapter priority range</h4>
+        <p>Assumed <code>setpriority(0..20)</code> → aligned to 0..2, and the SPAWN whitelist also removed nonexistent binaries.</p></div>
+    </div>
+  </section>
+
+  <!-- 09 K5-K7 -->
+  <section class="slide">
+    <div class="eyebrow">2nd code·security review (2026-05-28~29)</div>
+    <h2><span class="num">07+</span> K5~K7 — race · security</h2>
+    <div class="grid g3 fill">
+      <div class="card accent"><h4><span class="pill p-bad">K5</span> thread/main teardown race</h4>
+        <p>main runs <code>freeproc</code> before the child thread → shared page <code>kfree</code> → <strong>page-use-after-free</strong>.</p>
+        <p style="margin-top:8px;">Scan tgroup for live threads → downgrade <code>thread_freepagetable</code>. Regression reproducer <code>thread_race.c</code>.</p></div>
+      <div class="card accent"><h4><span class="pill p-bad">K6</span> thread_bridge injection</h4>
+        <p>Solar response <code>"ls\nkill 1"</code> — <code>shlex.split</code> treats <code>\n</code> as whitespace → whitelist bypass, init kill.</p>
+        <p style="margin-top:8px;"><code>\n \r ; &amp; | ` $(</code> all blocked.</p></div>
+      <div class="card accent"><h4><span class="pill p-bad">K7</span> process_bridge same flaw</h4>
+        <p>SPAWN intent had the same newline-splitting flaw — revealed that the security guard was not applied consistently across both adapters.</p>
+        <p style="margin-top:8px;">Same blocking applied to the <code>guard()</code> SPAWN branch.</p></div>
+    </div>
+    <div class="callout c-warn"><p><strong>Lesson:</strong> any path that pipes LLM output directly into shell stdin makes <strong>prompt injection = command injection</strong>.
+      A whitelist alone is not enough — <strong>metacharacter·newline blocking</strong> is needed together.</p></div>
+  </section>
+
+  <!-- 10 HOST 3-LAYER / IDENTITY -->
+  <section class="slide">
+    <div class="eyebrow">LLM FOR OS — IDENTITY</div>
+    <h2><span class="num">08</span> Host 3-Layer Separation</h2>
+    <p class="lead">So that the "LLM for OS" identity is <strong>not diluted by free-form chat</strong>, the host tools are separated into 3 layers by role.</p>
+    <div class="fill">
+      <table>
+        <thead><tr><th style="width:130px">Layer</th><th>Tool</th><th>Role</th><th style="width:110px">In evaluation</th></tr></thead>
+        <tbody>
+          <tr><td><span class="pill p-info">Hot path</span></td><td><code>nl_shell.py</code> + <code>adapters/*</code></td><td>natural language → MLFQ queue integer reduction (main demo)</td><td><span class="pill p-ok">✅</span></td></tr>
+          <tr><td><span class="pill p-info">Cold path</span></td><td><code>ops/supervisor.py</code></td><td>natural-language queries on MERGE_NOTES·eval·K-fix·syscall (5-stage refusal gate)</td><td><span class="pill p-ok">✅ auxiliary</span></td></tr>
+          <tr><td><span class="pill p-warn">Dev path</span></td><td><code>dev_chat.py</code></td><td>free-form chat REPL — developer convenience</td><td><span class="pill p-bad">❌ intentional</span></td></tr>
+        </tbody>
+      </table>
+      <div class="callout c-info"><p>Hot-path output is limited to a <strong>2-bit queue level (0/1/2)</strong> — the LLM is a "translator", while execution·management stays in the OS layer. <strong>This is not a thin LLM wrapper.</strong></p></div>
+    </div>
+  </section>
+
+  <!-- 11 EVAL -->
+  <section class="slide">
+    <div class="eyebrow">07 · QUANTITATIVE EVAL</div>
+    <h2><span class="num">09</span> Quantitative Evaluation (re-run 2026-05-27)</h2>
+    <p class="lead">3-way comparison of baseline / heuristic / solar by avg_turnaround.</p>
+    <div class="fill">
+      <table>
+        <thead><tr><th>Workload</th><th>Δheur%</th><th>Δllm%</th><th>Interpretation</th></tr></thead>
+        <tbody>
+          <tr><td><code>cpu_heavy</code></td><td><span class="pill p-bad">+283%</span></td><td><span class="pill p-bad">+550%</span></td><td>single program → a priority demotion is a direct loss (expected)</td></tr>
+          <tr><td><code>io_heavy</code></td><td><span class="pill p-warn">+2.8%</span></td><td><span class="pill p-warn">+15.8%</span></td><td>single + partial timeout, negligible change</td></tr>
+          <tr><td><code>mixed</code></td><td><span class="pill p-warn">+17.1%</span></td><td><span class="pill p-warn">+14.3%</span></td><td>average↑ but fairness <strong>+155%</strong>, max_TT <strong>−53%</strong></td></tr>
+          <tr><td><code>three_way</code></td><td><span class="pill p-ok">−7.3%</span></td><td><span class="pill p-ok">−5.8%</span></td><td><strong>multiple programs — both heur/llm improve</strong></td></tr>
+          <tr><td><code>realprog</code></td><td><span class="pill p-warn">+6.8%</span></td><td><span class="pill p-ok">−0.2%</span></td><td>heur avg_response <strong>−26%</strong> (interactive improvement)</td></tr>
+        </tbody>
+      </table>
+      <div class="callout c-ok"><p><strong>Conclusion:</strong> for multiple programs (three_way·mixed·realprog) the hints effect is measurable with no regression.
+        The adverse effect on single programs is an inherent characteristic of the hints system, not a new finding.</p></div>
+    </div>
+  </section>
+
+  <!-- 12 SANITY -->
+  <section class="slide">
+    <div class="eyebrow">AUTOMATED REGRESSION</div>
+    <h2><span class="num">10</span> Automated Regression — one-liner 8/8</h2>
+    <div class="fill">
+      <pre>$ XV6_DIR=~/xv6-build bash integration/sanity_check.sh
+<span class="c"># build → QEMU boot → grep 8 success markers</span>
+<span class="ok">[1/8] ps            ... OK</span>
+<span class="ok">[2/8] tracetool     ... OK</span>
+<span class="ok">[3/8] nlrun EXIT    ... OK</span>
+<span class="ok">[4/8] bgq all_done  ... OK</span>
+<span class="ok">[5/8] thread_race   ... OK   </span><span class="c"># K5 regression</span>
+<span class="ok">[6/8] threadtest    ... OK</span>
+<span class="ok">[7/8] setprio       ... OK</span>
+<span class="ok">[8/8] sysinfo       ... OK</span>
+<span class="ok">SANITY 8/8 PASS — exit 0</span></pre>
+      <div class="grid g3" style="margin-top:18px;">
+        <div class="card"><h4>One-line run</h4><p>Verifies 4-team demos + K5 race + threadtest follow-up all at once.</p></div>
+        <div class="card"><h4>CI/cron friendly</h4><p>Exit code 0/1 — on failure the last 30 lines of QEMU output are auto-attached.</p></div>
+        <div class="card"><h4>Regression prevention</h4><p>If a teardown race like K5 recurs, it turns red immediately.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13 DEMO -->
+  <section class="slide">
+    <div class="eyebrow">08 · LIVE DEMO</div>
+    <h2><span class="num">11</span> Live Demo — Real QEMU Session</h2>
+    <div class="fill" style="align-items:center;justify-content:center;">
+      <img src="demo.gif" alt="xv6 Smart-MLFQ live demo"
+           style="max-height:64vh;max-width:90%;border:1px solid var(--border);border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,.5);">
+      <p style="margin-top:14px;text-align:center;">
+        <code>ps</code> → <code>tracetool dump</code> → <code>nlrun</code> → <code>threadtest</code> →
+        <code>bgq</code> → <code>setprio</code> — 4-team slices + integration demonstrated in a single session
+        <span class="pill p-ok" style="margin-left:8px;">sanity_check 8/8 verified</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- 14 RISKS -->
+  <section class="slide">
+    <div class="eyebrow">09 · KNOWN ISSUES</div>
+    <h2><span class="num">12</span> Known Environment Dependencies</h2>
+    <p class="lead">Not defects in the integration code itself, but items whose results may vary depending on the evaluation environment.</p>
+    <div class="grid g2 fill">
+      <div class="card"><h4>usertests <code>reparent2</code> — environment difference</h4>
+        <p>On <code>/mnt/c</code> (9P FS) the fork-bomb cleanup exceeds the 100ms window and fails; on <code>/root</code> (ext4) it is ALL PASSED.
+        <strong>→ evaluation recommended on Linux native FS.</strong></p></div>
+      <div class="card"><h4>userspace thread library not integrated</h4>
+        <p>Abstractions like thread.c/mutex.c — syscalls alone are sufficient inside xv6 — preserved in <code>_sources/jinhwan/</code>.</p></div>
+      <div class="card"><h4>haneol's standalone tests not included</h4>
+        <p>Standalone tests like <code>mlfq_bench</code>, <code>priority_test</code> are excluded from the integration tree, preserved in <code>_sources/</code>.</p></div>
+      <div class="card"><h4>eval stderr suppressed → patch done</h4>
+        <p>The cause of the 5/26 silent failure (<code>&gt;/dev/null</code>) was resolved on 5/27 with separate stderr capture, preventing recurrence.</p></div>
+    </div>
+  </section>
+
+  <!-- 15 CLOSING -->
+  <section class="slide title-slide">
+    <div class="eyebrow" style="align-self:center;">SUMMARY</div>
+    <h1>Build · Boot · Eval · Regression<br>All Passed</h1>
+    <div class="grid g4" style="margin:10px 0 30px;max-width:1000px;">
+      <div class="metric"><div class="v pos">4/4</div><div class="d">slices integrated</div></div>
+      <div class="metric"><div class="v pos">K1~K7</div><div class="d">integration·security fixes</div></div>
+      <div class="metric"><div class="v pos">8/8</div><div class="d">automated regression</div></div>
+      <div class="metric"><div class="v pos">−7.3%</div><div class="d">three_way turnaround</div></div>
+    </div>
+    <p class="sub">Remaining work: English report·slides / demo recording / integration PR (deferred to uphold the original-branch protection principle)</p>
+    <div class="meta">
+      <span>Scheduler <b>hyunsung</b></span><span>Syscall <b>minju</b></span>
+      <span>Thread <b>jinhwan</b></span><span>Process <b>haneol</b></span>
+    </div>
+  </section>
+
+</div>
+
+<div class="dots" id="dots"></div>
+<div class="counter"><b id="cur">1</b> / <span id="total">15</span></div>
+<div class="hint">← → · Space · Home/End · F fullscreen · P print(PDF)</div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  const dotsBox=document.getElementById('dots');
+  const total=slides.length;
+  document.getElementById('total').textContent=total;
+  let i=0;
+  slides.forEach((_,n)=>{
+    const d=document.createElement('div');d.className='dot';d.onclick=()=>go(n);
+    dotsBox.appendChild(d);
+  });
+  const dots=[...dotsBox.children];
+  function go(n){
+    i=Math.max(0,Math.min(total-1,n));
+    slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+    dots.forEach((d,k)=>d.classList.toggle('active',k===i));
+    document.getElementById('cur').textContent=i+1;
+    document.getElementById('progress').style.width=((i+1)/total*100)+'%';
+  }
+  function next(){go(i+1);} function prev(){go(i-1);}
+  document.addEventListener('keydown',e=>{
+    if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();next();}
+    else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();prev();}
+    else if(e.key==='Home'){go(0);} else if(e.key==='End'){go(total-1);}
+    else if(e.key==='f'||e.key==='F'){
+      if(!document.fullscreenElement)document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    } else if(e.key==='p'||e.key==='P'){window.print();}
+  });
+  // click right/left half to navigate (ignore links/dots)
+  document.getElementById('deck').addEventListener('click',e=>{
+    if(e.target.closest('a,.dot'))return;
+    (e.clientX>window.innerWidth/2)?next():prev();
+  });
+  go(0);
+</script>
+</body>
+</html>
