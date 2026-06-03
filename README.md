@@ -57,11 +57,11 @@
 ### 구현 완료
 | 항목 | 위치 | 상태 |
 |---|---|---|
-| 3-단계 MLFQ (HIGH/MID/LOW) + demotion + periodic boost | `smart-mlfq-xv6-patches/kernel/proc.c`, `trap.c` | ✅ |
+| 3-단계 MLFQ (HIGH/MID/LOW) + demotion + periodic boost | `../slice/smart-mlfq-xv6-patches/kernel/proc.c`, `trap.c` | ✅ |
 | I/O-aware queue retention (sleep 시 큐 레벨 유지) | `kernel/proc.c::sleep` | ✅ |
 | Multi-CPU safe priority changes (`boost_lock` + per-proc lock) | `kernel/proc.c` | ✅ |
 | 신규 syscall 4종: `setpri` / `getstats` / `settrace` / `forkpri` | `kernel/sysproc.c`, `syscall.h` | ✅ |
-| 자연어 → 실행 spec 변환 (Solar Pro 3) | `smart-mlfq-host/nl_shell.py` | ✅ |
+| 자연어 → 실행 spec 변환 (Solar Pro 3) | `../slice/smart-mlfq-host/nl_shell.py` | ✅ |
 | API 키 없을 때 휴리스틱 폴백 | `nl_shell.py` | ✅ |
 | 트레이스 파서 + 평가기 + 차트 (Gantt / bar) | `parse_trace.py`, `evaluator.py`, `viz.py` | ✅ |
 
@@ -127,22 +127,8 @@
 .
 ├── README.md                       ← 이 파일
 ├── .gitignore
-├── smart-mlfq-host/                ← 호스트 측 Python (단독 슬라이스)
-│   ├── nl_shell.py                 ← 자연어 REPL ⭐
-│   │                                  • --diagnose-from FILE   (diagprog → Solar 진단)
-│   │                                  • --analyze-tracetool FILE  (tracetool dump → Solar 분석)
-│   ├── prompts.py                  ← Solar 프롬프트 4종
-│   ├── parse_trace.py              ← xv6 로그 → JSON
-│   ├── llm_hint.py                 ← batch 통계 → hints.txt
-│   ├── evaluator.py                ← turnaround / fairness 메트릭
-│   ├── viz.py                      ← Gantt + 막대 차트
-│   └── requirements.txt
-├── smart-mlfq-xv6-patches/         ← xv6 커널/유저 패치 묶음 (단독 슬라이스)
-│   ├── apply_patches.sh            ← 깨끗한 xv6-riscv 트리에 적용
-│   ├── kernel/                     ← proc.c, trap.c, sysproc.c, ...
-│   ├── user/                       ← nlrun.c, wrunner.c, *_burner.c
-│   ├── workloads/                  ← 워크로드 spec 6종
-│   └── README.md                   ← 패치 적용/검증 가이드
+│   (단독 슬라이스 smart-mlfq-host/ · smart-mlfq-xv6-patches/ 는
+│    레포 밖 ../slice/ 로 분리됨 — §아래 참고)
 ├── integration/                    ← ⭐ 4팀 슬라이스 통합 결과 (단일 buildable 트리)
 │   ├── README.md                   ← 통합 개요 + 정량 평가 결과 요약
 │   ├── MERGE_NOTES.md              ← 충돌 결정 / K1~K4 fix 라벨 매핑
@@ -167,15 +153,18 @@
         └── integration/            ← 통합 트리 정량 평가 결과 (재실행)
 ```
 
-> 단독 슬라이스(`smart-mlfq-host/`, `smart-mlfq-xv6-patches/`)는 hyunsung 본인 작업물만 들어있어 백업 데모용으로 단독 빌드 가능. `integration/` 은 4팀 합본으로 통합 데모용. 둘은 의도적으로 공존합니다.
+> 단독 슬라이스(`smart-mlfq-host/`, `smart-mlfq-xv6-patches/`)는 hyunsung 본인 작업물만 들어있어 백업 데모용으로 단독 빌드 가능. **2026-06-03 이 두 폴더는 레포 밖 `../slice/` (이 저장소의 형제 폴더)로 분리**했습니다 — 작업 폴더는 통합 결과(`integration/`)에 집중하되, 개인 단독 산출물은 별도 보관. git 이력에는 남아 있어 언제든 복원 가능. `integration/` 은 4팀 합본으로 통합 데모용입니다.
 
 ---
 
 ## 6. Quick Start
 
+> 단독 슬라이스 Quick Start. 두 폴더는 `../slice/` 로 분리되어 있으니 경로를 그에 맞게 사용하세요.
+> (통합 트리만 쓸 경우 `integration/README.md` 의 Quick Start 참조.)
+
 ### 1) 커널 패치 적용 + 빌드
 ```bash
-cd smart-mlfq-xv6-patches
+cd ../slice/smart-mlfq-xv6-patches
 ./apply_patches.sh /path/to/xv6-riscv
 cd /path/to/xv6-riscv
 make clean && make
@@ -183,7 +172,7 @@ make clean && make
 
 ### 2) 호스트 Python 환경
 ```bash
-cd smart-mlfq-host
+cd ../slice/smart-mlfq-host
 python3 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env       # UPSTAGE_API_KEY 입력 (없어도 동작)

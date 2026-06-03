@@ -6,13 +6,14 @@
 ## 사전 준비
 
 - xv6-riscv 빌드 + qemu 부팅 환경 (WSL 또는 Linux)
-- `smart-mlfq-xv6-patches/apply_patches.sh` 적용 + `make qemu` 동작
-- 호스트: `smart-mlfq-host/.env` 에 `UPSTAGE_API_KEY=...` (없어도 휴리스틱으로 시연 가능)
+- `../slice/smart-mlfq-xv6-patches/apply_patches.sh` 적용 + `make qemu` 동작
+- 호스트: `../slice/smart-mlfq-host/.env` 에 `UPSTAGE_API_KEY=...` (없어도 휴리스틱으로 시연 가능)
+- ℹ️ 단독 슬라이스 두 폴더는 2026-06-03 레포 밖 `../slice/` 로 분리됨 (통합본은 `integration/`)
 
 ## 1) 자연어 → 큐 레벨 결정 (호스트)
 
 ```bash
-cd smart-mlfq-host
+cd ../slice/smart-mlfq-host
 python3 nl_shell.py --once "Run a heavy job in background"
 ```
 
@@ -79,8 +80,8 @@ API 가 죽어도 데모가 안 깨진다는 증거.
 
 ## 관련 파일
 
-- `smart-mlfq-host/nl_shell.py` — 자연어 → spec REPL
-- `smart-mlfq-host/prompts.py` — `NL_TO_SPEC_PROMPT`
-- `smart-mlfq-xv6-patches/user/nlrun.c` — `forkpri` 로 큐 진입
-- `smart-mlfq-xv6-patches/kernel/proc.c` — `kforkpri()` 구현
+- `../slice/smart-mlfq-host/nl_shell.py` — 자연어 → spec REPL
+- `../slice/smart-mlfq-host/prompts.py` — `NL_TO_SPEC_PROMPT`
+- `../slice/smart-mlfq-xv6-patches/user/nlrun.c` — `forkpri` 로 큐 진입
+- `../slice/smart-mlfq-xv6-patches/kernel/proc.c` — `kforkpri()` 구현
 - `docs/trace-format.md` — TRACE/EXIT 라인 스펙

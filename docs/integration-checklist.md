@@ -108,7 +108,7 @@ OK pid=4 level=2
 ## 6. 통합 후 정량 평가 재실행
 
 ```bash
-cd smart-mlfq-host
+cd ../slice/smart-mlfq-host    # 또는 통합 사본 integration/host
 XV6_DIR=/path/to/integration/xv6-riscv \
     OUT_ROOT=docs/charts/integration \
     ./run_eval_matrix.sh

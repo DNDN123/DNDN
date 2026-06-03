@@ -1,8 +1,0 @@
-# Smart-MLFQ workload: cpu_heavy
-# Format: <name> <arg> <spawn_at_tick>
-# All processes are CPU-bound. Default MLFQ should demote them all to LOW.
-cpu_burner 80000 0
-cpu_burner 90000 0
-cpu_burner 70000 1
-cpu_burner 85000 2
-cpu_burner 75000 3
