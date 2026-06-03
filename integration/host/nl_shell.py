@@ -29,11 +29,22 @@ Env:
 import argparse
 import hashlib
 import json
+import logging
 import os
 import re
 import sys
 import time
 from pathlib import Path
+
+# Persistent log file — when a demo breaks at presentation time, post-mortem
+# requires more than ephemeral stderr. Append-mode; rolled by hand if needed.
+_LOG_PATH = Path(__file__).resolve().parent / "run.log"
+logging.basicConfig(
+    filename=str(_LOG_PATH),
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s nl_shell] %(message)s",
+)
+log = logging.getLogger("nl_shell")
 
 from prompts import NL_TO_SPEC_PROMPT, DIAGNOSE_PROMPT, TRACETOOL_ANALYZE_PROMPT
 
