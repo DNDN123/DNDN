@@ -79,6 +79,7 @@
   .proc.run{border-color:var(--accent);box-shadow:0 0 0 2px rgba(56,189,248,.35);background:#0e2233;}
   .proc.user{border-color:var(--accent2);}
   .proc.user .nm{color:#c4b5fd;}
+  .proc.sleep{opacity:.45;border-style:dashed;}
   .controls{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px;}
   .legend{color:var(--muted);font-size:12.5px;margin-top:12px;line-height:1.7;}
   .legend b{color:var(--fg);}
@@ -210,6 +211,7 @@ function translateNL(){
 // ───────── MLFQ 시뮬레이터 ─────────
 const SLICE = [2,4,8];      // 실제 mlfq_slice_limit
 const BOOST = 100;          // 실제 MLFQ_BOOST_INTERVAL
+const IO_BLOCK = 3;         // I/O 작업이 run 후 잠드는 tick (CPU 양보)
 let procs = [], tick = 0, rr = [0,0,0], running = null, timer = null;
 
 function kindOf(cmd){
@@ -218,8 +220,8 @@ function kindOf(cmd){
 }
 function baseProcs(){
   return [
-    {id:"cpu_hog", name:"cpu_hog", kind:"cpu", level:0, used:0, user:false},
-    {id:"io_task", name:"io_task", kind:"io",  level:0, used:0, user:false},
+    {id:"cpu_hog", name:"cpu_hog", kind:"cpu", level:0, used:0, blk:0, user:false},
+    {id:"io_task", name:"io_task", kind:"io",  level:0, used:0, blk:0, user:false},
   ];
 }
 function resetSim(clearUser){
@@ -228,7 +230,7 @@ function resetSim(clearUser){
   procs = baseProcs();
   if(!clearUser && lastSpec){
     procs.unshift({id:"USER", name:lastSpec.cmd, kind:kindOf(lastSpec.cmd),
-                   level:lastSpec.q, used:0, user:true});
+                   level:lastSpec.q, used:0, blk:0, user:true});
   }
   render();
 }
@@ -237,31 +239,31 @@ function injectUser(){
   resetSim(false);
   document.getElementById("queues").scrollIntoView({behavior:"smooth",block:"center"});
 }
-function pickLevel(){
-  for(let l=0;l<3;l++) if(procs.some(p=>p.level===l)) return l;
-  return -1;
-}
 function stepTick(){
-  const lvl = pickLevel();
-  if(lvl<0) return;
-  const inLvl = procs.filter(p=>p.level===lvl);
-  rr[lvl] = rr[lvl] % inLvl.length;
-  const p = inLvl[rr[lvl]];
-  running = p.id;
   tick++;
-  p.used++;
-  if(p.kind==="io"){
-    // I/O 블록: 같은 레벨 유지(강등 X), 슬라이스 리셋, 큐 뒤로
-    p.used = 0; rr[lvl] = (rr[lvl]+1) % inLvl.length;
-  } else {
-    // CPU: 슬라이스 소진 시 강등
-    if(p.used >= SLICE[p.level]){
+  // I/O sleeper들 깨우기 (블록된 프로세스는 스케줄 대상 아님)
+  procs.forEach(q=>{ if(q.blk>0) q.blk--; });
+  const runnable = procs.filter(p=>p.blk===0);
+  let lvl = -1;
+  for(let l=0;l<3;l++) if(runnable.some(p=>p.level===l)){ lvl=l; break; }
+  running = null;
+  if(lvl>=0){
+    const inLvl = runnable.filter(p=>p.level===lvl);
+    rr[lvl] = rr[lvl] % inLvl.length;
+    const p = inLvl[rr[lvl]];
+    running = p.id;
+    p.used++;
+    if(p.kind==="io"){
+      // I/O 블록: 같은 레벨 유지(강등 X), 슬라이스 리셋, 잠듦
+      p.used = 0; p.blk = IO_BLOCK; rr[lvl] = (rr[lvl]+1) % inLvl.length;
+    } else if(p.used >= SLICE[p.level]){
+      // CPU: 슬라이스 소진 시 강등
       p.used = 0;
       if(p.level < 2) p.level++;
       rr[lvl] = 0;
     }
   }
-  // boost
+  // boost: 전부 HIGH 복귀
   if(tick % BOOST === 0){
     procs.forEach(q=>{q.level=0; q.used=0;});
     rr=[0,0,0];
@@ -286,8 +288,10 @@ function render(){
     const lane=row.querySelector(".lane");
     procs.filter(p=>p.level===l).forEach(p=>{
       const el=document.createElement("div");
-      el.className="proc"+(p.id===running?" run":"")+(p.user?" user":"");
-      el.innerHTML=`<span class="nm">${p.name}</span><span class="meta">${p.kind} · ${p.used}/${SLICE[p.level]}</span>`;
+      const sleeping = p.blk>0;
+      el.className="proc"+(p.id===running?" run":"")+(p.user?" user":"")+(sleeping?" sleep":"");
+      const meta = sleeping ? `sleep ${p.blk}` : `${p.kind} · ${p.used}/${SLICE[p.level]}`;
+      el.innerHTML=`<span class="nm">${p.name}</span><span class="meta">${meta}</span>`;
       lane.appendChild(el);
     });
     box.appendChild(row);
