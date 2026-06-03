@@ -1,243 +1,188 @@
-# DNDN Project on xv6 — LLM 가이드 스케줄러
+# DNDN Project — xv6 위에서 자연어로 움직이는 OS
 
-> **xv6-riscv 커널 내부에 구현한 3-단계 MLFQ(Multi-Level Feedback Queue) 스케줄러** 와,
-> Upstage **Solar Pro 3** 를 사용해 자연어 요청을 커널 스케줄링 힌트로 변환하는
-> 호스트-사이드 Python 브리지.
+> 4인 팀이 xv6-riscv 커널의 4개 슬라이스(**Scheduler · Syscall · Thread · Process**)를
+> 각자 구현해 **단일 빌드 트리로 통합**하고, 그 위에 **LLM(Upstage Solar Pro 3)이
+> 자연어 요청을 커널 스케줄링 힌트로 번역**하는 시스템을 올린 운영체제 프로젝트.
 >
-> **Team Project · Direction B (LLM for OS) · 2026 Spring**
+> **Team Project · Direction B (LLM for OS) · 2026 Spring** · GitHub: `DNDN123/DNDN`
+
+### 한 줄 요약
+> **"LLM은 절대 커널 안에 들어오지 않는다. LLM은 *힌트* 만 주고, 실제 스케줄링 결정은
+> 우리가 직접 구현한 xv6 MLFQ가 내린다."**
 
 ---
 
-## 1. 프로젝트 방향성
+## 1. 무엇을 만든 프로젝트인가
 
-### 한 줄 요약
-> "LLM은 절대 커널 안에 들어오지 않는다. LLM은 *힌트* 만 주고, 실제 스케줄링 결정은
-> 우리가 직접 구현한 xv6 MLFQ가 내린다."
+운영체제의 **핵심 4개념**을 4명이 한 조각씩 맡아 xv6 커널에 직접 구현하고, 충돌을 해결하며
+**하나의 빌드 가능한 트리로 통합**했습니다. 그 위에 호스트(PC) 측 Python 브리지가 자연어를
+받아 LLM으로 큐 레벨(0/1/2)로 번역해 OS로 흘려보냅니다. 즉 두 가지를 동시에 증명하는 프로젝트:
 
-### 왜 이 방향인가
-강의계획서 한 줄이 핵심이었습니다:
+1. **OS 내부 구현** — 스케줄러·시스템콜·스레드·프로세스를 커널 레벨 C로 작성
+2. **올바른 AI×OS 결합** — LLM은 "조언자"일 뿐, 실행·결정·교정은 OS가 담당 (thin wrapper 아님)
+
+---
+
+## 2. 팀 구성 — OS 4개념을 한 조각씩
+
+| 슬라이스 | 담당 (브랜치) | 구현한 OS 개념 | 핵심 결과물 |
+|---|---|---|---|
+| **Scheduler** | 조현성 (`hyunsung`) | CPU 스케줄링 | 3-단계 MLFQ + LLM 힌트 + Solar 브리지 |
+| **Syscall** | (`minju`) | 시스템콜 | 통합 syscall 후킹 + per-pid trace JSON |
+| **Thread** | (`jinhwan`) | 스레드·동기화 | kthread + futex(mutex/condvar) |
+| **Process** | (`haneol`) | 프로세스 관리 | `ps` / `sysinfo` + 안전 가드 |
+
+> 각 슬라이스는 *"이 모듈이 막혀도 단독 데모가 가능"* 하도록 설계됐고, 4개를 합친 결과가
+> 이 저장소의 `integration/` 입니다. 본 저장소는 `hyunsung` 이 관리하지만 **내용은 팀 4명의 통합 결과**입니다.
+
+---
+
+## 3. 설계 방향성 — 왜 이렇게 했나
+
+강의계획서의 한 줄이 설계를 결정했습니다:
 
 > *"Thin wrappers around an LLM API — or projects where the OS angle is only
 > 'it runs on Linux' — do not qualify and will not be accepted."*
 
-흔한 *"LLM에 dmesg 던지고 응답 받는 도구"* 류는 이 문장에 정확히 걸리는 위험이 있어서,
-우리는 다음 두 가지 원칙을 잡았습니다:
+그래서 "LLM 껍데기가 아님"을 **코드 구조로** 강제하는 3원칙을 세웠습니다:
 
-1. **LLM 출력은 syscall 경계에서 2비트 정수(`{0, 1, 2}`)로 축약되어야 한다.**
-   잘못된 값이 들어오면 syscall에서 거부됨. 커널은 LLM의 존재를 모름.
-2. **OS 계층이 잘못된 힌트를 자가 교정한다.**
-   CPU-bound 프로세스가 HIGH로 잘못 배치되어도, 표준 MLFQ demotion 규칙이
-   몇 tick 안에 자동으로 LOW 큐로 강등시킴. LLM은 *초기* 큐만 슬쩍 건드림.
-3. **LLM 없이도 모든 데모가 동작한다.**
-   API 키가 없으면 결정론적 키워드 휴리스틱으로 폴백 → 네트워크 장애에 데모가 안 깨짐.
+1. **LLM 격리** — LLM 출력은 syscall 경계에서 **2비트 정수 `{0,1,2}`** 로 축약. 범위 밖이면 거부.
+   커널은 LLM의 존재를 모름.
+2. **OS 자가교정** — LLM이 CPU-bound 작업을 HIGH로 잘못 배치해도, 표준 MLFQ demotion이
+   몇 tick 안에 LOW로 강등. LLM은 *초기* 큐만 슬쩍 건드림.
+3. **LLM 없이도 동작** — API 키가 없으면 결정론적 키워드 휴리스틱으로 폴백 → 데모가 안 깨짐.
 
 ---
 
-## 2. 팀 구성과 역할 분담
+## 4. 시스템 구조 / 데이터 흐름
 
-4인 팀 프로젝트. 각자 xv6의 다른 슬라이스를 책임지고 **Week 13에 통합**합니다.
+```
+[유저 자연어]  "무거운 작업 백그라운드로 돌려줘"
+      │
+      ▼   HOST (Python)
+  nl_shell.py → Solar Pro 3 → JSON spec → 검증·안전가드 → 큐 레벨 정수로 축약
+      │        (키 없으면 휴리스틱 폴백)
+      ▼   "nlrun 2 cpu_burner 1000000"
+════════ syscall 경계 — 여기서 LLM 격리 (2비트만 통과) ════════
+      ▼   xv6 KERNEL
+  forkpri(2) → 3-단계 MLFQ가 실제 스케줄링 (잘못된 힌트는 demotion이 자동 교정)
+```
 
-| 팀원 (브랜치) | 담당 슬라이스 | 핵심 작업 |
+---
+
+## 5. Syscall 번호 최종 분배 (통합 결과)
+
+| 번호 | 슬라이스 | 추가된 syscall |
 |---|---|---|
-| **조현성 (`hyunsung`)** ← 본인 | **Scheduler** | 3-단계 MLFQ + LLM 힌트 통합 + Solar Pro 3 브리지 |
-| `jinhwan` | Thread | 유저레벨 스레드 + worker pool (clone/futex 기반) |
-| `haneol` | Process | `sys_ps` + NL Intent 브리지 + 안전 가드 |
-| `minju` | Syscall | 통합 syscall 후킹 + trace JSON |
+| 1~21 | stock xv6 | (미수정) |
+| 22~24 | `minju` | `trace_on` / `trace_off` / `trace_stats` |
+| 25~29 | `jinhwan` | `thread_create/join/exit` + `futex_wait/wake` |
+| 30~33 | `hyunsung` | `setpri` / `getstats` / `settrace` / `forkpri` |
+| 34~35 | `haneol` | `ps` / `sysinfo` |
 
-> ⚠️ `jinhwan / haneol / minju` 의 구체 작업 항목은 통합 시점에 각 브랜치의
-> README 를 참조하세요. 본 저장소(`hyunsung` 브랜치)는 **Scheduler 슬라이스**만 다룹니다.
-
-각 슬라이스는 *"이 모듈이 망해도 본인 단독 데모가 가능"* 한 형태로 설계되어 있어서,
-한 명이 막혀도 발표 자체는 가능합니다.
+> 4팀이 모두 22~25 영역을 쓰려 한 게 가장 큰 충돌이었고, 위 표로 합의해 14개 syscall이
+> 충돌 없이 공존합니다. 상세 결정 근거는 `integration/MERGE_NOTES.md`.
 
 ---
 
-## 3. 본인이 맡은 임무 (Scheduler Track)
+## 6. 최종 결과 — 빌드 · 검증 (모두 통과)
 
-### 구현 완료
-| 항목 | 위치 | 상태 |
+| 항목 | 상태 | 근거 |
 |---|---|---|
-| 3-단계 MLFQ (HIGH/MID/LOW) + demotion + periodic boost | `../slice/smart-mlfq-xv6-patches/kernel/proc.c`, `trap.c` | ✅ |
-| I/O-aware queue retention (sleep 시 큐 레벨 유지) | `kernel/proc.c::sleep` | ✅ |
-| Multi-CPU safe priority changes (`boost_lock` + per-proc lock) | `kernel/proc.c` | ✅ |
-| 신규 syscall 4종: `setpri` / `getstats` / `settrace` / `forkpri` | `kernel/sysproc.c`, `syscall.h` | ✅ |
-| 자연어 → 실행 spec 변환 (Solar Pro 3) | `../slice/smart-mlfq-host/nl_shell.py` | ✅ |
-| API 키 없을 때 휴리스틱 폴백 | `nl_shell.py` | ✅ |
-| 트레이스 파서 + 평가기 + 차트 (Gantt / bar) | `parse_trace.py`, `evaluator.py`, `viz.py` | ✅ |
-
-### 진행 중 / 예정
-| 항목 | 예정 주차 | 상태 |
-|---|---|---|
-| 정량적 3-way 비교 (RR baseline vs MLFQ vs MLFQ+LLM) | — | ✅ |
-| 다른 팀원 슬라이스와 통합 | — | ✅ 완료 (2026-05) |
-| 최종 영문 기술 보고서 + 데모 영상 | — | ⏳ 예정 |
+| 빌드 / 부팅 | ✅ PASS | WSL + QEMU |
+| 4팀 슬라이스 라이브 데모 | ✅ 4/4 | `ps` / `tracetool dump` / `nlrun` / `threadtest` / `bgq` |
+| 정량 평가 (baseline/heuristic/Solar) | ✅ PASS | `three_way` avg_turnaround **−7.3% / −5.8%** |
+| 자동 회귀 (`sanity_check.sh`) | ✅ **8/8** | 2026-06-03 fresh ext4 재실행, exit 0 |
+| 통합·보안 수정 | ✅ | `K1~K7` (allocproc 누수, 배열 오버플로, thread teardown race, prompt-injection 가드 등) |
 
 ---
 
-## 4. 처음부터 지금까지의 진행 상황
-
-### Week 09 — 팀 정렬 + 환경 셋업
-- Direction B (LLM for OS) 확정, 4인 역할 1차 배정
-- GitHub repo 생성 (https://github.com/DNDN123/DNDN)
-- 각자 Solar Pro 3 API 키 발급 + `hello_solar.py` 동작 확인
-- Python 3.11+ 환경 통일
-
-### Week 10 — 트레이스 → 힌트 모드 구축
-- xv6 콘솔 로그 포맷 정의 (`TRACE`, `EXIT` 라인)
-- `parse_trace.py`: 로그 → JSON
-- `llm_hint.py`: 통계 → Solar Pro 3 질의 → `hints.txt` 생성
-- `wrunner.c`: 워크로드 + hints 받아서 `setpri()` 후 실행
-- baseline vs LLM 비교 차트 (`evaluator.py`, `viz.py`)
-
-### Week 11 — 자연어 → 실행 모드 구축 ⭐ 분기점
-- `prompts.py`: `NL_TO_SPEC_PROMPT` 추가 (자연어 → JSON spec)
-- `nl_shell.py`: 자연어 REPL → Solar → xv6 명령 한 줄 출력
-- `nlrun.c`: 받은 큐 레벨로 `forkpri()` 후 exec
-- 6건의 커널 패치 (1건 빌드 실패 버그, 5건 품질 이슈):
-  - 🚨 `forkret()` → 강의용 xv6 호환 수정
-  - C1: `last_boost_tick` 멀티 CPU race → `boost_lock`
-  - C2: `total_io_blocks` 가 kwait/pause 도 카운트 → 필터링
-  - C3: scheduler가 락 잡은 채로 printf → `swtch` 후로 이동
-  - I2: 무조건 trace ON → `settrace()` syscall로 토글
-  - I4: fork→setpri race → `forkpri()` syscall로 원자화
-- ✅ **Hello World 시연 통과** — 약한 팀의 가장 큰 분기점 돌파
-
-### Week 12 — 정량적 평가 ✅
-- baseline (RR) vs MLFQ vs MLFQ+LLM 3-way 매트릭스 실험
-- 평가 지표: turnaround time, response time, throughput, Jain's fairness index
-- 워크로드 6종 (`cpu_heavy`, `io_heavy`, `mixed`, `realprog`, `stress`, `three_way`)
-- 차트 자동 생성 (`run_eval_matrix.sh`)
-
-### Week 13 — 팀 통합 (예정) ⏳
-- 4명 슬라이스 머지 → 단일 xv6 트리에서 빌드/부팅
-- 모듈 간 인터페이스 충돌 해결
-- 통합 데모 시나리오 작성
-
-### Week 14 — 최종 발표 (예정) ⏳
-- 영문 기술 보고서 (architecture + OS-concept-to-file mapping)
-- 영문 발표 슬라이드
-- 백업 데모 영상 (라이브 실패 대비)
-- 각자 본인 슬라이스 섹션 발표
-
----
-
-## 5. 저장소 구조
+## 7. 저장소 구조
 
 ```
 .
-├── README.md                       ← 이 파일
-├── .gitignore
-│   (단독 슬라이스 smart-mlfq-host/ · smart-mlfq-xv6-patches/ 는
-│    레포 밖 ../slice/ 로 분리됨 — §아래 참고)
-├── integration/                    ← ⭐ 4팀 슬라이스 통합 결과 (단일 buildable 트리)
-│   ├── README.md                   ← 통합 개요 + 정량 평가 결과 요약
-│   ├── MERGE_NOTES.md              ← 충돌 결정 / K1~K4 fix 라벨 매핑
-│   ├── xv6-riscv/                  ← 통합 커널 + user 빌드 대상
-│   │   ├── kernel/                 ← MLFQ + trace + thread/futex + ps 모두
-│   │   ├── user/                   ← nlrun, wrunner, threadtest, tracetool, ps, setprio, ⭐ bgq
-│   │   └── workloads/              ← cpu_heavy/io_heavy/mixed/three_way/realprog/bgq
-│   └── host/                       ← 통합 호스트 Python (smart-mlfq-host 의 사본 + 어댑터)
-│       ├── nl_shell.py             ← 동일 (--analyze-tracetool 포함)
-│       └── adapters/
-│           ├── process_bridge.py   ← haneol — Process Intent 브리지
-│           └── thread_bridge.py    ← jinhwan — Thread Intent 브리지
-└── docs/
-    ├── syscall-allocation.md       ← 4팀 syscall 번호 분배표 (통합 기준)
-    ├── trace-format.md             ← TRACE/EXIT 라인 정식 스펙
-    ├── hints-format.md             ← hints.txt 포맷
-    ├── hello-world.md              ← 시연 재현 절차
-    ├── integration-checklist.md    ← 통합일 순서·충돌 해결
-    ├── security-policy.md          ← API 키 보관 + 사고 대응
-    └── charts/
-        ├── standalone/             ← 단독-슬라이스 정량 평가 결과
-        └── integration/            ← 통합 트리 정량 평가 결과 (재실행)
+├── README.md                  ← 이 파일 (프로젝트 개요)
+├── integration/               ← ⭐ 4팀 통합 결과 (메인 산출물)
+│   ├── xv6-riscv/             ← 통합 커널 + user + workloads (빌드 대상)
+│   │   ├── kernel/            ← MLFQ + trace + thread/futex + ps 전부
+│   │   ├── user/              ← nlrun, wrunner, threadtest, tracetool, ps, setprio, bgq …
+│   │   └── workloads/         ← cpu_heavy / io_heavy / mixed / three_way / realprog / bgq …
+│   ├── host/                  ← 호스트 Python (3-레이어)
+│   │   ├── nl_shell.py        ← ⭐ Hot path — 자연어 → 큐 레벨 (단일 진입점)
+│   │   ├── nl_demo.py         ← 터미널 데모 (자연어 → MLFQ 시뮬레이션)
+│   │   ├── adapters/          ← process / thread Intent 브리지
+│   │   ├── ops/supervisor.py  ← Cold path — OS-grounded 감사 LLM
+│   │   └── dev_chat.py        ← Dev path — 자유 대화 (평가 경로 밖)
+│   ├── MERGE_NOTES.md         ← 충돌 결정 / K1~K7 fix 매핑
+│   ├── sanity_check.sh        ← 한 줄 자동 회귀 (build+boot+8 마커)
+│   ├── REPORT.html / _EN      ← 보고서 (한/영)
+│   ├── SLIDES.html / _EN      ← 발표 슬라이드 15장 (한/영)
+│   ├── DEMO.html              ← 브라우저 인터랙티브 데모
+│   └── demo.gif               ← 실제 QEMU 세션 캡처
+├── docs/                      ← 설계 문서 + 정량 평가 차트
+│   ├── syscall-allocation.md / trace-format.md / hints-format.md
+│   ├── hello-world.md / integration-checklist.md / security-policy.md
+│   └── charts/{standalone,integration}/   ← 워크로드별 평가 결과
+└── (../slice/)                ← 개인 단독 슬라이스 보관 (레포 밖, 아래 참고)
 ```
 
-> 단독 슬라이스(`smart-mlfq-host/`, `smart-mlfq-xv6-patches/`)는 hyunsung 본인 작업물만 들어있어 백업 데모용으로 단독 빌드 가능. **2026-06-03 이 두 폴더는 레포 밖 `../slice/` (이 저장소의 형제 폴더)로 분리**했습니다 — 작업 폴더는 통합 결과(`integration/`)에 집중하되, 개인 단독 산출물은 별도 보관. git 이력에는 남아 있어 언제든 복원 가능. `integration/` 은 4팀 합본으로 통합 데모용입니다.
+> **개인 단독 슬라이스**(`smart-mlfq-host/`, `smart-mlfq-xv6-patches/`)는 2026-06-03에
+> 레포 밖 형제 폴더 `../slice/` 로 분리했습니다. 작업 폴더는 **팀 통합 결과**(`integration/`)에
+> 집중하고, 개인 단독 산출물은 별도 보관(git 이력엔 남아 복원 가능). `hyunsung` 브랜치에도 보존돼 있습니다.
 
 ---
 
-## 6. Quick Start
+## 8. 산출물 (Deliverables)
 
-> 단독 슬라이스 Quick Start. 두 폴더는 `../slice/` 로 분리되어 있으니 경로를 그에 맞게 사용하세요.
-> (통합 트리만 쓸 경우 `integration/README.md` 의 Quick Start 참조.)
+| 산출물 | 위치 | 설명 |
+|---|---|---|
+| **통합 트리** | `integration/xv6-riscv/` | 빌드·부팅 가능한 단일 xv6 |
+| **보고서** | `integration/REPORT.html`, `REPORT_EN.html` | 한/영 기술 보고서 |
+| **슬라이드** | `integration/SLIDES.html`, `SLIDES_EN.html` | 한/영 발표 덱 (15장, 방향키·PDF 인쇄) |
+| **데모 GIF** | `integration/demo.gif` | 실제 QEMU 세션 (4슬라이스 + 통합) |
+| **인터랙티브 데모** | `integration/DEMO.html` | 브라우저: 자연어 → 큐 → MLFQ 애니메이션 |
+| **터미널 데모** | `integration/host/nl_demo.py` | 셸: 자연어 → 큐 → MLFQ 시뮬레이션 |
+| **회귀 자동화** | `integration/sanity_check.sh` | build + boot + 8 마커 검증 (8/8) |
 
-### 1) 커널 패치 적용 + 빌드
+---
+
+## 9. Quick Start
+
+> 통합 트리 빌드·실행의 상세 절차는 **`integration/README.md`** 를 참조하세요. 요약:
+
 ```bash
-cd ../slice/smart-mlfq-xv6-patches
-./apply_patches.sh /path/to/xv6-riscv
-cd /path/to/xv6-riscv
-make clean && make
-```
+# 1) 통합 xv6 빌드 (WSL2 Ubuntu / Linux + riscv 툴체인 + qemu)
+cd integration/xv6-riscv && make clean && make
 
-### 2) 호스트 Python 환경
-```bash
-cd ../slice/smart-mlfq-host
-python3 -m venv venv && source venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env       # UPSTAGE_API_KEY 입력 (없어도 동작)
-python3 hello_solar.py     # 'ok' 가 뜨면 OK
-```
+# 2) 4팀 슬라이스 라이브 데모 (단일 QEMU 세션)
+make qemu CPUS=2
+#   $ ps  /  tracetool dump  /  nlrun 2 cpu_burner 50000  /  threadtest  /  bgq bgq.txt
 
-### 3) 자연어 → 실행 흐름
-```bash
-# 호스트: 자연어를 xv6 명령으로 변환
-python nl_shell.py --once "Run a heavy job in background"
+# 3) 한 줄 회귀 검증
+XV6_DIR=integration/xv6-riscv bash integration/sanity_check.sh        # → 8/8 PASS
 
-# xv6 (QEMU 안):
-$ nlrun 2 cpu_burner 1000000
-TRACE tick=... pid=... pri=2 slice=...     # MLFQ가 LLM 힌트 받아들임
-EXIT  pid=... name=cpu_burner ... final_pri=2
-```
-
-### 4) Batch hint 흐름 (참고)
-```bash
-# 1. xv6에서 baseline 워크로드를 돌리고 콘솔 로그를 캡처해둔 뒤:
-python parse_trace.py qemu_baseline.log --output baseline.json
-
-# 2. baseline 통계 → Solar → hints.txt (API 키 없으면 휴리스틱 폴백)
-python llm_hint.py baseline.json --output hints.txt
-
-# 3. xv6 (QEMU 안): hints.txt를 받아 setpri 후 워크로드 재실행
-$ wrunner cpu_heavy.txt hints.txt
-TRACE ... / EXIT ...                       # LLM-guided 트레이스 캡처
-
-# 4. baseline vs LLM 비교 차트
-python parse_trace.py qemu_llm.log --output llm.json
-python evaluator.py --baseline baseline.json --llm llm.json
-python viz.py --baseline baseline.json --llm llm.json --out-dir docs/charts/batch_demo
+# 4) 자연어 → OS 데모 (호스트, 키 없어도 휴리스틱으로 동작)
+cd integration/host
+python3 nl_shell.py --once "Run a heavy job in background"   # → nlrun 2 cpu_burner ...
+python3 nl_demo.py  --once "밤새 돌려도 되는 통계 집계"        # → 큐 번역 + MLFQ 애니메이션
 ```
 
 ---
 
-## 7. 설계 메모
+## 10. 설계 메모
 
-### LLM이 커널에 들어오지 않는 이유
-Solar Pro 3는 JSON을 반환합니다. 그 JSON에서 우리가 추출하는 건 큐 레벨 정수 하나뿐.
-이 정수는 `forkpri()` syscall의 인자로 전달되며, 유효 범위(`0..2`)를 벗어나면 거부됨.
-즉, LLM 응답에 어떤 이상한 텍스트가 섞여 있어도 커널에는 정수 한 개만 도달.
+**LLM이 커널에 안 들어오는 이유** — Solar Pro 3는 JSON을 반환하지만, 거기서 추출하는 건
+큐 레벨 정수 하나뿐. 이 정수는 `forkpri()` syscall 인자로 전달되며 `0..2` 밖이면 거부됩니다.
+LLM 응답에 어떤 텍스트가 섞여도 커널엔 정수 한 개만 도달합니다.
 
-### 폴백이 단순 휴리스틱인 이유
-`nl_shell.py` 의 폴백은 *"heavy", "background", "interactive"* 같은 키워드만 본다.
-의도적으로 결정론적으로 만들었어요 — 네트워크가 끊기든, API 키가 잘못됐든,
-**같은 입력이면 항상 같은 spec** 이 나옴. 발표 시연을 안정시키는 게 목적.
+**폴백이 단순 휴리스틱인 이유** — `nl_shell.py` 폴백은 *"heavy/background/interactive"* 같은
+키워드만 봅니다. 의도적으로 결정론적 — 네트워크가 끊겨도 **같은 입력이면 항상 같은 결과** →
+발표 시연 안정화가 목적.
 
 ---
 
-## 8. 강의계획서 요구사항 체크리스트
+## 11. 라이선스 / 크레딧
 
-| 요구사항 (강의계획서 기준) | 충족 위치 |
-|---|---|
-| OS 개념의 **substantive** 구현 | MLFQ, syscall path, spinlock, sleep/wakeup 모두 실제 xv6 커널 C |
-| LLM thin-wrapper **금지** | LLM 출력은 syscall 경계에서 2비트 정수로 축약 |
-| Public GitHub repo + 셋업/실행/데모 | 본 저장소 README (위 §6) |
-| 최종 산출물 영문 | 최종 슬라이드/보고서 (작성 중) |
-| Solar Pro 3 backend | `.env.example` 의 `UPSTAGE_MODEL=solar-pro3` 기본값 |
-
----
-
-## 9. 라이선스 / 크레딧
-
-- **xv6-riscv**: MIT License (MIT). 본 저장소의 패치는 강의에서 제공된 미수정
-  xv6-riscv 트리 위에 적용됩니다.
-- **Solar Pro 3**: Upstage 제품. OpenAI 호환 Chat Completions 엔드포인트로 호출.
+- **xv6-riscv**: MIT License. 강의 제공 미수정 트리 위에 통합 패치를 적용.
+- **Solar Pro 3**: Upstage. OpenAI 호환 Chat Completions 엔드포인트로 호출.
+- **Team DNDN**: Scheduler(조현성) · Syscall(minju) · Thread(jinhwan) · Process(haneol).
