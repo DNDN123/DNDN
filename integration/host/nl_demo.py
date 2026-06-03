@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""mlfq_demo.py — terminal showcase: natural language -> queue level -> live MLFQ.
+"""nl_demo.py — terminal showcase: natural language -> queue level -> live MLFQ.
 
 The terminal twin of integration/DEMO.html. It reuses the REAL translation
 pipeline (nl_shell.translate: cache -> Solar Pro 3 -> heuristic fallback) and
@@ -17,10 +17,10 @@ The LLM never enters the kernel — it only nudges the *initial* queue; standard
 MLFQ rules take over and fix any bad hint within a few ticks.
 
 Usage:
-    python3 mlfq_demo.py                      # interactive REPL
-    python3 mlfq_demo.py --once "밤새 돌려도 되는 통계 집계"
-    python3 mlfq_demo.py --once "make it snappy" --ticks 120 --speed 90
-    python3 mlfq_demo.py --no-cache --once "heavy batch job"   # force live Solar
+    python3 nl_demo.py                      # interactive REPL
+    python3 nl_demo.py --once "밤새 돌려도 되는 통계 집계"
+    python3 nl_demo.py --once "make it snappy" --ticks 120 --speed 90
+    python3 nl_demo.py --no-cache --once "heavy batch job"   # force live Solar
 """
 import argparse
 import os
@@ -67,7 +67,7 @@ def base_procs():
 
 def render(procs, tick, running):
     out = [CLEAR]
-    out.append(f"{BOLD}{CYAN}  Smart-MLFQ  —  말로 움직이는 OS 스케줄러{RESET}"
+    out.append(f"{BOLD}{CYAN}  DNDN Project  —  말로 움직이는 OS 스케줄러{RESET}"
                f"{DIM}   (LLM은 큐 힌트만, 결정은 MLFQ){RESET}\n")
     run_name = next((p["name"] for p in procs if p["id"] == running), "—")
     out.append(f"  tick {BOLD}{tick:>3}{RESET}   "
@@ -183,7 +183,7 @@ def main():
         run_one(args.once, args)
         return
 
-    print(f"{BOLD}{CYAN}Smart-MLFQ 터미널 데모{RESET} — 자연어를 입력하면 큐 레벨로 번역 후 MLFQ 시뮬레이션.")
+    print(f"{BOLD}{CYAN}DNDN Project 터미널 데모{RESET} — 자연어를 입력하면 큐 레벨로 번역 후 MLFQ 시뮬레이션.")
     print(f"{DIM}예: '밤새 돌려도 되는 통계 집계'  /  '사용자가 기다리는 작업 빠르게'   ('exit' 종료){RESET}\n")
     while True:
         try:

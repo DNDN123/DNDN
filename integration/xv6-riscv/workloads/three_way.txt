@@ -1,4 +1,4 @@
-# Smart-MLFQ workload: three_way
+# DNDN Project workload: three_way
 # Each MLFQ queue gets a candidate that runs long enough for demotion +
 # aging to fire visibly in the trace. Tuned for the project's QEMU speed
 # (~100 ticks/sec); cpu_burner 20M iters ≈ 50–100 ticks, enough to walk

@@ -1,4 +1,4 @@
-# Smart-MLFQ on xv6 — LLM 가이드 스케줄러
+# DNDN Project on xv6 — LLM 가이드 스케줄러
 
 > **xv6-riscv 커널 내부에 구현한 3-단계 MLFQ(Multi-Level Feedback Queue) 스케줄러** 와,
 > Upstage **Solar Pro 3** 를 사용해 자연어 요청을 커널 스케줄링 힌트로 변환하는

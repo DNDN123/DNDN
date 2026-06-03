@@ -1,7 +1,7 @@
 """
 nl_shell.py
 ===========
-Natural-language shell front-end for the Smart-MLFQ xv6 system.
+Natural-language shell front-end for the DNDN Project xv6 system.
 
 User types a request in plain English/Korean. Solar Pro (or a local
 heuristic fallback) translates it into an execution spec:
@@ -242,7 +242,7 @@ def render(spec: dict) -> str:
 
 
 def repl(exec_mode: bool):
-    print("[nl_shell] Smart-MLFQ natural-language shell")
+    print("[nl_shell] DNDN Project natural-language shell")
     print("[nl_shell] type a request in plain language, or 'exit' to quit.")
     print("[nl_shell] mode: " + ("exec (forward to xv6)" if exec_mode else "dry-run (print only)"))
     while True:

@@ -1,4 +1,4 @@
-# Smart-MLFQ workload: mixed
+# DNDN Project workload: mixed
 # Classic motivating case: mix of CPU and I/O bound processes, plus a
 # mixed_burner instance so the MID queue is actually exercised.
 cpu_burner   100000 0

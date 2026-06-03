@@ -1,4 +1,4 @@
-// Smart-MLFQ-xv6 modified proc.c
+// DNDN Project-xv6 modified proc.c
 // =================================
 // Changes from stock xv6:
 //   * struct proc extended with priority + scheduling stats (see proc.h)
@@ -48,7 +48,7 @@ struct spinlock wait_lock;
 // === jinhwan: global futex lock (Thread slice) ===
 struct spinlock futex_lock;
 
-// === Smart-MLFQ: per-level time slice limit (ticks) ===
+// === DNDN Project: per-level time slice limit (ticks) ===
 const int mlfq_slice_limit[MLFQ_LEVELS] = { 2, 4, 8 };
 
 // Global tracker for periodic priority boost.
@@ -56,7 +56,7 @@ const int mlfq_slice_limit[MLFQ_LEVELS] = { 2, 4, 8 };
 static int last_boost_tick = 0;
 static struct spinlock boost_lock;
 
-// === Smart-MLFQ: Aging — gentler than boost ===
+// === DNDN Project: Aging — gentler than boost ===
 // Every MLFQ_AGING_INTERVAL ticks we scan for RUNNABLE non-HIGH procs
 // that have not been scheduled for MLFQ_AGE_THRESHOLD ticks and promote
 // them by ONE level. This prevents starvation between boosts (which
@@ -87,7 +87,7 @@ procinit(void)
 
   initlock(&pid_lock, "nextpid");
   initlock(&wait_lock, "wait_lock");
-  initlock(&boost_lock, "mlfq_boost");   // === Smart-MLFQ ===
+  initlock(&boost_lock, "mlfq_boost");   // === DNDN Project ===
   initlock(&futex_lock, "futex");        // === jinhwan: Thread slice ===
   for(p = proc; p < &proc[NPROC]; p++) {
       initlock(&p->lock, "proc");
@@ -156,7 +156,7 @@ found:
   p->pid = allocpid();
   p->state = USED;
 
-  // === Smart-MLFQ initialization ===
+  // === DNDN Project initialization ===
   p->priority = 0;             // start at HIGH
   p->time_slice_used = 0;
   p->total_run_ticks = 0;
@@ -357,7 +357,7 @@ kfork(void)
 
   safestrcpy(np->name, p->name, sizeof(p->name));
 
-  // === Smart-MLFQ: child inherits parent's tracing setting ===
+  // === DNDN Project: child inherits parent's tracing setting ===
   np->trace_enabled = p->trace_enabled;
   // === minju: child also inherits per-syscall trace state (K3 fix) ===
   np->traced = p->traced;
@@ -413,7 +413,7 @@ kexit(int status)
   end_op();
   p->cwd = 0;
 
-  // === Smart-MLFQ: record completion + emit trace ===
+  // === DNDN Project: record completion + emit trace ===
   p->completion_tick = ticks;
   if(p->trace_enabled){
     printf("EXIT pid=%d name=%s arrival=%d completion=%d run=%d ioblock=%d final_pri=%d\n",
@@ -512,7 +512,7 @@ scheduler(void)
     intr_on();
     intr_off();
 
-    // --- Smart-MLFQ: periodic boost (double-checked, serialized) ---
+    // --- DNDN Project: periodic boost (double-checked, serialized) ---
     // Fast-path read is racy but the inner check after acquiring
     // boost_lock is authoritative. We hold boost_lock for the entire
     // boost so concurrent harts that find the inner check false will
@@ -534,7 +534,7 @@ scheduler(void)
       release(&boost_lock);
     }
 
-    // --- Smart-MLFQ: aging pass (between boosts, finer-grained) -------
+    // --- DNDN Project: aging pass (between boosts, finer-grained) -------
     // Every MLFQ_AGING_INTERVAL ticks promote any RUNNABLE non-HIGH proc
     // that has been starved for MLFQ_AGE_THRESHOLD ticks. Unlike boost
     // this is non-destructive: only one level up, and only for procs
@@ -686,7 +686,7 @@ sleep(void *chan, struct spinlock *lk)
   acquire(&p->lock);
   release(lk);
 
-  // === Smart-MLFQ: I/O block — retain queue, reset slice counter ===
+  // === DNDN Project: I/O block — retain queue, reset slice counter ===
   // Always reset slice (sleeping process keeps its priority on wakeup).
   // Only bump total_io_blocks for genuine I/O channels.
   int is_internal =
@@ -818,7 +818,7 @@ procdump(void)
   }
 }
 
-// === Smart-MLFQ helpers — called from sysproc.c ===
+// === DNDN Project helpers — called from sysproc.c ===
 
 // Returns 1 if p->state is "live" enough to receive priority/trace updates.
 // Excludes UNUSED (slot not in use) and ZOMBIE (already exited; mutating
@@ -927,7 +927,7 @@ proc_on_timer_tick(void)
   release(&p->lock);
 }
 
-// === Smart-MLFQ: fork variant that sets the child's initial priority
+// === DNDN Project: fork variant that sets the child's initial priority
 // atomically, BEFORE the child can be scheduled. This avoids the
 // race where workload_runner forks at HIGH (default) and the child
 // runs a few ticks before the parent's setpri takes effect.

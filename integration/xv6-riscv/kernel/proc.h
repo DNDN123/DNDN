@@ -72,7 +72,7 @@ struct trapframe {
 
 enum procstate { UNUSED, USED, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
 
-// === Smart-MLFQ: priority levels and time slice limits ===
+// === DNDN Project: priority levels and time slice limits ===
 // 0 = HIGH (short slice, interactive)
 // 1 = MID  (medium slice)
 // 2 = LOW  (long slice, CPU-bound)
@@ -118,7 +118,7 @@ struct proc {
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
 
-  // === Smart-MLFQ fields ===
+  // === DNDN Project fields ===
   int priority;          // current queue level: 0/1/2
   int time_slice_used;   // ticks consumed in current scheduling burst
   int total_run_ticks;   // accumulated CPU time

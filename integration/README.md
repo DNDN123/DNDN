@@ -48,7 +48,7 @@ integration/
 | 1~21 | stock xv6 |
 | 22~24 | minju (trace) |
 | 25~29 | jinhwan (thread/futex) |
-| 30~33 | hyunsung (Smart-MLFQ) |
+| 30~33 | hyunsung (DNDN Project) |
 | 34~35 | haneol (ps, sysinfo) |
 
 전체 매핑은 `MERGE_NOTES.md §1` 참조.

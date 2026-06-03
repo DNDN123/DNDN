@@ -2,7 +2,7 @@
 // ========================
 // 22-24: minju (trace)
 // 25-29: jinhwan (thread/futex)
-// 30-33: hyunsung (Smart-MLFQ)
+// 30-33: hyunsung (DNDN Project)
 // 34+ : haneol (process/ps)
 
 // System call numbers
@@ -37,7 +37,7 @@
 #define SYS_thread_exit   27
 #define SYS_futex_wait    28
 #define SYS_futex_wake    29
-// --- hyunsung (Smart-MLFQ) ---
+// --- hyunsung (DNDN Project) ---
 #define SYS_setpri   30
 #define SYS_getstats 31
 #define SYS_settrace 32

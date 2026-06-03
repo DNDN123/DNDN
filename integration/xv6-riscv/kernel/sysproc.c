@@ -1,4 +1,4 @@
-// Smart-MLFQ-xv6 modified sysproc.c
+// DNDN Project-xv6 modified sysproc.c
 // =================================
 // Added: sys_setpri, sys_getstats, sys_settrace, sys_forkpri implementations.
 
@@ -109,7 +109,7 @@ sys_uptime(void)
   return xticks;
 }
 
-// === Smart-MLFQ syscalls ===
+// === DNDN Project syscalls ===
 
 // setpri(int pid, int level)
 //   level: 0 (HIGH), 1 (MID), 2 (LOW)

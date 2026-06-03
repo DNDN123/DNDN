@@ -1,4 +1,4 @@
-// Smart-MLFQ-xv6 modified syscall.c
+// DNDN Project-xv6 modified syscall.c
 // =================================
 // Added: sys_setpri, sys_getstats, sys_settrace, sys_forkpri
 // entries in the syscall table.
@@ -96,10 +96,10 @@ extern uint64 sys_unlink(void);
 extern uint64 sys_link(void);
 extern uint64 sys_mkdir(void);
 extern uint64 sys_close(void);
-extern uint64 sys_setpri(void);    // Smart-MLFQ
-extern uint64 sys_getstats(void);  // Smart-MLFQ
-extern uint64 sys_settrace(void);  // Smart-MLFQ (I2)
-extern uint64 sys_forkpri(void);   // Smart-MLFQ (I4)
+extern uint64 sys_setpri(void);    // DNDN Project
+extern uint64 sys_getstats(void);  // DNDN Project
+extern uint64 sys_settrace(void);  // DNDN Project (I2)
+extern uint64 sys_forkpri(void);   // DNDN Project (I4)
 // === minju: per-syscall trace ===
 extern uint64 sys_trace_on(void);
 extern uint64 sys_trace_off(void);
@@ -136,10 +136,10 @@ static uint64 (*syscalls[])(void) = {
 [SYS_link]    sys_link,
 [SYS_mkdir]   sys_mkdir,
 [SYS_close]   sys_close,
-[SYS_setpri]   sys_setpri,     // Smart-MLFQ
-[SYS_getstats] sys_getstats,    // Smart-MLFQ
-[SYS_settrace] sys_settrace,    // Smart-MLFQ (I2)
-[SYS_forkpri]  sys_forkpri,     // Smart-MLFQ (I4)
+[SYS_setpri]   sys_setpri,     // DNDN Project
+[SYS_getstats] sys_getstats,    // DNDN Project
+[SYS_settrace] sys_settrace,    // DNDN Project (I2)
+[SYS_forkpri]  sys_forkpri,     // DNDN Project (I4)
 // === minju: per-syscall trace ===
 [SYS_trace_on]    sys_trace_on,
 [SYS_trace_off]   sys_trace_off,

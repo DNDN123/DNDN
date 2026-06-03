@@ -1,4 +1,4 @@
-# 단독 슬라이스 정량 평가 결과 — Smart-MLFQ 3-way 비교
+# 단독 슬라이스 정량 평가 결과 — DNDN Project 3-way 비교
 
 실험 일자: 2026-05-20
 실험 환경: WSL Ubuntu, QEMU RISC-V, xv6-riscv (본인 MLFQ 패치 적용, 통합 전 단독 슬라이스)

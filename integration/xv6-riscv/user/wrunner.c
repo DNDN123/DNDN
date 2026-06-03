@@ -1,4 +1,4 @@
-// wrunner: workload runner for Smart-MLFQ-xv6.
+// wrunner: workload runner for DNDN Project-xv6.
 // (Renamed from "workload_runner" because xv6 DIRSIZ=14.)
 //
 // Usage:

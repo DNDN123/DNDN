@@ -1,4 +1,4 @@
-# Smart-MLFQ workload: cpu_heavy
+# DNDN Project workload: cpu_heavy
 # Format: <name> <arg> <spawn_at_tick>
 # All processes are CPU-bound. Default MLFQ should demote them all to LOW.
 cpu_burner 80000 0

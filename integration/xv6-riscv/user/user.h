@@ -14,7 +14,7 @@
 
 struct stat;
 
-// === Smart-MLFQ: stats struct returned by getstats ===
+// === DNDN Project: stats struct returned by getstats ===
 struct procstats {
   int pid;
   int priority;
@@ -56,10 +56,10 @@ int getpid(void);
 char* sys_sbrk(int,int);
 int pause(int);
 int uptime(void);
-int setpri(int pid, int level);                // Smart-MLFQ
-int getstats(int pid, struct procstats *out);  // Smart-MLFQ
-int settrace(int pid, int on);                 // Smart-MLFQ (I2)
-int forkpri(int level);                        // Smart-MLFQ (I4)
+int setpri(int pid, int level);                // DNDN Project
+int getstats(int pid, struct procstats *out);  // DNDN Project
+int settrace(int pid, int on);                 // DNDN Project (I2)
+int forkpri(int level);                        // DNDN Project (I4)
 // === minju: 시스템콜 추적 ===
 int trace_on(void);
 int trace_off(void);

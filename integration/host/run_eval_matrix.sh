@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# run_eval_matrix.sh — Smart-MLFQ 3-way evaluation matrix runner.
+# run_eval_matrix.sh — DNDN Project 3-way evaluation matrix runner.
 #
 # For each workload W in {cpu_heavy, io_heavy, mixed} and each mode M in
 # {baseline, heuristic, solar}, this script:

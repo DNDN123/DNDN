@@ -1,4 +1,4 @@
-// Smart-MLFQ-xv6 modified trap.c
+// DNDN Project-xv6 modified trap.c
 // =================================
 // Changes from stock xv6:
 //   * On timer interrupt (both usertrap and kerneltrap), we call
@@ -73,7 +73,7 @@ usertrap(void)
   if(killed(p))
     kexit(-1);
 
-  // === Smart-MLFQ: update time slice + maybe demote, then yield ===
+  // === DNDN Project: update time slice + maybe demote, then yield ===
   if(which_dev == 2){
     proc_on_timer_tick();
     yield();
@@ -127,7 +127,7 @@ kerneltrap()
     panic("kerneltrap");
   }
 
-  // === Smart-MLFQ: update time slice + maybe demote, then yield ===
+  // === DNDN Project: update time slice + maybe demote, then yield ===
   if(which_dev == 2 && myproc() != 0){
     proc_on_timer_tick();
     yield();

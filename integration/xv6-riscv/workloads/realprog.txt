@@ -1,4 +1,4 @@
-# Smart-MLFQ workload: real_programs
+# DNDN Project workload: real_programs
 # Uses xv6's actual built-in user programs (not synthetic burners) to show
 # the scheduler under genuinely diverse system calls.
 #

@@ -1,4 +1,4 @@
-# Smart-MLFQ workload: stress
+# DNDN Project workload: stress
 # 10 long-running CPU-bound processes simultaneously — exercises the
 # anti-starvation machinery (aging + boost). Designed so that some
 # processes will be demoted to LOW and observe the aging promotion

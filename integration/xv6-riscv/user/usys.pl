@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# Smart-MLFQ-xv6 modified usys.pl
+# DNDN Project-xv6 modified usys.pl
 # ==============================
 # Added: setpri, getstats, settrace, forkpri
 
@@ -46,10 +46,10 @@ entry("getpid");
 entry("sbrk");
 entry("pause");
 entry("uptime");
-entry("setpri");    # Smart-MLFQ
-entry("getstats");  # Smart-MLFQ
-entry("settrace");  # Smart-MLFQ (I2)
-entry("forkpri");   # Smart-MLFQ (I4)
+entry("setpri");    # DNDN Project
+entry("getstats");  # DNDN Project
+entry("settrace");  # DNDN Project (I2)
+entry("forkpri");   # DNDN Project (I4)
 # === minju: 시스템콜 추적 ===
 entry("trace_on");
 entry("trace_off");

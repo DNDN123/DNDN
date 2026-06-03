@@ -173,7 +173,7 @@ def compare(base: dict, llm: dict) -> dict:
 def print_report(base: dict, llm: dict, cmp: dict):
     print()
     print("=" * 72)
-    print("Smart-MLFQ Evaluation Report")
+    print("DNDN Project Evaluation Report")
     print("=" * 72)
     print(f"  Baseline: {base['n_exits']} workload exits, {base['n_traces']} traces")
     print(f"  LLM:      {llm['n_exits']} workload exits, {llm['n_traces']} traces")
@@ -202,7 +202,7 @@ def print_three_way(base: dict, heur: dict, llm: dict):
     """Side-by-side report for baseline / heuristic / Solar runs."""
     print()
     print("=" * 84)
-    print("Smart-MLFQ 3-way Evaluation Report")
+    print("DNDN Project 3-way Evaluation Report")
     print("=" * 84)
     print(f"  Baseline:  {base['n_exits']} exits, {base['n_traces']} traces")
     print(f"  Heuristic: {heur['n_exits']} exits, {heur['n_traces']} traces")

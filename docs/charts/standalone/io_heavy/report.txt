@@ -1,6 +1,6 @@
 
 ====================================================================================
-Smart-MLFQ 3-way Evaluation Report
+DNDN Project 3-way Evaluation Report
 ====================================================================================
   Baseline:  4 exits, 1764 traces
   Heuristic: 4 exits, 1974 traces

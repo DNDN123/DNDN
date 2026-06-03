@@ -2,7 +2,7 @@
 ### Workload: cpu_heavy ###
 
 ====================================================================================
-Smart-MLFQ 3-way Evaluation Report
+DNDN Project 3-way Evaluation Report
 ====================================================================================
   Baseline:  5 exits, 19 traces
   Heuristic: 5 exits, 22 traces
@@ -30,7 +30,7 @@ Smart-MLFQ 3-way Evaluation Report
 ### Workload: io_heavy ###
 
 ====================================================================================
-Smart-MLFQ 3-way Evaluation Report
+DNDN Project 3-way Evaluation Report
 ====================================================================================
   Baseline:  4 exits, 1764 traces
   Heuristic: 4 exits, 1974 traces
@@ -58,7 +58,7 @@ Smart-MLFQ 3-way Evaluation Report
 ### Workload: mixed ###
 
 ====================================================================================
-Smart-MLFQ 3-way Evaluation Report
+DNDN Project 3-way Evaluation Report
 ====================================================================================
   Baseline:  7 exits, 1208 traces
   Heuristic: 7 exits, 1317 traces
@@ -88,7 +88,7 @@ Smart-MLFQ 3-way Evaluation Report
 ### Workload: three_way ###
 
 ====================================================================================
-Smart-MLFQ 3-way Evaluation Report
+DNDN Project 3-way Evaluation Report
 ====================================================================================
   Baseline:  3 exits, 1308 traces
   Heuristic: 3 exits, 1296 traces
@@ -118,7 +118,7 @@ Smart-MLFQ 3-way Evaluation Report
 ### Workload: realprog ###
 
 ====================================================================================
-Smart-MLFQ 3-way Evaluation Report
+DNDN Project 3-way Evaluation Report
 ====================================================================================
   Baseline:  5 exits, 2615 traces
   Heuristic: 5 exits, 2621 traces

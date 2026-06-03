@@ -1,4 +1,4 @@
-// Smart-MLFQ-xv6 modified defs.h
+// DNDN Project-xv6 modified defs.h
 // =================================
 // Changes from stock xv6:
 //   * added prototypes for proc_setpri, proc_getstats, proc_on_timer_tick
@@ -108,7 +108,7 @@ int             either_copyout(int user_dst, uint64 dst, void *src, uint64 len);
 int             either_copyin(void *dst, int user_src, uint64 src, uint64 len);
 void            procdump(void);
 
-// === Smart-MLFQ extensions (proc.c) ===
+// === DNDN Project extensions (proc.c) ===
 int             proc_setpri(int pid, int level);
 int             proc_settrace(int pid, int on);
 int             proc_getstats(int pid, struct procstats *out);
