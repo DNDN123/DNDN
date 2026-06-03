@@ -101,32 +101,42 @@ Output JSON only — no markdown, no commentary.
 
 def parse_nl(text: str) -> Intent:
     """Call Solar Pro 3 to convert NL to an Intent. Falls back to a tiny
-    rule-based parser when no API key is configured (offline dev)."""
+    rule-based parser when no API key is configured OR when the Solar call
+    fails for any reason (network, HTTP error, malformed JSON, missing keys).
+    Without this fallback the whole adapter crashes on a transient 5xx."""
     if not SOLAR_API_KEY:
         return _offline_parse(text)
 
-    # Lazy import so the file is importable without `requests` installed
-    import requests  # type: ignore
-    resp = requests.post(
-        f"{SOLAR_BASE_URL}/chat/completions",
-        headers={"Authorization": f"Bearer {SOLAR_API_KEY}"},
-        json={
-            "model": SOLAR_MODEL,
-            "messages": [
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": text},
-            ],
-            "temperature": 0,
-            "response_format": {"type": "json_object"},
-        },
-        timeout=15,
-    )
-    resp.raise_for_status()
-    data = resp.json()["choices"][0]["message"]["content"]
-    obj = json.loads(data)
-    return Intent(type=obj.get("type", "REJECT"),
-                  args=obj.get("args", {}),
-                  reason=obj.get("reason", ""))
+    try:
+        # Lazy import so the file is importable without `requests` installed
+        import requests  # type: ignore
+        resp = requests.post(
+            f"{SOLAR_BASE_URL}/chat/completions",
+            headers={"Authorization": f"Bearer {SOLAR_API_KEY}"},
+            json={
+                "model": SOLAR_MODEL,
+                "messages": [
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": text},
+                ],
+                "temperature": 0,
+                "response_format": {"type": "json_object"},
+            },
+            timeout=15,
+        )
+        resp.raise_for_status()
+        data = resp.json()["choices"][0]["message"]["content"]
+        obj = json.loads(data)
+        return Intent(type=obj.get("type", "REJECT"),
+                      args=obj.get("args", {}),
+                      reason=obj.get("reason", ""))
+    except Exception as e:
+        # Don't crash the REPL on a transient Solar issue — fall back to the
+        # offline keyword parser. The REJECT case still surfaces if the
+        # offline parser can't classify.
+        print(f"  ⚠  Solar 호출 실패 ({type(e).__name__}: {e}) — 오프라인 파서 사용",
+              file=sys.stderr)
+        return _offline_parse(text)
 
 
 def _offline_parse(text: str) -> Intent:
@@ -161,7 +171,14 @@ def guard(intent: Intent) -> Optional[str]:
         if not isinstance(prio, int) or not (0 <= prio <= 2):
             return f"priority must be 0..2 MLFQ queue level (got {prio!r})"
     if intent.type == "SPAWN":
-        prog = (intent.args.get("cmd") or "").strip().split()
+        raw = (intent.args.get("cmd") or "").strip()
+        # Block command chaining / injection — a Solar response of
+        # "ls\nkill 1" would otherwise pass the whitelist check on parts[0]
+        # and then send_to_xv6 would write both lines into xv6 stdin.
+        for bad in ("\n", "\r", ";", "&", "|", "`", "$("):
+            if bad in raw:
+                return f"refusing command with {bad!r} (chain/injection blocked)"
+        prog = raw.split()
         if not prog or prog[0] not in SPAWN_WHITELIST:
             return f"program not in whitelist: {prog[0] if prog else '<empty>'}"
     return None
@@ -203,13 +220,19 @@ class QEMUDriver:
     _MAX_BUF = 1 << 20  # 1 MiB
 
     def __init__(self, xv6_dir: str = XV6_DIR, boot_wait: float = 4.0):
+        # preexec_fn=os.setsid is POSIX-only. On Windows there's no setsid
+        # and Popen would AttributeError. Skip process-group setup there;
+        # QEMU still terminates correctly via proc.terminate()/kill().
+        popen_kwargs = {}
+        if sys.platform != "win32" and hasattr(os, "setsid"):
+            popen_kwargs["preexec_fn"] = os.setsid
         self.proc = subprocess.Popen(
             ["make", "qemu"],
             cwd=xv6_dir,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
-            preexec_fn=os.setsid,
+            **popen_kwargs,
         )
         self._buf = bytearray()
         self._buf_lock = threading.Lock()
@@ -278,13 +301,22 @@ class QEMUDriver:
 
     def shutdown(self) -> None:
         if self.proc.poll() is None:
+            posix_killpg = (sys.platform != "win32"
+                            and hasattr(os, "killpg")
+                            and hasattr(os, "getpgid"))
             try:
-                os.killpg(os.getpgid(self.proc.pid), signal.SIGTERM)
+                if posix_killpg:
+                    os.killpg(os.getpgid(self.proc.pid), signal.SIGTERM)
+                else:
+                    self.proc.terminate()
                 self.proc.wait(timeout=3)
-            except (ProcessLookupError, subprocess.TimeoutExpired):
+            except (ProcessLookupError, subprocess.TimeoutExpired, OSError):
                 try:
-                    os.killpg(os.getpgid(self.proc.pid), signal.SIGKILL)
-                except ProcessLookupError:
+                    if posix_killpg:
+                        os.killpg(os.getpgid(self.proc.pid), signal.SIGKILL)
+                    else:
+                        self.proc.kill()
+                except (ProcessLookupError, OSError):
                     pass
         # Reader thread exits naturally when stdout EOFs
         self._reader.join(timeout=2)

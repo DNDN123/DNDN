@@ -7,8 +7,10 @@ Integration notes:
   - 하드코딩된 API 키 제거됨 → 환경변수 UPSTAGE_API_KEY/SOLAR_API_KEY 로
   - 하드코딩된 XV6_DIR 제거됨 → 환경변수 XV6_DIR 로 (기본값은 통합 트리)
   - 보안 정책: docs/security-policy.md 참조
+  - K5 fix: LLM 응답을 send_to_xv6 로 직접 주입하기 전 whitelist + guard 통과.
 """
 
+import shlex
 import subprocess
 import threading
 import sys
@@ -42,6 +44,48 @@ QEMU_CMD = [
     "-drive",   "file=fs.img,if=none,format=raw,id=x0",
     "-device",  "virtio-blk-device,drive=x0,bus=virtio-mmio-bus.0",
 ]
+
+# K5 fix: programs/builtins the LLM is allowed to invoke. Anything else from
+# Solar (e.g. prompt-injected `kill 1`, `rm /` style request, or hallucinated
+# binaries) is rejected before reaching QEMU stdin.
+ALLOWED_CMDS = {
+    "ls", "cat", "echo", "mkdir", "rm", "grep", "wc",
+    "threadtest", "forktest",
+    "ps", "tracetool", "setprio",
+}
+
+def guard_cmd(cmd: str) -> tuple[bool, str]:
+    """Return (ok, reason). Validates the first token against ALLOWED_CMDS
+    and rejects kill of init / negative or non-numeric pids.
+    Also rejects shell metacharacters and any embedded newline / CR — Solar
+    is allowed to translate prose into ONE xv6 command, not chain multiple."""
+    cmd = (cmd or "").strip()
+    if not cmd:
+        return False, "empty command"
+    if cmd.startswith("[오류]"):
+        return False, cmd       # surface API error verbatim, don't run
+    # Block command chaining / injection — shlex.split eats \n as whitespace
+    # so a Solar response "ls\nkill 1" would silently pass the whitelist
+    # check on parts[0]="ls" and then xv6 sh would execute both lines.
+    for bad in ("\n", "\r", ";", "&", "|", "`", "$("):
+        if bad in cmd:
+            return False, f"refusing command with {bad!r} (chain/injection blocked)"
+    try:
+        parts = shlex.split(cmd)
+    except ValueError as e:
+        return False, f"unparseable: {e}"
+    prog = parts[0]
+    # `kill` is special-cased: only allowed for non-init pids.
+    if prog == "kill":
+        if len(parts) != 2 or not parts[1].lstrip("-").isdigit():
+            return False, "kill requires one numeric pid"
+        if int(parts[1]) <= 1:
+            return False, "refusing to kill pid <= 1"
+        return True, ""
+    if prog not in ALLOWED_CMDS:
+        return False, f"program not in whitelist: {prog}"
+    return True, ""
+
 
 SYSTEM_PROMPT = """You are an assistant for an xv6 RISC-V operating system shell.
 The user will give you a natural language request in Korean or English.
@@ -161,6 +205,11 @@ def main():
             # LLM 번역
             print("  ⟳  LLM 처리 중...", end="", flush=True)
             cmd = call_solar(nl)
+            ok, reason = guard_cmd(cmd)
+            if not ok:
+                print(f"\r  ⚠  거부됨: {reason:<40}")
+                print()
+                continue
             print(f"\r  →  [xv6 실행] $ {cmd:<35}")
             print()
 
