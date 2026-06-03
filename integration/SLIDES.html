@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>xv6 4-Slice 통합 — 발표 슬라이드</title>
+<style>
+  :root{
+    --bg:#0a0f1e; --bg-card:#1e293b; --bg-soft:#334155;
+    --fg:#e2e8f0; --fg-muted:#94a3b8;
+    --accent:#38bdf8; --accent-2:#a78bfa;
+    --good:#34d399; --warn:#fbbf24; --bad:#f87171;
+    --code-bg:#0b1220; --border:#334155;
+    --hyunsung:#38bdf8; --minju:#34d399; --jinhwan:#a78bfa; --haneol:#fbbf24;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans KR',sans-serif;
+    background:linear-gradient(180deg,#070b16 0%,#0f172a 100%);
+    color:var(--fg); line-height:1.6; overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* ── slide frame ── */
+  .deck{position:relative;width:100vw;height:100vh;}
+  .slide{
+    position:absolute; inset:0;
+    display:none; flex-direction:column;
+    padding:6vh 8vw 9vh;
+    animation:fade .35s ease;
+  }
+  .slide.active{display:flex;}
+  @keyframes fade{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+
+  .eyebrow{
+    display:inline-block;align-self:flex-start;
+    padding:5px 13px;margin-bottom:18px;
+    background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.3);
+    border-radius:999px;color:var(--accent);
+    font-size:13px;font-weight:600;letter-spacing:.06em;
+  }
+  h1{font-size:clamp(30px,4.6vw,56px);line-height:1.12;margin-bottom:18px;
+     background:linear-gradient(135deg,#38bdf8 0%,#a78bfa 100%);
+     -webkit-background-clip:text;background-clip:text;color:transparent;}
+  h2{font-size:clamp(24px,3.2vw,40px);margin-bottom:24px;display:flex;align-items:center;gap:16px;}
+  h2 .num{font-size:.55em;color:var(--accent);font-variant-numeric:tabular-nums;
+          border:1px solid var(--border);border-radius:8px;padding:2px 12px;}
+  h3{font-size:clamp(17px,1.9vw,22px);color:var(--accent-2);margin:18px 0 12px;}
+  p{color:var(--fg-muted);font-size:clamp(15px,1.5vw,19px);}
+  .lead{font-size:clamp(16px,1.7vw,21px);color:var(--fg);max-width:46em;}
+  strong{color:var(--fg);}
+  code{font-family:'JetBrains Mono','SF Mono',Consolas,monospace;
+       background:var(--code-bg);border:1px solid var(--border);
+       padding:1px 6px;border-radius:5px;font-size:.86em;color:#bae6fd;}
+  ul{list-style:none;}
+  li{position:relative;padding-left:1.4em;margin:.5em 0;font-size:clamp(15px,1.5vw,19px);color:var(--fg-muted);}
+  li::before{content:"▸";position:absolute;left:0;color:var(--accent);}
+  li strong{color:var(--fg);}
+
+  /* ── title slide ── */
+  .title-slide{justify-content:center;align-items:center;text-align:center;}
+  .title-slide h1{font-size:clamp(38px,6vw,76px);}
+  .title-slide .sub{font-size:clamp(17px,2vw,24px);color:var(--fg-muted);max-width:40em;margin-bottom:34px;}
+  .title-slide .meta{display:flex;gap:22px;flex-wrap:wrap;justify-content:center;font-size:14px;color:var(--fg-muted);}
+  .title-slide .meta b{color:var(--fg);margin-left:6px;}
+
+  /* ── layout helpers ── */
+  .grid{display:grid;gap:18px;margin-top:8px;}
+  .g2{grid-template-columns:1fr 1fr;}
+  .g3{grid-template-columns:1fr 1fr 1fr;}
+  .g4{grid-template-columns:repeat(4,1fr);}
+  .fill{flex:1;display:flex;flex-direction:column;justify-content:center;}
+  .card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:18px 20px;}
+  .card h4{font-size:clamp(15px,1.6vw,19px);margin-bottom:8px;color:var(--fg);}
+  .card p,.card li{font-size:clamp(13px,1.25vw,16px);}
+  .card.accent{border-color:rgba(56,189,248,.45);}
+
+  /* tags */
+  .tag{display:inline-block;padding:2px 9px;border-radius:6px;font-size:.8em;font-weight:700;}
+  .t-hyunsung{background:rgba(56,189,248,.16);color:var(--hyunsung);}
+  .t-minju{background:rgba(52,211,153,.16);color:var(--minju);}
+  .t-jinhwan{background:rgba(167,139,250,.16);color:var(--jinhwan);}
+  .t-haneol{background:rgba(251,191,36,.16);color:var(--haneol);}
+  .pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:.78em;font-weight:700;}
+  .p-ok{background:rgba(52,211,153,.15);color:var(--good);}
+  .p-warn{background:rgba(251,191,36,.15);color:var(--warn);}
+  .p-bad{background:rgba(248,113,113,.15);color:var(--bad);}
+  .p-info{background:rgba(56,189,248,.15);color:var(--accent);}
+
+  /* metrics */
+  .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:10px;}
+  .metric{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:22px;text-align:center;}
+  .metric .l{font-size:14px;color:var(--fg-muted);}
+  .metric .v{font-size:clamp(30px,4vw,46px);font-weight:800;margin:6px 0;}
+  .metric .v.pos{color:var(--good);}
+  .metric .d{font-size:13px;color:var(--fg-muted);}
+
+  /* table */
+  table{width:100%;border-collapse:collapse;margin-top:8px;font-size:clamp(13px,1.35vw,17px);}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--border);}
+  th{color:var(--accent);font-weight:600;font-size:.92em;}
+  td code{font-size:.92em;}
+  tbody tr:hover{background:rgba(56,189,248,.04);}
+
+  /* callout */
+  .callout{border-radius:12px;padding:16px 20px;margin-top:16px;border-left:4px solid;}
+  .c-ok{background:rgba(52,211,153,.08);border-color:var(--good);}
+  .c-warn{background:rgba(251,191,36,.08);border-color:var(--warn);}
+  .c-info{background:rgba(56,189,248,.08);border-color:var(--accent);}
+  .callout p{color:var(--fg);}
+
+  pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;
+      padding:14px 16px;overflow:auto;font-family:'JetBrains Mono',Consolas,monospace;
+      font-size:clamp(12px,1.15vw,15px);color:#cbd5e1;line-height:1.55;margin-top:8px;}
+  pre .c{color:#64748b;}
+  pre .ok{color:var(--good);}
+
+  .big{font-size:clamp(20px,2.2vw,28px);color:var(--fg);}
+  .flow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:clamp(14px,1.5vw,19px);margin-top:14px;}
+  .flow .node{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:10px 16px;color:var(--fg);}
+  .flow .arr{color:var(--accent);font-weight:700;}
+
+  /* ── chrome (progress + counter + hint) ── */
+  .progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#38bdf8,#a78bfa);
+            z-index:50;transition:width .3s ease;}
+  .counter{position:fixed;bottom:18px;right:24px;font-size:13px;color:var(--fg-muted);
+           font-variant-numeric:tabular-nums;z-index:50;}
+  .counter b{color:var(--fg);}
+  .hint{position:fixed;bottom:18px;left:24px;font-size:12px;color:#475569;z-index:50;}
+  .brand{position:fixed;top:14px;right:24px;font-size:12px;color:#475569;z-index:50;letter-spacing:.05em;}
+  .dots{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:7px;z-index:50;}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--bg-soft);cursor:pointer;transition:.2s;}
+  .dot.active{background:var(--accent);transform:scale(1.25);}
+
+  /* ── print → one slide per page ── */
+  @media print{
+    body{overflow:visible;height:auto;background:#0a0f1e;}
+    .deck{height:auto;}
+    .slide{display:flex!important;position:relative;inset:auto;
+           height:100vh;page-break-after:always;animation:none;}
+    .progress,.counter,.hint,.brand,.dots{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<div class="brand">xv6 SMART-MLFQ · 통합 발표</div>
+
+<div class="deck" id="deck">
+
+  <!-- 01 TITLE -->
+  <section class="slide title-slide active">
+    <div class="eyebrow" style="align-self:center;">OS PROJECT · INTEGRATION</div>
+    <h1>xv6 4-Slice 통합<br>Smart MLFQ Scheduler</h1>
+    <p class="sub">Scheduler · Syscall · Thread · Process — 네 명의 슬라이스를 단일
+      <code>xv6-riscv</code> 트리로 합쳐 빌드 · 부팅 · 정량 평가 · 회귀 자동화까지 통과시킨 통합 결과</p>
+    <div class="meta">
+      <span>팀:<b>hyunsung · minju · jinhwan · haneol</b></span>
+      <span>통합:<b>2026-05-26</b></span>
+      <span>평가:<b>2026-05-27</b></span>
+      <span>2차 리뷰:<b>2026-05-28~29</b></span>
+    </div>
+  </section>
+
+  <!-- 02 OVERVIEW -->
+  <section class="slide">
+    <div class="eyebrow">01 · OVERVIEW</div>
+    <h2><span class="num">01</span> 프로젝트 개요</h2>
+    <p class="lead">4명이 각자 GitHub 브랜치에서 개발한 xv6 슬라이스를 <strong>단일 빌드 가능 트리</strong>로 합치는 것이 목표.
+      원본 브랜치는 <code>git archive</code> 로 읽기만 하고 <strong>단 1바이트도 수정하지 않습니다.</strong></p>
+    <div class="grid g2 fill">
+      <div class="card accent">
+        <h4>핵심 원칙</h4>
+        <ul>
+          <li><strong>원본 보호</strong> — push / commit / 새 브랜치 금지</li>
+          <li><strong>단일 진입점</strong> — host NL은 <code>nl_shell.py</code> 하나</li>
+          <li><strong>API 키 sanitize</strong> — 환경변수만, 하드코딩 금지</li>
+          <li><strong>roll-back 가능</strong> — <code>_sources/</code> 에 원본 보존</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>최종 산출물</h4>
+        <ul>
+          <li><code>xv6-riscv/</code> — 통합 빌드 트리 (kernel + user + workloads)</li>
+          <li><code>host/</code> — Solar Pro 3 LLM 연동 Python 브리지 (3-레이어)</li>
+          <li><code>MERGE_NOTES.md</code> — 충돌 결정 기록 (K1~K7)</li>
+          <li><code>docs/charts/integration/</code> — 5 워크로드 × 3 모드 평가</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 STATUS METRICS -->
+  <section class="slide">
+    <div class="eyebrow">STATUS</div>
+    <h2><span class="num">02</span> 한눈에 보는 검증 상태</h2>
+    <div class="fill">
+      <div class="metrics">
+        <div class="metric"><div class="l">빌드 / 부팅</div><div class="v pos">PASS</div><div class="d">2026-05-26 · WSL+QEMU</div></div>
+        <div class="metric"><div class="l">라이브 데모</div><div class="v pos">4 / 4</div><div class="d">슬라이스 전부 동작</div></div>
+        <div class="metric"><div class="l">정량 평가</div><div class="v pos">PASS</div><div class="d">three_way Δturnaround −7.3%</div></div>
+        <div class="metric"><div class="l">회귀 자동화</div><div class="v pos">8 / 8</div><div class="d">sanity_check.sh 한 줄</div></div>
+        <div class="metric"><div class="l">통합 Syscall</div><div class="v">14개</div><div class="d">22~35 충돌 없이 공존</div></div>
+        <div class="metric"><div class="l">통합·보안 Fix</div><div class="v">K1~K7</div><div class="d">+ injection 가드 2건</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 ARCHITECTURE -->
+  <section class="slide">
+    <div class="eyebrow">02 · STRUCTURE</div>
+    <h2><span class="num">03</span> 통합 아키텍처</h2>
+    <div class="fill">
+      <div class="flow">
+        <span class="node">유저 자연어</span><span class="arr">→</span>
+        <span class="node">host/nl_shell.py ⭐</span><span class="arr">→</span>
+        <span class="node">Solar Pro 3 (번역만)</span><span class="arr">→</span>
+        <span class="node">xv6 명령 (큐 정수)</span><span class="arr">→</span>
+        <span class="node">QEMU xv6 커널</span>
+      </div>
+      <div class="grid g2" style="margin-top:22px;">
+        <div class="card">
+          <h4>⭐ 빌드 대상 — <code>xv6-riscv/</code></h4>
+          <ul>
+            <li><strong>kernel/</strong> proc.c(+K1/K3/K5), proc.h(+K2), syscall.{c,h}, vm.c, kalloc.c</li>
+            <li><strong>user/</strong> nlrun, wrunner, *_burner, tracetool, threadtest, ps, setprio, bgq, <code>thread_race</code></li>
+            <li><strong>workloads/</strong> 8종 (cpu_heavy … three_way, hints)</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4>호스트 Python — <code>host/</code> (3-레이어)</h4>
+          <ul>
+            <li><span class="pill p-info">Hot</span> nl_shell.py + adapters/ (process·thread)</li>
+            <li><span class="pill p-info">Cold</span> ops/supervisor.py — OS-grounded 감사</li>
+            <li><span class="pill p-warn">Dev</span> dev_chat.py — 자유 대화 (평가 밖)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 SLICES -->
+  <section class="slide">
+    <div class="eyebrow">03 · CONTRIBUTIONS</div>
+    <h2><span class="num">04</span> 4팀 슬라이스 — 기여 내역</h2>
+    <div class="grid g2 fill">
+      <div class="card">
+        <h4><span class="tag t-hyunsung">hyunsung</span> Scheduler / MLFQ</h4>
+        <ul>
+          <li>3-level MLFQ (HIGH/MID/LOW), aging, demote</li>
+          <li><code>nlrun</code>, <code>wrunner</code>, <code>*_burner</code>, <code>diagprog</code></li>
+          <li>호스트 <code>nl_shell.py</code> 단일 진입점</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4><span class="tag t-minju">minju</span> Syscall Trace</h4>
+        <ul>
+          <li>모든 syscall 단일 후킹 → per-pid 통계</li>
+          <li><code>trace_on / off / stats</code> (JSON dump)</li>
+          <li>dump → 호스트 LLM 분석과 자연 연동</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4><span class="tag t-jinhwan">jinhwan</span> Thread / Futex</h4>
+        <ul>
+          <li><code>kthread_create/join/exit</code>, <code>kfutex_wait/wake</code></li>
+          <li>페이지 공유 <code>uvmshare</code>, <code>thread_freepagetable</code></li>
+          <li><code>threadtest</code> 4 시나리오 (mutex·condvar)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4><span class="tag t-haneol">haneol</span> Process (ps / sysinfo)</h4>
+        <ul>
+          <li><code>sys_ps</code> — 6열 프로세스 표</li>
+          <li><code>sys_sysinfo</code> — freemem + nproc</li>
+          <li>priority 슬라이스는 hyunsung 과 중복 → DROP</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 SYSCALLS -->
+  <section class="slide">
+    <div class="eyebrow">04 · SYSCALL MAP</div>
+    <h2><span class="num">05</span> Syscall 번호 최종 분배</h2>
+    <p class="lead">4팀이 모두 <code>22~25</code> 영역을 쓰려 해 가장 큰 충돌 — 합의된 분배로 모두 <code>NELEM=64</code> 안에 공존.</p>
+    <div class="grid g4 fill" style="align-content:center;">
+      <div class="card"><h4><span class="tag t-minju">22~24</span></h4>
+        <p><code>trace_on / off / stats</code></p><p style="margin-top:6px;color:var(--minju);">minju · per-syscall 통계</p></div>
+      <div class="card"><h4><span class="tag t-jinhwan">25~29</span></h4>
+        <p><code>thread_create / join / exit</code><br><code>futex_wait / wake</code></p><p style="margin-top:6px;color:var(--jinhwan);">jinhwan · 원본 22~26 재번호</p></div>
+      <div class="card"><h4><span class="tag t-hyunsung">30~33</span></h4>
+        <p><code>setpri / getstats</code><br><code>settrace / forkpri</code></p><p style="margin-top:6px;color:var(--hyunsung);">hyunsung · MLFQ 제어</p></div>
+      <div class="card"><h4><span class="tag t-haneol">34~35</span></h4>
+        <p><code>ps / sysinfo</code></p><p style="margin-top:6px;color:var(--haneol);">haneol · 고유 가시성 도구</p></div>
+    </div>
+    <div class="callout c-info"><p><strong>문서 vs 코드 불일치 발견:</strong> hyunsung 원본 문서는 "30~33 이동 완료"였지만
+      실제 <code>syscall.h</code> 는 22~25 → 통합 시 코드를 문서에 맞게 정렬.</p></div>
+  </section>
+
+  <!-- 07 CONFLICTS -->
+  <section class="slide">
+    <div class="eyebrow">05 · CONFLICT RESOLUTION</div>
+    <h2><span class="num">06</span> 핵심 충돌 결정</h2>
+    <p class="lead">의미가 겹치는 충돌은 한쪽을 선택 — 근거는 <strong>정량 검증</strong> 또는 <strong>기능 풍부도</strong>.</p>
+    <div class="fill">
+      <table>
+        <thead><tr><th>충돌 영역</th><th style="width:140px">승자</th><th>사유</th></tr></thead>
+        <tbody>
+          <tr><td>MLFQ 스케줄러</td><td><span class="tag t-hyunsung">hyunsung</span></td><td>정량 평가 검증, 3-단계 큐가 0..20 보다 정교</td></tr>
+          <tr><td>0..20 priority (haneol)</td><td><span class="pill p-bad">DROP</span></td><td><code>setpri(0..2)</code> 로 통일, <code>setprio.c</code> 재작성</td></tr>
+          <tr><td>trace syscall</td><td><span class="tag t-minju">minju</span></td><td>per-syscall 통계가 더 풍부, JSON 출력</td></tr>
+          <tr><td>kthread_* 함수</td><td><span class="tag t-jinhwan">jinhwan</span></td><td>고유 기능, MLFQ 와 별도 영역에 append</td></tr>
+          <tr><td>host NL 진입점</td><td><span class="tag t-hyunsung">hyunsung</span></td><td><code>nl_shell.py</code> 단일, 나머지는 adapters/</td></tr>
+          <tr><td>Solar API 키 (평문)</td><td><span class="pill p-warn">sanitize</span></td><td>환경변수 전환 + 키 없을 때 폴백</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 08 K1-K4 -->
+  <section class="slide">
+    <div class="eyebrow">06 · INTEGRATION FIXES</div>
+    <h2><span class="num">07</span> 통합 중 발견한 K1~K4</h2>
+    <p class="lead">슬라이스 단독일 땐 안 보이고 <strong>합치는 순간</strong> 드러난 버그 — 코드에 <code>K1~K4 fix</code> 라벨.</p>
+    <div class="grid g2 fill">
+      <div class="card"><h4><span class="pill p-info">K1</span> allocproc 필드 누수</h4>
+        <p>슬롯 재사용 시 <code>traced</code>/<code>syscall_count[]</code>/<code>is_thread</code> 미초기화 → 직전 입주자 trace 상태 누수, dump 쓰레기.</p></div>
+      <div class="card"><h4><span class="pill p-info">K2</span> syscall_count 오버플로</h4>
+        <p>minju 원본 배열 32 → 통합 후 35번까지 확장. <strong>32 → 64</strong> 로 확장 (5개 파일).</p></div>
+      <div class="card"><h4><span class="pill p-info">K3</span> fork 시 traced 미상속</h4>
+        <p><code>tracetool on</code> 후 자식 프로세스 추적 누락 → <code>fork()</code>/<code>forkpri()</code> 둘 다 traced 상속 명시.</p></div>
+      <div class="card"><h4><span class="pill p-info">K4</span> 어댑터 priority 범위</h4>
+        <p><code>setpriority(0..20)</code> 가정 → 0..2 정렬, SPAWN whitelist 도 없는 바이너리 제거.</p></div>
+    </div>
+  </section>
+
+  <!-- 09 K5-K7 -->
+  <section class="slide">
+    <div class="eyebrow">2차 코드·보안 리뷰 (2026-05-28~29)</div>
+    <h2><span class="num">07+</span> K5~K7 — race · 보안</h2>
+    <div class="grid g3 fill">
+      <div class="card accent"><h4><span class="pill p-bad">K5</span> thread/main 종료 race</h4>
+        <p>main 이 자식 thread 보다 먼저 <code>freeproc</code> → 공유 페이지 <code>kfree</code> → <strong>page-use-after-free</strong>.</p>
+        <p style="margin-top:8px;">tgroup live thread 스캔 → <code>thread_freepagetable</code> 다운그레이드. 회귀 재현 <code>thread_race.c</code>.</p></div>
+      <div class="card accent"><h4><span class="pill p-bad">K6</span> thread_bridge injection</h4>
+        <p>Solar 응답 <code>"ls\nkill 1"</code> 이 <code>shlex.split</code> 에서 <code>\n</code> 공백 처리 → whitelist 우회, init kill.</p>
+        <p style="margin-top:8px;"><code>\n \r ; &amp; | ` $(</code> 전부 차단.</p></div>
+      <div class="card accent"><h4><span class="pill p-bad">K7</span> process_bridge 동일 결함</h4>
+        <p>SPAWN intent 에 같은 newline 분리 결함 — 보안 가드가 두 어댑터에 일관 적용 안 됨을 드러냄.</p>
+        <p style="margin-top:8px;"><code>guard()</code> SPAWN 분기에 동일 차단 적용.</p></div>
+    </div>
+    <div class="callout c-warn"><p><strong>교훈:</strong> LLM 출력을 셸 stdin 으로 직접 흘리는 경로는 <strong>프롬프트 인젝션 = 명령 인젝션</strong>.
+      whitelist 만으로 부족하고 <strong>메타문자·개행 차단</strong>이 함께 필요.</p></div>
+  </section>
+
+  <!-- 10 HOST 3-LAYER / IDENTITY -->
+  <section class="slide">
+    <div class="eyebrow">LLM FOR OS — IDENTITY</div>
+    <h2><span class="num">08</span> 호스트 3-레이어 분리</h2>
+    <p class="lead">"LLM for OS" 정체성이 <strong>자유 채팅으로 희석되지 않도록</strong> 호스트 도구를 역할별 3계층으로 분리.</p>
+    <div class="fill">
+      <table>
+        <thead><tr><th style="width:130px">레이어</th><th>도구</th><th>역할</th><th style="width:110px">평가 등장</th></tr></thead>
+        <tbody>
+          <tr><td><span class="pill p-info">Hot path</span></td><td><code>nl_shell.py</code> + <code>adapters/*</code></td><td>자연어 → MLFQ 큐 정수 축약 (메인 데모)</td><td><span class="pill p-ok">✅</span></td></tr>
+          <tr><td><span class="pill p-info">Cold path</span></td><td><code>ops/supervisor.py</code></td><td>MERGE_NOTES·eval·K-fix·syscall 자연어 질의 (5중 거부 게이트)</td><td><span class="pill p-ok">✅ 보조</span></td></tr>
+          <tr><td><span class="pill p-warn">Dev path</span></td><td><code>dev_chat.py</code></td><td>자유 대화 REPL — 개발 편의</td><td><span class="pill p-bad">❌ 의도적</span></td></tr>
+        </tbody>
+      </table>
+      <div class="callout c-info"><p>핫 패스 출력은 <strong>2-bit 큐 레벨(0/1/2)</strong> 로 제한 — LLM 은 "번역기", 실행·관리는 OS 레이어. <strong>thin LLM wrapper 가 아님.</strong></p></div>
+    </div>
+  </section>
+
+  <!-- 11 EVAL -->
+  <section class="slide">
+    <div class="eyebrow">07 · QUANTITATIVE EVAL</div>
+    <h2><span class="num">09</span> 정량 평가 (2026-05-27 재실행)</h2>
+    <p class="lead">avg_turnaround 기준 baseline / heuristic / solar 3-way 비교.</p>
+    <div class="fill">
+      <table>
+        <thead><tr><th>워크로드</th><th>Δheur%</th><th>Δllm%</th><th>해석</th></tr></thead>
+        <tbody>
+          <tr><td><code>cpu_heavy</code></td><td><span class="pill p-bad">+283%</span></td><td><span class="pill p-bad">+550%</span></td><td>단일 프로그램 → 우선순위 강등이 곧 손해 (예상)</td></tr>
+          <tr><td><code>io_heavy</code></td><td><span class="pill p-warn">+2.8%</span></td><td><span class="pill p-warn">+15.8%</span></td><td>단일 + 부분 timeout, 변화 미미</td></tr>
+          <tr><td><code>mixed</code></td><td><span class="pill p-warn">+17.1%</span></td><td><span class="pill p-warn">+14.3%</span></td><td>평균↑ 지만 fairness <strong>+155%</strong>, max_TT <strong>−53%</strong></td></tr>
+          <tr><td><code>three_way</code></td><td><span class="pill p-ok">−7.3%</span></td><td><span class="pill p-ok">−5.8%</span></td><td><strong>다중 프로그램 — heur/llm 모두 개선</strong></td></tr>
+          <tr><td><code>realprog</code></td><td><span class="pill p-warn">+6.8%</span></td><td><span class="pill p-ok">−0.2%</span></td><td>heur avg_response <strong>−26%</strong> (대화형 개선)</td></tr>
+        </tbody>
+      </table>
+      <div class="callout c-ok"><p><strong>결론:</strong> 다중 프로그램(three_way·mixed·realprog)에서 hints 효과 측정 + 회귀 없음.
+        단일 프로그램 역효과는 hints 시스템의 본질적 특성으로 새 발견이 아님.</p></div>
+    </div>
+  </section>
+
+  <!-- 12 SANITY -->
+  <section class="slide">
+    <div class="eyebrow">AUTOMATED REGRESSION</div>
+    <h2><span class="num">10</span> 자동 회귀 — 한 줄 8/8</h2>
+    <div class="fill">
+      <pre>$ XV6_DIR=~/xv6-build bash integration/sanity_check.sh
+<span class="c"># 빌드 → QEMU 부팅 → 성공 마커 8개 grep</span>
+<span class="ok">[1/8] ps            ... OK</span>
+<span class="ok">[2/8] tracetool     ... OK</span>
+<span class="ok">[3/8] nlrun EXIT    ... OK</span>
+<span class="ok">[4/8] bgq all_done  ... OK</span>
+<span class="ok">[5/8] thread_race   ... OK   </span><span class="c"># K5 회귀</span>
+<span class="ok">[6/8] threadtest    ... OK</span>
+<span class="ok">[7/8] setprio       ... OK</span>
+<span class="ok">[8/8] sysinfo       ... OK</span>
+<span class="ok">SANITY 8/8 PASS — exit 0</span></pre>
+      <div class="grid g3" style="margin-top:18px;">
+        <div class="card"><h4>1줄 실행</h4><p>4팀 데모 + K5 race + threadtest 후속을 한 번에 검증.</p></div>
+        <div class="card"><h4>CI/cron 친화</h4><p>종료 코드 0/1 — 실패 시 마지막 30줄 QEMU 출력 자동 첨부.</p></div>
+        <div class="card"><h4>회귀 방지</h4><p>K5 같은 teardown race 가 재발하면 즉시 빨간불.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13 DEMO -->
+  <section class="slide">
+    <div class="eyebrow">08 · LIVE DEMO</div>
+    <h2><span class="num">11</span> 라이브 데모 시나리오</h2>
+    <div class="fill">
+      <pre>$ make qemu CPUS=2
+
+<span class="c"># [hyunsung] 자연어 힌트 → 큐 레벨</span>
+$ nlrun 2 cpu_burner 50000        → EXIT final_pri=2
+
+<span class="c"># [minju] 모든 syscall 단일 후킹</span>
+$ tracetool on; ls; tracetool dump
+  {"pid":…,"total":…,"calls":{"fork":…,"exec":…}}
+
+<span class="c"># [jinhwan] kthread + futex</span>
+$ threadtest        → test 1~4 OK (counter=200000, sum=499500)
+
+<span class="c"># [haneol] ps + setpri 통합</span>
+$ ps; setprio 1 2   → OK pid=1 level=2
+
+<span class="c"># [통합] 백그라운드 큐 + LOW + 좀비 회수</span>
+$ bgq bgq.txt       → BGQ all_done 3
+
+<span class="c"># [호스트 LLM] xv6 출력 → Solar 분석</span>
+$ python nl_shell.py --diagnose-from /tmp/diag.txt
+  → action: setpri 5 0   <span class="c"># starvation 식별</span></pre>
+    </div>
+  </section>
+
+  <!-- 14 RISKS -->
+  <section class="slide">
+    <div class="eyebrow">09 · KNOWN ISSUES</div>
+    <h2><span class="num">12</span> 알려진 환경 의존성</h2>
+    <p class="lead">통합 코드 자체 결함은 아니지만 평가 환경에 따라 결과가 달라질 수 있는 항목.</p>
+    <div class="grid g2 fill">
+      <div class="card"><h4>usertests <code>reparent2</code> — 환경 차이</h4>
+        <p><code>/mnt/c</code>(9P FS)에서 fork bomb cleanup 100ms window 초과로 실패, <code>/root</code>(ext4)에서는 ALL PASSED.
+        <strong>→ 평가는 Linux native FS 권고.</strong></p></div>
+      <div class="card"><h4>userspace thread 라이브러리 미통합</h4>
+        <p>thread.c/mutex.c 등 추상화는 xv6 안에서 syscall 만으로 충분 — <code>_sources/jinhwan/</code> 에 보존.</p></div>
+      <div class="card"><h4>haneol 단독 테스트 미포함</h4>
+        <p><code>mlfq_bench</code>, <code>priority_test</code> 등 단독 테스트는 통합 트리 제외, <code>_sources/</code> 보존.</p></div>
+      <div class="card"><h4>eval stderr 가림 → 패치 완료</h4>
+        <p>5/26 무음 실패 원인(<code>&gt;/dev/null</code>)을 5/27 stderr 분리 캡처로 해결, 재발 방지.</p></div>
+    </div>
+  </section>
+
+  <!-- 15 CLOSING -->
+  <section class="slide title-slide">
+    <div class="eyebrow" style="align-self:center;">SUMMARY</div>
+    <h1>빌드 · 부팅 · 평가 · 회귀<br>모두 통과</h1>
+    <div class="grid g4" style="margin:10px 0 30px;max-width:1000px;">
+      <div class="metric"><div class="v pos">4/4</div><div class="d">슬라이스 통합</div></div>
+      <div class="metric"><div class="v pos">K1~K7</div><div class="d">통합·보안 fix</div></div>
+      <div class="metric"><div class="v pos">8/8</div><div class="d">회귀 자동화</div></div>
+      <div class="metric"><div class="v pos">−7.3%</div><div class="d">three_way turnaround</div></div>
+    </div>
+    <p class="sub">남은 일: 영문 보고서·슬라이드 / 데모 녹화 / 통합 PR(원본 보호 원칙 유지 차원 연기)</p>
+    <div class="meta">
+      <span>Scheduler <b>hyunsung</b></span><span>Syscall <b>minju</b></span>
+      <span>Thread <b>jinhwan</b></span><span>Process <b>haneol</b></span>
+    </div>
+  </section>
+
+</div>
+
+<div class="dots" id="dots"></div>
+<div class="counter"><b id="cur">1</b> / <span id="total">15</span></div>
+<div class="hint">← → · Space · Home/End · F 전체화면 · P 인쇄(PDF)</div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  const dotsBox=document.getElementById('dots');
+  const total=slides.length;
+  document.getElementById('total').textContent=total;
+  let i=0;
+  slides.forEach((_,n)=>{
+    const d=document.createElement('div');d.className='dot';d.onclick=()=>go(n);
+    dotsBox.appendChild(d);
+  });
+  const dots=[...dotsBox.children];
+  function go(n){
+    i=Math.max(0,Math.min(total-1,n));
+    slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+    dots.forEach((d,k)=>d.classList.toggle('active',k===i));
+    document.getElementById('cur').textContent=i+1;
+    document.getElementById('progress').style.width=((i+1)/total*100)+'%';
+  }
+  function next(){go(i+1);} function prev(){go(i-1);}
+  document.addEventListener('keydown',e=>{
+    if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();next();}
+    else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();prev();}
+    else if(e.key==='Home'){go(0);} else if(e.key==='End'){go(total-1);}
+    else if(e.key==='f'||e.key==='F'){
+      if(!document.fullscreenElement)document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    } else if(e.key==='p'||e.key==='P'){window.print();}
+  });
+  // click right/left half to navigate (ignore links/dots)
+  document.getElementById('deck').addEventListener('click',e=>{
+    if(e.target.closest('a,.dot'))return;
+    (e.clientX>window.innerWidth/2)?next():prev();
+  });
+  go(0);
+</script>
+</body>
+</html>
