@@ -85,14 +85,9 @@ def compute_metrics(trace: dict) -> dict:
     p99_tt = _percentile(tts_sorted, 0.99)
     p95_rt = _percentile(rts_sorted, 0.95)
 
-    # Starvation count: per-pid max consecutive ticks spent at LOW (pri=2)
-    # without being chosen by the scheduler. If this exceeds threshold for
-    # any pid, that pid was starved.
-    pid_low_runs = defaultdict(lambda: [0, 0])  # [current_streak, max_streak]
-    last_tick = 0
-    by_pid_tick = sorted(traces, key=lambda x: (x["pid"], x["tick"]))
-    # A simpler approximation: per-pid, count the longest gap between
-    # consecutive TRACE entries where pri==2 throughout.
+    # Starvation count: per-pid, find the longest gap between consecutive
+    # TRACE entries where pri==2 throughout. If any gap exceeds threshold
+    # for any pid, that pid was starved.
     pid_traces = defaultdict(list)
     for t in traces:
         pid_traces[t["pid"]].append(t)
@@ -135,6 +130,18 @@ def compute_metrics(trace: dict) -> dict:
     }
 
 
+def _safe_pct(new, old):
+    """Percent delta. Returns None when baseline is 0/None — so the caller
+    can render 'n/a' without silently dropping the row. Previously the
+    callers used `if base.get(k)` which removed starvation regressions
+    (baseline=0, llm=5) from the report entirely."""
+    if old is None or new is None:
+        return None
+    if old == 0:
+        return None     # delta undefined, but the metric itself is kept
+    return round((new - old) / old * 100, 2)
+
+
 def compare(base: dict, llm: dict) -> dict:
     summary = {}
     keys = ["avg_turnaround", "median_turnaround", "max_turnaround",
@@ -143,12 +150,11 @@ def compare(base: dict, llm: dict) -> dict:
             "throughput_per_tick", "fairness_jain",
             "starved_pids", "longest_low_gap"]
     for k in keys:
-        if k in base and k in llm and base.get(k):
-            pct = (llm[k] - base[k]) / base[k] * 100
+        if k in base and k in llm:
             summary[k] = {
                 "baseline": base[k],
                 "llm": llm[k],
-                "delta_pct": round(pct, 2),
+                "delta_pct": _safe_pct(llm[k], base[k]),
             }
 
     by_name = {}
@@ -157,9 +163,8 @@ def compare(base: dict, llm: dict) -> dict:
     for n in set(list(base_names) + list(llm_names)):
         b = base_names.get(n, {}).get("avg_tt")
         l = llm_names.get(n, {}).get("avg_tt")
-        entry = {"baseline_avg_tt": b, "llm_avg_tt": l}
-        if b and l:
-            entry["delta_pct"] = round((l - b) / b * 100, 2)
+        entry = {"baseline_avg_tt": b, "llm_avg_tt": l,
+                 "delta_pct": _safe_pct(l, b)}
         by_name[n] = entry
 
     return {"summary": summary, "per_name": by_name}
@@ -173,19 +178,23 @@ def print_report(base: dict, llm: dict, cmp: dict):
     print(f"  Baseline: {base['n_exits']} workload exits, {base['n_traces']} traces")
     print(f"  LLM:      {llm['n_exits']} workload exits, {llm['n_traces']} traces")
     print()
+    def _fmt(v):
+        """Render delta cell — handles None (baseline=0 case) without crashing."""
+        if v is None: return "n/a"
+        if isinstance(v, float): return f"{v:.2f}"
+        return str(v)
+
     print(f"  {'Metric':<22} {'Baseline':>12} {'LLM':>12} {'Δ%':>10}")
     print("  " + "-" * 60)
     for k, d in cmp["summary"].items():
-        print(f"  {k:<22} {d['baseline']:>12} {d['llm']:>12} {d['delta_pct']:>10}")
+        print(f"  {k:<22} {_fmt(d['baseline']):>12} {_fmt(d['llm']):>12} {_fmt(d['delta_pct']):>10}")
 
     print()
     print(f"  {'Program':<18} {'Base TT':>10} {'LLM TT':>10} {'Δ%':>10}")
     print("  " + "-" * 50)
     for name, d in cmp["per_name"].items():
-        b = d.get("baseline_avg_tt", "-")
-        l = d.get("llm_avg_tt", "-")
-        dp = d.get("delta_pct", "-")
-        print(f"  {name:<18} {str(b):>10} {str(l):>10} {str(dp):>10}")
+        print(f"  {name:<18} {_fmt(d.get('baseline_avg_tt')):>10} "
+              f"{_fmt(d.get('llm_avg_tt')):>10} {_fmt(d.get('delta_pct')):>10}")
     print()
 
 
@@ -213,10 +222,11 @@ def print_three_way(base: dict, heur: dict, llm: dict):
         lv = llm.get(k)
         if bv is None or hv is None or lv is None:
             continue
-        dh = (hv - bv) / bv * 100 if bv else 0
-        dl = (lv - bv) / bv * 100 if bv else 0
-        print(f"  {k:<22} {bv:>12} {hv:>12} {lv:>12} "
-              f"{dh:>8.2f}% {dl:>8.2f}%")
+        dh = _safe_pct(hv, bv)
+        dl = _safe_pct(lv, bv)
+        dh_s = f"{dh:>8.2f}%" if dh is not None else "     n/a "
+        dl_s = f"{dl:>8.2f}%" if dl is not None else "     n/a "
+        print(f"  {k:<22} {bv:>12} {hv:>12} {lv:>12} {dh_s} {dl_s}")
 
     print()
     print(f"  {'Program':<18} {'Base TT':>10} {'Heur TT':>10} {'LLM TT':>10} "
@@ -230,16 +240,14 @@ def print_three_way(base: dict, heur: dict, llm: dict):
         b = base_n.get(name, {}).get("avg_tt")
         h = heur_n.get(name, {}).get("avg_tt")
         l = llm_n.get(name, {}).get("avg_tt")
-        if b and h:
-            dh = round((h - b) / b * 100, 2)
-        else:
-            dh = "-"
-        if b and l:
-            dl = round((l - b) / b * 100, 2)
-        else:
-            dl = "-"
-        print(f"  {name:<18} {str(b):>10} {str(h):>10} {str(l):>10} "
-              f"{str(dh):>8}% {str(dl):>8}%")
+        dh = _safe_pct(h, b)
+        dl = _safe_pct(l, b)
+        bs = "-" if b is None else str(b)
+        hs = "-" if h is None else str(h)
+        ls = "-" if l is None else str(l)
+        dhs = "n/a" if dh is None else f"{dh}%"
+        dls = "n/a" if dl is None else f"{dl}%"
+        print(f"  {name:<18} {bs:>10} {hs:>10} {ls:>10} {dhs:>9} {dls:>9}")
     print()
 
 
@@ -259,8 +267,8 @@ def three_way_compare(base: dict, heur: dict, llm: dict) -> dict:
             "baseline": bv,
             "heuristic": hv,
             "llm": lv,
-            "delta_heur_pct": round((hv - bv) / bv * 100, 2) if bv else None,
-            "delta_llm_pct":  round((lv - bv) / bv * 100, 2) if bv else None,
+            "delta_heur_pct": _safe_pct(hv, bv),
+            "delta_llm_pct":  _safe_pct(lv, bv),
         }
     bn = base.get("per_name", {}); hn = heur.get("per_name", {})
     ln = llm.get("per_name", {})
@@ -268,10 +276,11 @@ def three_way_compare(base: dict, heur: dict, llm: dict) -> dict:
         b = bn.get(name, {}).get("avg_tt")
         h = hn.get(name, {}).get("avg_tt")
         l = ln.get(name, {}).get("avg_tt")
-        entry = {"baseline_avg_tt": b, "heuristic_avg_tt": h, "llm_avg_tt": l}
-        if b and h: entry["delta_heur_pct"] = round((h - b) / b * 100, 2)
-        if b and l: entry["delta_llm_pct"]  = round((l - b) / b * 100, 2)
-        out["per_name"][name] = entry
+        out["per_name"][name] = {
+            "baseline_avg_tt": b, "heuristic_avg_tt": h, "llm_avg_tt": l,
+            "delta_heur_pct": _safe_pct(h, b),
+            "delta_llm_pct":  _safe_pct(l, b),
+        }
     return out
 
 
