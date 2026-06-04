@@ -1,348 +1,144 @@
-# SmartShell — Claude Code 컨텍스트 (xv6-riscv 기반)
+# CLAUDE.md — 프로젝트 컨텍스트 (xv6 자연어 OS 셸)
 
-이 파일은 Claude Code가 프로젝트를 시작할 때 자동으로 읽는 컨텍스트야.
-**질문하기 전에 항상 이 파일을 먼저 읽고 시작해.**
-
----
-
-## 📌 프로젝트 한 줄 요약
-
-**SmartShell** — xv6-riscv(RISC-V 64-bit) 위에 LLM 자연어 인터페이스를 얹어, 자연어로 OS 프로세스를 다루는 시스템.
-- **방향 B**: LLM for OS (LLM을 OS 안으로 통합)
-- 진짜 **OS 컴포넌트**(xv6 커널의 스케줄러, syscall, proc table)를 직접 수정/확장
-- LLM(Upstage Solar Pro 3)은 **호스트 측 브리지**로 분리 — xv6는 네트워크/HTTPS 불가
-- 학부 운영체제 학기말 팀 프로젝트, 4인팀, 14주차, 성적 30%
+Claude Code가 세션 시작 시 자동으로 읽는 파일. **작업 전 항상 먼저 읽을 것.**
 
 ---
 
-## 📂 디렉토리 구조 (중요 — 두 곳에 분산되어 있음)
+## 한 줄 요약
+
+xv6-riscv(RISC-V 64-bit) 위에, **자연어 → OS 명령**으로 동작하는 시스템.
+자연어를 **로컬 파인튜닝 SLM**이 구조화된 인텐트로 변환 → 안전가드 → 실제 xv6 syscall 실행.
+- 방향 B (LLM for OS). 학부 OS 학기말 팀 프로젝트.
+- **LLM은 절대 커널에 안 들어감**: syscall 경계에서 작은 JSON(인텐트)로 축약됨. 커널은 LLM의 존재를 모름.
+- LLM 없이도 동작(결정론적 폴백/규칙). API 키·네트워크 장애에 데모가 안 깨짐.
+
+---
+
+## 디렉토리 구조 (현재 실제 기준)
 
 ```
-/Users/jeonhaneol/Downloads/LLM for OS/   ← 프로젝트 루트 (단일 트리)
-├── CLAUDE.md                         (이 파일)
-├── README.md                         (사용자/평가자용 문서)
-├── host/                             ← 호스트 NL 브리지 (Python)
-│   ├── nl_bridge.py
-│   ├── README.md
-│   ├── .env                          (gitignored — UPSTAGE_API_KEY)
-│   └── .gitignore
-└── xv6-riscv/                        ← xv6 커널 소스 (멤버 B 등과 공유)
-    ├── kernel/                       ← C 커널 소스
-    │   ├── proc.c, proc.h            ← 스케줄러, proc table (내가 수정 중)
-    │   ├── sysproc.c                 ← 프로세스 syscall (내가 sys_ps 추가)
-    │   ├── procinfo.h                ← 내가 신규로 만듦
-    │   ├── syscall.c, syscall.h      ← syscall 디스패치 (내가 SYS_ps 등록)
-    │   └── ...
-    ├── user/                         ← 사용자 공간 프로그램
-    │   ├── ps.c                      ← 내가 신규로 만듦
-    │   ├── priority_test.c           ← 기존
-    │   ├── usys.pl, user.h           ← syscall stub (내가 ps 추가)
-    │   └── ...
-    ├── Makefile                      ← UPROGS에 _ps 추가
-    └── test-xv6.py                   ← QEMU 자동화 테스트 러너
-```
-
-`host/nl_bridge.py`는 `XV6_DIR` 기본값을 `os.path.dirname(__file__)/../xv6-riscv`로 잡아서, 어디로 옮겨도 자동 탐색됨.
-
----
-
-## ⚠️ 가장 중요한 원칙
-
-> **"LLM API 단순 래퍼"는 인정 안 됨.**
-> **OS 개념(스케줄러, syscall, proc table)을 xv6 커널에서 직접 구현해야 함.**
-
-- LLM의 역할: 자연어 → 구조화된 의도(Intent), 결과 요약 (호스트 측)
-- 우리가 구현: **xv6 커널의 MLFQ 스케줄러, sys_ps/sys_setpriority 등 syscall, 호스트↔xv6 콘솔 브리지**
-- 코드 비중: xv6 C 코드 > Python 호스트 브리지 (LLM 호출 코드는 전체의 5% 이하)
-
----
-
-## 🏗️ 시스템 아키텍처
-
-```
-[사용자 자연어 입력]
-        │
-        ▼
-┌───────────────────────────────────┐
-│  Python NL Bridge (호스트)         │  ← 멤버 A 일부 + C 담당
-│  host/nl_bridge.py                │
-│  - Solar API: NL → Intent         │
-│  - 화이트리스트 가드               │
-│  - QEMU stdio 입출력               │
-└───────────┬───────────────────────┘
-            │ stdin/stdout (subprocess)
-            ▼
-┌───────────────────────────────────┐
-│  xv6-riscv (QEMU)                 │
-│  ┌──────────────────────────┐     │
-│  │  user/sh, ps, ...        │     │  ← 멤버 A: ps.c, priority_test
-│  ├──────────────────────────┤     │
-│  │  syscalls                │     │  ← 멤버 A: sys_ps, sys_setpriority
-│  ├──────────────────────────┤     │
-│  │  kernel                  │     │
-│  │   - proc.c (priority→MLFQ│     │  ← 멤버 A ⭐ (W12 확장 예정)
-│  │   - trap.c (quantum)     │     │  ← 멤버 A ⭐ (W12)
-│  │   - signal/syscall       │     │  ← 멤버 B
-│  │   - fs/log (ireclaim)    │     │  ← 멤버 B (이미 있음)
-│  │   - vm.c (lazy alloc)    │     │  ← 멤버 B (이미 있음)
-│  └──────────────────────────┘     │
-└───────────────────────────────────┘
+LLM for OS/
+├── CLAUDE.md  README.md                      ← 이 파일 / 사용자 문서
+├── LLM_RESEARCH_PROPOSAL.md  LLM_TRAINING_PLAN.md
+├── data/                                      ← 학습 데이터 (NL → spec)
+│   ├── seeds/01..07_*.jsonl                   ← 수동 시드 (07 = 확장 인텐트)
+│   ├── seeds.jsonl  augmented.jsonl  augmented_auto.jsonl
+│   └── train.jsonl  test.jsonl                ← build_train.py 산출 (gitignore: auto/models)
+├── scripts/                                   ← 학습 파이프라인 (Python, Windows/GPU)
+│   ├── gen_intent_seeds.py                    ← 확장 인텐트 시드 생성
+│   ├── augment_offline.py                     ← 무료 규칙기반 증강 (API 불필요)
+│   ├── build_train.py                         ← 그룹단위 split (누수 0) + --balance
+│   ├── train.py                               ← plain transformers+peft LoRA (bf16, cu128)
+│   ├── evaluate.py  compare.py                ← 정확도 / Solar 대비 비교
+│   └── requirements.txt  run_all.sh
+├── models/                                    ← 학습 산출물 (gitignored, 큼)
+│   └── smartmlfq-qwen-3b-r64-e10/{lora,merged}
+├── integration/
+│   ├── xv6-riscv/                             ← 통합 커널 + 유저 (빌드 대상; 맥북/리눅스)
+│   │   ├── kernel/  (proc.c=MLFQ+reap, sysproc.c, syscall.*)
+│   │   └── user/    (nlrun, ps, setprio, kill, killall, killheavy, reap,
+│   │                 uptime, sysinfo, tracepid, *_burner ...)
+│   └── host/                                  ← 호스트 Python
+│       ├── nl_shell.py                        ← 기존 NL→spec REPL
+│       ├── executor.py    ★ M3: 인텐트→xv6명령 + 안전가드
+│       ├── agent.py       ★ M4: 추상요청("정리해줘")→다단계 분해
+│       └── prompts.py  parse_trace.py  evaluator.py  viz.py
+├── smart-mlfq-host/  smart-mlfq-xv6-patches/  ← 단독 슬라이스(백업 데모용, 의도적 공존)
+├── agent/                                     ← Phase-2 자율 스케줄러 에이전트(별도)
+└── docs/  (charts, syscall-allocation, trace-format, ...)
 ```
 
 ---
 
-## 👤 내 역할: 멤버 A — 프로세스/스케줄러
+## 가장 중요한 원칙
 
-**xv6 커널의 프로세스 관리 + 호스트 NL 브리지의 프로세스 관련 부분을 담당.**
-
-### 진행 상황 (W10 시점)
-
-| 항목 | 상태 | 파일 |
-|---|---|---|
-| `sys_ps` syscall | ✅ 구현 완료 | `kernel/sysproc.c`, `kernel/procinfo.h` (신규) |
-| `ps` 사용자 프로그램 | ✅ 구현 완료 | `user/ps.c` (신규) |
-| 빌드 통합 (Makefile, syscall.h/c, usys.pl, user.h) | ✅ 완료 | 6곳 수정 |
-| 호스트 NL 브리지 스켈레톤 | ✅ 구현 완료 | `host/nl_bridge.py` (신규) |
-| `[sched]/[sleep]/[wakeup]` 디버그 print 정리 | ⏸️ 보류 (멤버 B 영역, 합의 필요) | `kernel/proc.c` |
-| MLFQ 확장 | 🚧 W12 목표 | `kernel/proc.c`, `kernel/trap.c` |
-
-### 기존에 들어가 있던 것 (내가 만들지 않음)
-
-- `proc.h`에 `int priority` 필드 (0=highest, 20=lowest, default 10)
-- `proc.h`에 `int trace_mask` 필드
-- `kernel/sysproc.c`: `sys_setpriority`, `sys_getpriority`, `sys_trace`, `sys_sysinfo`
-- `kernel/proc.c`: scheduler()가 단일 우선순위 기반 (가장 낮은 priority 숫자 선택) — MLFQ 아님
-- `user/priority_test.c`, `trace_test.c`, `sysinfo_test.c`
-- `kernel/vm.c`: lazy page allocation 확장 (멤버 B 영역)
-- `kernel/fs.c`: `ireclaim()` orphaned inode 회수 (멤버 B 영역)
+> **"LLM 단순 래퍼"는 인정 안 됨. OS 개념을 xv6 커널에서 직접 구현해야 함.**
+- LLM 역할: 자연어 → 인텐트 JSON (호스트 측). 출력은 syscall 경계에서 작은 정수/문자열로 축약.
+- 우리 구현: xv6 **3-단계 MLFQ 스케줄러**, syscall 다수(setpri/getstats/ps/reap/...), 안전가드, 호스트 브리지.
+- 잘못된 힌트는 MLFQ demotion이 자가 교정. 위험 동작(kill/rm)은 가드가 pid 0·1 보호 + 확인 게이트.
 
 ---
 
-## 🔑 sys_ps 인터페이스 (이미 구현됨)
+## 자연어 인텐트 (모델 출력 스키마) — 20종
 
-```c
-// kernel/procinfo.h
-struct procinfo {
-  int pid;
-  int ppid;
-  int state;        // procstate enum 값 (UNUSED..ZOMBIE)
-  int priority;     // 0=highest .. 20=lowest
-  uint64 sz;
-  char name[16];
-};
+`{"cmd": ..., "args": [...], "queue_hint": 0|1|2, "reason": "..."}`
 
-// 사용자에서:  int ps(struct procinfo *buf, int max);
-//             반환: 채운 entry 수, 실패 -1
-```
+| 그룹 | cmd |
+|---|---|
+| 작업실행 | cpu_burner io_burner mixed_burner echo |
+| 파일 | ls cat rm mkdir ln |
+| 프로세스 | ps kill setpri trace |
+| 정리 | killall killheavy reap |
+| 시스템 | uptime sysinfo |
+| 기타 | explain reject |
 
-`user/ps.c` 출력 포맷 (호스트 브리지가 정규식으로 파싱):
-```
-PID  PPID  STATE    PRIO  SZ        NAME
-1  0  sleep  10  16384  init
-2  1  sleep  10  20480  sh
-TOTAL 3
-```
-
-주의: `sys_ps`는 `parent` 접근에 `wait_lock`을 잡지 않음 (xv6 `procdump()`와 동일한 race-tolerant 패턴). 디버깅 출력용이라 OK.
+- `train.py`와 `evaluate.py`와 `executor.py`의 SYSTEM_PROMPT는 **반드시 글자단위로 동일**해야 함.
+- 새 인텐트 추가 절차: `gen_intent_seeds.py`에 시드 추가 → `augment_offline.py` → `build_train.py` → SYSTEM_PROMPT 3곳 동기화 → 재학습.
 
 ---
 
-## 🔑 MLFQ 설계 (W12 목표 — 아직 미구현)
+## 파이프라인 (자연어 → 실행)
 
-### 큐 레벨
-- L0 (HIGH): priority 0–6
-- L1 (NORMAL): priority 7–13
-- L2 (LOW): priority 14–20
-
-### 동작
-1. 새 프로세스 시작 시 priority=10 (L1)
-2. timer tick마다 RUNNING proc의 `run_ticks++`
-3. `run_ticks >= QUANTUM[level]` 도달 시: priority += 1 (강등), run_ticks = 0
-4. 매 BOOST_INTERVAL(예: 100 tick)마다 모든 priority를 0으로 reset (starvation 방지)
-
-### 새 필드 (proc.h에 추가 예정)
-```c
-int run_ticks;      // 현재 quantum에서 사용한 tick
+```
+자연어 ──(로컬 SLM, OpenAI호환)──▶ spec(JSON)
+           executor.py: build_command() ─▶ xv6 명령 문자열
+           executor.py: SafetyGuard      ─▶ allow / confirm / reject
+                                            (kill 0·1 거부, kill/rm/killall/killheavy 확인)
+추상요청("정리해줘") ─▶ agent.py: ps 관찰 → [reap, killheavy ...] 분해 → 각각 가드
 ```
 
-기존 `priority` 필드는 그대로 유지 → `setpriority`/`getpriority` 인터페이스 호환 유지.
-
 ---
 
-## 🔑 호스트 NL 브리지 (`host/nl_bridge.py`, 이미 구현됨)
+## 빌드 / 실행 명령
 
-### Intent 종류
-- `PS` — 프로세스 목록
-- `SETPRIO {pid, prio}` — 우선순위 변경
-- `SPAWN {cmd}` — 사용자 프로그램 실행
-- `KILL {pid}` — 프로세스 종료
-- `EXPLAIN {about}` — LLM이 그냥 답변
-- `REJECT` — 안전하지 않거나 범위 외
+### 학습 (Windows + RTX 5070 Ti, Blackwell)
+```powershell
+cd scripts
+python -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
+python -m pip install -r requirements.txt
+$env:PYTHONUTF8="1"                 # trl cp949 버그 우회 (필수)
+python train.py                      # qwen-3b r64 e10 → models/smartmlfq-qwen-3b-r64-e10
+python evaluate.py --backend hf --model ..\models\smartmlfq-qwen-3b-r64-e10\lora
+```
 
-### Solar API (있을 때) / 오프라인 파서 (없을 때) 폴백
-- `UPSTAGE_API_KEY` (또는 `SOLAR_API_KEY`) 환경변수로 활성화
-- 키 없으면 정규식 기반 오프라인 파서로 폴백 → 로컬 개발 가능
-
-### 안전 가드
-- `KILL`은 PID=0, 1 (init) 거부
-- `SPAWN`은 화이트리스트 (`SPAWN_WHITELIST` in `nl_bridge.py`)
-- `SETPRIO`는 `0 <= prio <= 20` 검증
-
-### QEMUDriver
-- `subprocess.Popen(['make', 'qemu'], cwd=XV6_DIR, ...)` 로 부팅
-- `proc.stdin`에 명령 송신, `proc.stdout` 읽어서 `[sched]/[sleep]/[wakeup]` 노이즈 정규식으로 필터
-
----
-
-## 🛠️ 빌드 / 실행 명령어 (자주 씀)
-
-### xv6 커널만 빌드
+### xv6 빌드 (맥북/리눅스 — RISC-V 툴체인 필요, Windows 네이티브 불가)
 ```bash
-cd /Users/jeonhaneol/Downloads/LLM for OS/xv6-riscv
-make kernel/kernel
+cd integration/xv6-riscv && make clean && make qemu
+# xv6: ps / killall cpu_burner / killheavy / reap / uptime / sysinfo
 ```
 
-### 사용자 프로그램까지 + fs.img 재생성
-```bash
-make fs.img
-```
-
-### QEMU 직접 실행 (인터랙티브)
-```bash
-make qemu
-# 종료: Ctrl-A 다음 X
-```
-
-### 자동 테스트 (xv6 트리에 이미 있음)
-```bash
-./test-xv6.py usertests          # 전체
-./test-xv6.py -q usertests       # 빠른 버전
-./test-xv6.py crash               # log/forphan/dorphan
-```
-
-### 호스트 브리지 실행
-```bash
-cd "/Users/jeonhaneol/Downloads/LLM for OS/host"
-export UPSTAGE_API_KEY=sk-...     # 선택 (없으면 오프라인 파서)
-python3 nl_bridge.py
+### 데이터 재생성 (GPU 불필요)
+```powershell
+cd scripts
+python gen_intent_seeds.py
+python augment_offline.py --multiplier 8     # 무료, 결정론적
+python build_train.py                         # 누수 0 그룹 split
 ```
 
 ---
 
-## 🛠️ 기술 스택 / 환경
+## 함정 / 주의
 
-- **xv6**: RISC-V 64-bit, QEMU 7.2+
-- **빌드 도구**: `riscv64-elf-gcc` (Mac brew: `riscv64-elf-binutils`, `riscv64-elf-gcc`)
-- **호스트**: Python 3.11+, 표준 라이브러리만 (Solar API 호출 시 `requests` 추가)
-- **LLM**: Upstage Solar Pro 3 (OpenAI 호환), `solar-pro2` 모델
-
----
-
-## 📅 주차별 로드맵
-
-| 주차 | 마일스톤 | 내(A) 작업 |
-|---|---|---|
-| W10 ✅ | 아키텍처 확정, MVP | 새 CLAUDE.md, sys_ps/ps, host/nl_bridge.py 스켈레톤 |
-| W11 | NL→ps 1개 명령 end-to-end | 실 Solar API 연동, QEMU pty 안정화 |
-| W12 | MLFQ + 평가 지표 | proc.c MLFQ 확장, run_ticks/boost, 평가 자동화 |
-| W13 | 평가 + 발표 리허설 | 처리량/공정성 그래프 |
-| W14 | 최종 발표 (영어) | |
+1. **Windows 한국어 인코딩(cp949)**: 모든 파일 IO는 `encoding="utf-8"`. 학습 실행 전 `$env:PYTHONUTF8="1"`.
+2. **Blackwell(sm_120)**: torch는 반드시 cu128 빌드. cu124는 `is_available()=True`여도 커널 실행에서 터짐.
+3. **xv6 빌드는 Windows 불가**: RISC-V gcc + qemu 필요 → 맥북/리눅스/WSL2.
+4. **syscall 추가는 6곳**: syscall.h(번호) / syscall.c(extern+배열) / sysproc.c(함수) / defs.h / usys.pl / user.h. 새 유저 프로그램은 Makefile UPROGS.
+5. **proc 테이블 락 순서**: `wait_lock` → `p->lock`. parent 접근은 wait_lock 안에서.
+6. **SYSTEM_PROMPT 동기화**: train/evaluate/executor 3곳이 다르면 평가가 불공정해지고 모델 동작이 틀어짐.
+7. **models/는 gitignore**: 수 GB. 커밋 금지.
 
 ---
 
-## 📊 평가 지표
+## 현재 상태 (2026-06)
 
-1. 자연어 명령 성공률 (목표 ≥85%)
-2. **MLFQ 공정성**: HIGH/NORMAL/LOW 평균 대기 tick 비율 ← 내 모듈
-3. **동시 작업 처리량**: N개 fork 동시 제출 시 평균 완료 tick ← 내 모듈
-4. xv6 usertests 통과 유지 (회귀 없음)
-5. 안전 가드 false positive (악성 명령 차단율)
+| 단계 | 상태 |
+|---|---|
+| 데이터 20인텐트 (한/영 ~반반, train 5951/test 1584) | ✅ |
+| 학습 (qwen-3b r64 e10) | ✅ 산출물 존재 (정확도는 evaluate.py 실행 필요) |
+| 커널 reap + 유저 killall/killheavy/reap/uptime/sysinfo/tracepid | ✅ 작성 (맥북 빌드 검증 대기) |
+| M3 executor + 안전가드 | ✅ 오프라인 검증 |
+| M4 agent (추상요청 분해) | ✅ 오프라인 검증 |
+| 라이브 자동실행(QEMU 드라이버 연결) | ⬜ 빌드 통과 후 연결 |
 
----
-
-## 🧑‍💻 코딩 규칙
-
-### xv6 (C)
-- 기존 xv6 스타일 (2-space indent, K&R brace)
-- `-Wall -Werror`, 경고 0
-- syscall은 `argint`/`argaddr`/`argstr`로 인자 추출
-- proc 테이블 접근은 반드시 `p->lock` 안에서
-- 머지 전 디버그 `printf` 제거
-
-### Python (호스트)
-- PEP 8
-- Type hint
-- 표준 라이브러리 우선; 외부 패키지는 lazy import (`requests`)
-
-### 브랜치
-- `main` 보호, PR로만 머지
-- `feature/<모듈>-<작업>`: 예) `feature/proc-mlfq`, `feature/host-bridge`
-
----
-
-## ⚠️ 함정 (xv6 + LLM 특화)
-
-### 1. xv6는 네트워크 X
-- xv6 안에서 직접 Solar API 호출 불가 → 반드시 호스트 브리지 구조
-
-### 2. proc 테이블 락 순서
-- xv6는 `p->lock`, `wait_lock`, `tickslock` 등 락이 여럿
-- 정확히 하려면 `parent` 접근에 `wait_lock`도 잡아야 함
-- 디버깅용 `ps`/`procdump`는 race를 허용하는 게 일반적
-
-### 3. MLFQ + timer tick (W12 작업 시)
-- timer 인터럽트는 `kerneltrap`/`usertrap` 양쪽에서 옴
-- run_ticks++는 user mode 진입 시점이 안전 (`yield()` 직전)
-- BOOST_INTERVAL는 `tickslock` 안에서만 비교
-
-### 4. priority_test 호환성
-- 기존 `priority_test.c`는 default=10, range [0,20] 가정
-- MLFQ로 바꿔도 인터페이스(setpriority/getpriority)는 유지
-
-### 5. `[sched]` printf — 출력 도배
-- 현재 scheduler가 매 스위치마다 printf
-- 호스트 브리지는 `_NOISE_RE`로 필터링 중이지만 임시방편
-- 멤버 B와 합의 후 `#ifdef SCHED_DEBUG` 가드 권장
-
-### 6. Makefile UPROGS — 새 user 프로그램 추가 시
-- syscall 새로 추가하면 6곳 수정: `kernel/syscall.h` (번호), `kernel/syscall.c` (extern + 배열 + 이름 배열), `kernel/sysproc.c` (함수), `user/usys.pl` (stub), `user/user.h` (선언)
-- 새 user 프로그램은 `Makefile`의 `UPROGS`에 `$U/_xxx` 추가
-
----
-
-## 🤖 Claude Code 활용 가이드
-
-### 좋은 패턴
-- ✅ "kernel/sysproc.c에 sys_ps 함수만 짜줘. 인터페이스는 (struct procinfo *, int max) → int."
-- ✅ "kernel/proc.c scheduler() 안의 priority 비교 부분만 MLFQ 3-큐로 바꿔줘."
-- ✅ "host/nl_bridge.py에 KILL intent 처리 흐름 추가."
-
-### 나쁜 패턴
-- ❌ "xv6에 LLM 통합해줘" (너무 추상)
-- ❌ "스케줄러 다시 짜줘" (기존 코드 컨텍스트 빠짐)
-
-### 반드시 검증할 것
-- syscall 추가는 6곳을 다 손대야 함 (위 함정 #6 참조)
-- MLFQ 변경 후 `usertests`, `priority_test`가 통과하는지 확인
-- 락 순서 위반 시 panic 발생 — 작은 변경마다 `make qemu` 돌려보기
-
----
-
-## 🎤 "단순 래퍼"가 아닌 증거 (발표용)
-
-1. ✅ xv6 커널 `proc.c`의 priority 스케줄러 → MLFQ 확장 (C 코드, LLM과 무관)
-2. ✅ `sys_ps`, `sys_setpriority` 직접 구현 (proc table → user space copyout)
-3. 🚧 timer tick 기반 quantum/boost 메커니즘 (trap.c 수정, W12)
-4. ✅ ireclaim/lazy alloc (멤버 B) — 커널 자료구조 직접 수정
-5. ✅ LLM은 호스트 브리지로만 사용 (전체 코드의 5% 이하)
-
----
-
-## ✏️ 현재 진행 상황
-
-- [x] W9: 팀 구성, 방향 결정
-- [x] **W10**: 아키텍처 확정, sys_ps/ps MVP, host bridge 스켈레톤 — **완료**
-- [ ] W11: NL → xv6 명령 end-to-end (실 Solar API 연동)
-- [ ] W12: MLFQ 완성
-- [ ] W13: 평가
-- [ ] W14: 최종 발표
+## 범위 밖 (xv6에 기능 자체가 없음 — 추가 불가/비현실적)
+네트워크(다운로드), 유저/권한(sudo/chmod), 서비스/패키지매니저, 프로세스 일시정지(SIGSTOP).

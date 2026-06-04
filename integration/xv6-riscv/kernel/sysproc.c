@@ -332,3 +332,10 @@ sys_ps(void)
   }
   return n;
 }
+
+// sys_reap() — force-reap abandoned zombie processes. Returns the count reaped.
+uint64
+sys_reap(void)
+{
+  return proc_reap_zombies();
+}

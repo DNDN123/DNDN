@@ -63,3 +63,5 @@ entry("futex_wake");
 # === haneol: process listing ===
 entry("ps");
 entry("sysinfo");
+# === Tier-1 cleanup ===
+entry("reap");

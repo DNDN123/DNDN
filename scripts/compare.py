@@ -7,7 +7,7 @@ Usage:
     # Compare fine-tuned vs Solar
     export UPSTAGE_API_KEY=up_...
     python compare.py \\
-        --a "Solar Pro 3"    --a-backend solar   --a-model solar-pro2 \\
+        --a "Solar Pro 3"    --a-backend solar   --a-model solar-pro3 \\
         --b "Ours (7B)"      --b-backend ollama  --b-model smartmlfq \\
         --output ../compare_solar_vs_ours.md
 
@@ -179,7 +179,7 @@ print()
 backend_a = BACKEND_MAKERS[args.a_backend]()
 backend_b = BACKEND_MAKERS[args.b_backend]()
 
-test = [json.loads(line) for line in open(args.test_file)]
+test = [json.loads(line) for line in open(args.test_file, encoding="utf-8")]
 if args.limit > 0:
     test = test[:args.limit]
 print(f"Test set: {len(test)} examples\n")
@@ -286,7 +286,7 @@ print("=" * 70)
 # ---------------------------------------------------------------------------
 # Markdown report
 # ---------------------------------------------------------------------------
-out = open(args.output, "w")
+out = open(args.output, "w", encoding="utf-8")
 def w(s=""): out.write(s + "\n")
 
 w(f"# Head-to-Head Comparison\n")
@@ -342,7 +342,7 @@ print(f"\nReport written to {args.output}")
 
 # Also dump raw results for further analysis
 raw_path = args.output.replace(".md", "_raw.jsonl")
-with open(raw_path, "w") as f:
+with open(raw_path, "w", encoding="utf-8") as f:
     for r in results:
         f.write(json.dumps(r, ensure_ascii=False, default=str) + "\n")
 print(f"Raw results: {raw_path}")

@@ -77,6 +77,7 @@ struct procinfo;   // forward decl; full def in kernel/procinfo.h
 struct sysinfo;    // forward decl; full def in kernel/sysinfo.h
 int ps(struct procinfo *buf, int max);
 int sysinfo(struct sysinfo *info);
+int reap(void);                                // Tier-1: reap abandoned zombies
 
 // ulib.c
 int stat(const char*, struct stat*);

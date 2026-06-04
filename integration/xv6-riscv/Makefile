@@ -158,6 +158,12 @@ UPROGS=\
 	$U/_setprio\
 	$U/_bgq\
 	$U/_forkstress\
+	$U/_killall\
+	$U/_killheavy\
+	$U/_reap\
+	$U/_uptime\
+	$U/_sysinfo\
+	$U/_tracepid\
 
 # Workload spec files used by wrunner/nlrun. Packaged into fs.img so the
 # user can run `wrunner cpu_heavy.txt hints_example.txt` etc.

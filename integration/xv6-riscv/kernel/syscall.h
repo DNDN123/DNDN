@@ -45,3 +45,5 @@
 // --- haneol (process) ---
 #define SYS_ps       34
 #define SYS_sysinfo  35
+// --- Tier-1 cleanup ---
+#define SYS_reap     36

@@ -355,6 +355,33 @@ reparent(struct proc *p)
   }
 }
 
+// === Tier-1 cleanup ===
+// Force-reap abandoned zombies. Any ZOMBIE whose parent is not already init is
+// reparented to init and init is woken, so init's wait() loop frees it through
+// the normal, tested path (we never call freeproc() directly). Returns the
+// number reparented. Lock order matches wait(): wait_lock then p->lock.
+int
+proc_reap_zombies(void)
+{
+  struct proc *p;
+  int reaped = 0;
+
+  acquire(&wait_lock);
+  for(p = proc; p < &proc[NPROC]; p++){
+    acquire(&p->lock);
+    if(p->state == ZOMBIE && p->parent != initproc){
+      p->parent = initproc;
+      reaped++;
+    }
+    release(&p->lock);
+  }
+  if(reaped > 0)
+    wakeup(initproc);   // same pattern as reparent(): wakeup under wait_lock
+  release(&wait_lock);
+
+  return reaped;
+}
+
 // === MODIFIED ===
 // Emit EXIT trace line before tearing down.
 void

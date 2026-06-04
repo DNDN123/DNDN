@@ -13,7 +13,7 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 MODE="${MODE:-accuracy}"
-SOLAR_MODEL="${SOLAR_MODEL:-solar-pro2}"
+SOLAR_MODEL="${SOLAR_MODEL:-solar-pro3}"
 echo "============================================================"
 echo "SmartShell pipeline — MODE=$MODE"
 echo "============================================================"

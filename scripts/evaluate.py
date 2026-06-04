@@ -11,6 +11,7 @@ Usage (direct HF backend — uses LoRA adapter):
 """
 import argparse
 import json
+import os
 import re
 import time
 from collections import defaultdict, Counter
@@ -27,12 +28,22 @@ parser.add_argument("--limit", type=int, default=0, help="0 = all")
 args = parser.parse_args()
 
 SYSTEM_PROMPT = (
-    "You are an xv6 NL-to-spec classifier. Given a user request, output a "
-    "single JSON object with keys cmd, args, queue_hint, reason. "
-    "cmd in {cpu_burner, io_burner, mixed_burner, echo, cat, ls, reject}. "
-    "queue_hint in {0=HIGH, 1=MID, 2=LOW}. "
-    "args is a list of strings. reason is a short English sentence. "
-    "Output JSON only, no markdown fences."
+    "You are an xv6 natural-language OS shell. Convert the user request into a "
+    "single JSON object with keys cmd, args, queue_hint, reason.\n"
+    "cmd is one of:\n"
+    "  workloads: cpu_burner | io_burner | mixed_burner (args=[iterations]); "
+    "set queue_hint 0=HIGH (interactive/IO), 1=MID, 2=LOW (heavy/background).\n"
+    "  files: ls (args=[path?]) | cat (args=[path]) | rm (args=[path]) | "
+    "mkdir (args=[path]) | ln (args=[target,linkname]) | echo (args=[text]).\n"
+    "  process: ps (args=[]) | kill (args=[pid]) | setpri (args=[pid,prio 0..2]) | "
+    "trace (args=[pid,\"on\"|\"off\"]).\n"
+    "  cleanup: killall (args=[name]) | killheavy (args=[count?]) | reap (args=[]).\n"
+    "  system: uptime (args=[]) | sysinfo (args=[]).\n"
+    "  info: explain (args=[topic]) — answer only, no OS action.\n"
+    "  reject — unsafe/unsupported/out-of-scope (killing pid 0 or 1, networking, "
+    "sudo, gibberish).\n"
+    "For every non-workload command set queue_hint to 0. args is a list of "
+    "strings. reason is a short English sentence. Output JSON only, no markdown."
 )
 
 # ---------------------------------------------------------------------------
@@ -59,31 +70,47 @@ def query_ollama(user_text):
 _hf_model = None
 _hf_tok = None
 def query_hf(user_text):
+    """Plain transformers + peft (no unsloth). args.model may be a LoRA adapter
+    dir, a merged-model dir, or a base HF model id."""
     global _hf_model, _hf_tok
     if _hf_model is None:
-        from unsloth import FastLanguageModel
         import torch
-        _hf_model, _hf_tok = FastLanguageModel.from_pretrained(
-            model_name=args.model,
-            max_seq_length=2048,
-            load_in_4bit=True,
-        )
-        FastLanguageModel.for_inference(_hf_model)
+        from transformers import AutoModelForCausalLM, AutoTokenizer
+        dtype = torch.bfloat16 if (torch.cuda.is_available()
+                                   and torch.cuda.is_bf16_supported()) else torch.float16
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        adapter_cfg = os.path.join(args.model, "adapter_config.json")
+        if os.path.isfile(adapter_cfg):
+            # LoRA adapter dir → load base from adapter_config, then attach adapter
+            from peft import PeftConfig, PeftModel
+            pcfg = PeftConfig.from_pretrained(args.model)
+            base_id = pcfg.base_model_name_or_path
+            _hf_tok = AutoTokenizer.from_pretrained(base_id)
+            base = AutoModelForCausalLM.from_pretrained(
+                base_id, torch_dtype=dtype, device_map=device)
+            _hf_model = PeftModel.from_pretrained(base, args.model)
+        else:
+            # merged model dir or plain HF id
+            _hf_tok = AutoTokenizer.from_pretrained(args.model)
+            _hf_model = AutoModelForCausalLM.from_pretrained(
+                args.model, torch_dtype=dtype, device_map=device)
+        _hf_model.eval()
+        if _hf_tok.pad_token is None:
+            _hf_tok.pad_token = _hf_tok.eos_token
+    import torch
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": user_text},
     ]
     prompt = _hf_tok.apply_chat_template(messages, tokenize=False,
                                           add_generation_prompt=True)
-    import torch
-    inputs = _hf_tok(prompt, return_tensors="pt").to("cuda")
+    inputs = _hf_tok(prompt, return_tensors="pt").to(_hf_model.device)
     with torch.no_grad():
         outputs = _hf_model.generate(**inputs, max_new_tokens=256,
-                                     temperature=0, do_sample=False,
+                                     do_sample=False,
                                      pad_token_id=_hf_tok.eos_token_id)
-    text = _hf_tok.decode(outputs[0][inputs.input_ids.shape[1]:],
+    return _hf_tok.decode(outputs[0][inputs.input_ids.shape[1]:],
                           skip_special_tokens=True)
-    return text
 
 query = query_ollama if args.backend == "ollama" else query_hf
 
@@ -113,7 +140,7 @@ def looks_korean(s):
 # ---------------------------------------------------------------------------
 # Run
 # ---------------------------------------------------------------------------
-test = [json.loads(line) for line in open(args.test_file)]
+test = [json.loads(line) for line in open(args.test_file, encoding="utf-8")]
 if args.limit > 0:
     test = test[:args.limit]
 print(f"Evaluating {len(test)} examples against backend={args.backend} "
@@ -168,6 +195,7 @@ for i, ex in enumerate(test, 1):
     if q_ok:
         stats["correct_queue"] += 1
         stats["by_queue"][truth_q]["queue_ok"] += 1
+        stats["by_cmd"][truth_cmd]["queue_ok"] += 1
         stats["by_lang"][lang]["queue_ok"] += 1
     if cmd_ok and q_ok:
         stats["correct_both"] += 1
@@ -200,7 +228,7 @@ if stats["latencies"]:
 print("=" * 60)
 
 # Markdown report
-with open(args.output, "w") as f:
+with open(args.output, "w", encoding="utf-8") as f:
     f.write(f"# Evaluation Report — {args.model}\n\n")
     f.write(f"Backend: {args.backend}, test set: {args.test_file} (n={n})\n\n")
     f.write("## Overall\n\n")

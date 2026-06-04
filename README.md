@@ -6,6 +6,11 @@
 >
 > **Team Project · Direction B (LLM for OS) · 2026 Spring**
 
+> 📌 **자연어 OS 셸(LLM 통합) 전체 설명은 [`docs/nl-os-agent.md`](docs/nl-os-agent.md)** 참조 —
+> 로컬 파인튜닝 모델(20종 인텐트), 학습 파이프라인(`scripts/`), 인텐트 실행기·안전가드
+> (`integration/host/executor.py`), 추상요청 분해 에이전트(`integration/host/agent.py`),
+> 신규 커널/유저 명령(`killall`/`killheavy`/`reap`/`uptime`/`sysinfo`/`tracepid`)을 다룹니다.
+
 ---
 
 ## 1. 프로젝트 방향성

@@ -50,6 +50,21 @@ ENV/
 *.swo
 *~
 
+# === ML training artifacts (large — never commit) ===
+models/
+outputs/
+*.gguf
+*.safetensors
+*.bin
+# generated reports / logs
+eval_report.md
+eval_ours.md
+eval_quick.md
+compare_*.md
+agent_log.jsonl
+# generated dataset (reproducible via scripts/augment_offline.py; keep seeds + manual aug)
+data/augmented_auto.jsonl
+
 # === Claude Code / local tooling ===
 .claude/
 .sixth/

@@ -64,11 +64,12 @@ def call_solar(prompt):
     api_key = os.environ.get("UPSTAGE_API_KEY") or os.environ.get("SOLAR_API_KEY")
     if not api_key:
         raise RuntimeError("UPSTAGE_API_KEY not set")
+    base = os.environ.get("UPSTAGE_BASE_URL", "https://api.upstage.ai/v1")
     r = requests.post(
-        "https://api.upstage.ai/v1/solar/chat/completions",
+        f"{base}/chat/completions",
         headers={"Authorization": f"Bearer {api_key}"},
         json={
-            "model": "solar-pro2",
+            "model": os.environ.get("UPSTAGE_MODEL", "solar-pro3"),
             "messages": [{"role": "user", "content": prompt}],
             "temperature": 0.8,
             "response_format": {"type": "json_object"},
@@ -161,17 +162,17 @@ def paraphrase_seed(seed, n_attempts=3):
 # ---------------------------------------------------------------------------
 # Run
 # ---------------------------------------------------------------------------
-seeds = [json.loads(line) for line in open(args.seeds_file)]
+seeds = [json.loads(line) for line in open(args.seeds_file, encoding="utf-8")]
 if args.limit > 0:
     seeds = seeds[:args.limit]
 print(f"Augmenting {len(seeds)} seeds × {args.multiplier} variants each "
       f"(backend={args.backend})")
 
 # Append-only output (so we can resume)
-out_f = open(args.output, "a")
+out_f = open(args.output, "a", encoding="utf-8")
 existing = 0
 if Path(args.output).exists():
-    existing = sum(1 for _ in open(args.output))
+    existing = sum(1 for _ in open(args.output, encoding="utf-8"))
     print(f"  {existing} lines already in {args.output}; appending")
 
 total_new = 0
@@ -195,7 +196,11 @@ with ThreadPoolExecutor(max_workers=args.workers) as ex:
             errors += 1
             continue
         for v in variants:
-            new_line = {"user": v, "spec": seed["spec"]}
+            # Record provenance: the parent seed's text. build_train.py groups
+            # paraphrases by this key so a seed and its variants never split
+            # across train/test (prevents paraphrase leakage).
+            new_line = {"user": v, "spec": seed["spec"],
+                        "source": seed.get("source", seed["user"])}
             out_f.write(json.dumps(new_line, ensure_ascii=False) + "\n")
             out_f.flush()
             total_new += 1

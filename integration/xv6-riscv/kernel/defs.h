@@ -114,6 +114,7 @@ int             proc_settrace(int pid, int on);
 int             proc_getstats(int pid, struct procstats *out);
 int             kforkpri(int level);
 void            proc_on_timer_tick(void);
+int             proc_reap_zombies(void);   // Tier-1: force-reap abandoned zombies
 
 // === jinhwan: thread / futex (proc.c) ===
 int             kthread_create(uint64 fcn, uint64 arg, uint64 ustack);

@@ -27,6 +27,9 @@ parser.add_argument("--sources", nargs="+",
 parser.add_argument("--test-ratio", type=float, default=0.2)
 parser.add_argument("--seed", type=int, default=42)
 parser.add_argument("--min-test-per-cmd", type=int, default=5)
+parser.add_argument("--balance", choices=["none", "oversample"], default="none",
+                    help="oversample minority queue_hint classes in TRAIN only "
+                         "(test set is never touched)")
 args = parser.parse_args()
 
 random.seed(args.seed)
@@ -42,7 +45,7 @@ for src in args.sources:
         print(f"  skip {src} (not found)")
         continue
     n = 0
-    for line in open(path):
+    for line in open(path, encoding="utf-8"):
         line = line.strip()
         if not line:
             continue
@@ -60,50 +63,99 @@ for src in args.sources:
 # Deduplicate by (user, cmd) pair
 # ---------------------------------------------------------------------------
 seen = set()
-unique = []
+unique = []           # list of parsed dicts
 for line in all_lines:
     obj = json.loads(line)
     key = (obj["user"], obj["spec"]["cmd"])
     if key not in seen:
         seen.add(key)
-        unique.append(line)
+        unique.append(obj)
 
 print(f"Total: {len(all_lines)} → after dedup: {len(unique)}")
 
 # ---------------------------------------------------------------------------
-# Stratified split by cmd
+# Group paraphrases by provenance, then stratified split BY GROUP.
+#
+# group_key = obj["source"] (parent seed, stamped by augment.py) or obj["user"]
+# (a seed has no "source", so it groups under its own text; its paraphrases
+# carry source == that same text → they land in the same group). Splitting
+# whole groups guarantees a seed and all its variants stay on the SAME side,
+# eliminating paraphrase leakage between train and test.
+#
+# NOTE: augmented rows produced before this change lack "source" and therefore
+# group as singletons (no worse than the old behavior). Regenerate with the
+# updated augment.py for full leakage protection.
 # ---------------------------------------------------------------------------
-by_cmd = defaultdict(list)
-for line in unique:
-    cmd = json.loads(line)["spec"]["cmd"]
-    by_cmd[cmd].append(line)
+groups = defaultdict(list)            # group_key -> list of dicts
+for obj in unique:
+    gkey = obj.get("source") or obj["user"]
+    groups[gkey].append(obj)
+
+# Stratify groups by cmd (all members of a group share the same spec/cmd).
+by_cmd_groups = defaultdict(list)     # cmd -> list of groups
+for gkey, members in groups.items():
+    cmd = members[0]["spec"]["cmd"]
+    by_cmd_groups[cmd].append(members)
 
 train, test = [], []
-for cmd, lines in by_cmd.items():
-    random.shuffle(lines)
-    n_test = max(args.min_test_per_cmd, int(len(lines) * args.test_ratio))
-    test.extend(lines[:n_test])
-    train.extend(lines[n_test:])
+for cmd, glist in by_cmd_groups.items():
+    random.shuffle(glist)
+    # choose whole groups for test until the per-cmd row quota is met
+    target_test = max(args.min_test_per_cmd,
+                      int(sum(len(g) for g in glist) * args.test_ratio))
+    n_test_rows = 0
+    gi = 0
+    while gi < len(glist) and n_test_rows < target_test:
+        test.extend(glist[gi])
+        n_test_rows += len(glist[gi])
+        gi += 1
+    for g in glist[gi:]:
+        train.extend(g)
+
+# ---------------------------------------------------------------------------
+# Optional: balance TRAIN by queue_hint (oversample minority classes).
+# Test set is never modified.
+# ---------------------------------------------------------------------------
+if args.balance == "oversample":
+    by_q = defaultdict(list)
+    for obj in train:
+        by_q[obj["spec"]["queue_hint"]].append(obj)
+    target = max(len(v) for v in by_q.values())
+    balanced = []
+    for q, items in by_q.items():
+        balanced.extend(items)
+        if len(items) < target:
+            extra = random.choices(items, k=target - len(items))  # with replacement
+            balanced.extend(extra)
+    before = len(train)
+    train = balanced
+    print(f"Balanced train by queue_hint: {before} → {len(train)} "
+          f"(target {target}/class)")
 
 random.shuffle(train)
 random.shuffle(test)
 
 # ---------------------------------------------------------------------------
-# Write
+# Write — normalize to {user, spec} only (drop provenance so the downstream
+# train/eval schema stays exactly 2 keys).
 # ---------------------------------------------------------------------------
-with open(data_dir / "train.jsonl", "w") as f:
-    for line in train:
-        f.write(line + "\n")
-with open(data_dir / "test.jsonl", "w") as f:
-    for line in test:
-        f.write(line + "\n")
+def _norm(obj):
+    return json.dumps({"user": obj["user"], "spec": obj["spec"]},
+                      ensure_ascii=False)
+
+with open(data_dir / "train.jsonl", "w", encoding="utf-8") as f:
+    for obj in train:
+        f.write(_norm(obj) + "\n")
+with open(data_dir / "test.jsonl", "w", encoding="utf-8") as f:
+    for obj in test:
+        f.write(_norm(obj) + "\n")
 
 print(f"\nWrote train.jsonl: {len(train)}, test.jsonl: {len(test)}")
 print("\nTrain cmd distribution:")
-print(f"  {dict(Counter(json.loads(l)['spec']['cmd'] for l in train))}")
+print(f"  {dict(Counter(o['spec']['cmd'] for o in train))}")
 print("Test cmd distribution:")
-print(f"  {dict(Counter(json.loads(l)['spec']['cmd'] for l in test))}")
+print(f"  {dict(Counter(o['spec']['cmd'] for o in test))}")
 print("\nTrain queue_hint distribution:")
-print(f"  {dict(Counter(json.loads(l)['spec']['queue_hint'] for l in train))}")
+print(f"  {dict(Counter(o['spec']['queue_hint'] for o in train))}")
 print("Test queue_hint distribution:")
-print(f"  {dict(Counter(json.loads(l)['spec']['queue_hint'] for l in test))}")
+print(f"  {dict(Counter(o['spec']['queue_hint'] for o in test))}")
