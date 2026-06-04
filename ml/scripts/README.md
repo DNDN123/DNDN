@@ -224,7 +224,7 @@ ollama create smartmlfq -f Modelfile
 export UPSTAGE_BASE_URL=http://localhost:11434/v1
 export UPSTAGE_MODEL=smartmlfq
 export UPSTAGE_API_KEY=not-needed
-cd "../LLM for OS/integration/host"
+cd "../LLM for OS/host"
 python3 nl_shell.py
 ```
 

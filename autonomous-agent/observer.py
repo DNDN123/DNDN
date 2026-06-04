@@ -3,7 +3,7 @@
 Communicates with QEMU stdin/stdout. Parses the `getstats` output emitted
 by the kernel and returns a Snapshot object.
 
-Snapshot format (from integration/xv6-riscv kernel):
+Snapshot format (from os kernel):
     GETSTATS pid=2 prio=1 run=180 io=0 wait_age=140 name=cpu_burner
     GETSTATS pid=3 prio=0 run=20  io=15 wait_age=2  name=io_burner
     ...

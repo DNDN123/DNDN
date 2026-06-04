@@ -21,7 +21,7 @@ from anomaly_detector import Concern
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-# Defaults match the project contract in integration/host/.env.example:
+# Defaults match the project contract in host/.env.example:
 #   UPSTAGE_BASE_URL=https://api.upstage.ai/v1   UPSTAGE_MODEL=solar-pro3
 # Override both via env to swap in a local model (e.g. Ollama):
 #   UPSTAGE_BASE_URL=http://localhost:11434/v1   UPSTAGE_MODEL=smartmlfq

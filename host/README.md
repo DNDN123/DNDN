@@ -56,7 +56,7 @@ host/
   ```
   UPSTAGE_API_KEY=up_xxx...
   UPSTAGE_MODEL=solar-pro3
-  XV6_DIR=/path/to/integration/xv6-riscv
+  XV6_DIR=/path/to/os
   ```
 - 모든 어댑터는 `UPSTAGE_API_KEY` (혹은 별칭 `SOLAR_API_KEY`) 를 *환경변수* 로 읽습니다.
 - **하드코딩 금지** — jinhwan 의 원본 `solar_bridge.py` 에는 키가 박혀있었는데 통합 시 제거됨.

@@ -42,8 +42,8 @@ GitHub 원본 브랜치는 한 번도 수정되지 않았으며, push/commit 없
 ### 1.1 hyunsung 원본 문서 vs 코드 불일치
 
 `docs/syscall-allocation.md` 는 "hyunsung 30~33 으로 이동 완료" 라고 적혀있었지만,
-실제 `smart-mlfq-xv6-patches/kernel/syscall.h` 코드는 **여전히 22~25** 였음.
-→ 통합 시 코드를 문서에 맞게 30~33 으로 수정함 (`integration/xv6-riscv/kernel/syscall.h`).
+실제 `legacy/smart-mlfq-xv6-patches/kernel/syscall.h` 코드는 **여전히 22~25** 였음.
+→ 통합 시 코드를 문서에 맞게 30~33 으로 수정함 (`os/kernel/syscall.h`).
 
 ---
 
@@ -86,7 +86,7 @@ haneol 의 syscall 5개 중 3개는 통합에서 **제외**:
 
 ### 3.1 hyunsung Scheduler — 베이스
 - 상태: ✅ 완료
-- 추출: `smart-mlfq-xv6-patches/{kernel,user,workloads}/*`
+- 추출: `legacy/smart-mlfq-xv6-patches/{kernel,user,workloads}/*`
 - 적용 방법:
   1. minju 의 `.bak` 파일들로 stock xv6 트리 복원 → 베이스
   2. hyunsung 의 kernel/* (defs.h, proc.c, proc.h, syscall.{c,h}, sysproc.c, trap.c) 덮어쓰기
@@ -175,8 +175,8 @@ WSL/QEMU 환경에서 `make qemu CPUS=2` 로 빌드/부팅/슬라이스 데모 �
 
 ### 5.2 재실행 환경
 
-- venv: `/root/smart-mlfq-host/venv` (dotenv 1.2.2, openai 2.38.0)
-- `.env`: `/root/smart-mlfq-host/.env`를 `integration/host/.env`로 복사 (gitignored, `.gitignore` 루트 규칙 확인)
+- venv: `/root/legacy/smart-mlfq-host/venv` (dotenv 1.2.2, openai 2.38.0)
+- `.env`: `/root/legacy/smart-mlfq-host/.env`를 `host/.env`로 복사 (gitignored, `.gitignore` 루트 규칙 확인)
 - 명령: `XV6_DIR=../xv6-riscv OUT_ROOT=../../docs/charts/integration ./run_eval_matrix.sh`
 
 ### 5.3 결과 요약 (avg_turnaround 기준)
@@ -232,7 +232,7 @@ WSL/QEMU 환경에서 `make qemu CPUS=2` 로 빌드/부팅/슬라이스 데모 �
    /mnt/c, /root 양쪽 모두 `FORKSTRESS done 1000/1000`. 기본 fork+wait 경로 깨끗.
 2. `usertests forkforkfork` 직후 `forkstress 800` (reparent2 동등 부하) →
    /mnt/c 에서도 `FORKSTRESS done 800/800`. fork bomb 직후의 cleanup 도 정상.
-3. 통합 트리 전체를 `cp -r /mnt/c/.../integration/xv6-riscv /root/integration-test` →
+3. 통합 트리 전체를 `cp -r /mnt/c/.../os /root/integration-test` →
    /root 에서 `usertests -q ALL TESTS PASSED`. 같은 코드, 다른 디스크.
 
 **결론**: 통합 코드의 결함 아니며 **/mnt/c 의 9P 파일시스템 + QEMU virtio-blk** 가

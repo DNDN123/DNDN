@@ -104,7 +104,7 @@ python evaluate.py --backend hf --model ..\models\smartmlfq-qwen-3b-r64-e10\lora
 | `tracepid <pid> <0/1>` | 특정 pid syscall 추적 토글 |
 
 ```bash
-cd integration/xv6-riscv && make clean && make qemu
+cd os && make clean && make qemu
 # xv6: cpu_burner 200000000 & ; ps ; killall cpu_burner ; killheavy ; reap ; uptime ; sysinfo
 ```
 
@@ -115,16 +115,16 @@ cd integration/xv6-riscv && make clean && make qemu
 
 ## 5. 호스트 실행기 / 에이전트
 
-- `integration/host/executor.py` — **M3**. NL→spec(classify) / spec→명령(build_command) /
+- `host/executor.py` — **M3**. NL→spec(classify) / spec→명령(build_command) /
   SafetyGuard. 오프라인 자가검증: `python executor.py --selftest`. 라이브 REPL: `python executor.py`.
-- `integration/host/agent.py` — **M4**. 추상 요청을 규칙 기반으로 분해.
+- `host/agent.py` — **M4**. 추상 요청을 규칙 기반으로 분해.
   `좀비 정리`→`[reap]`, `무거운 거 정리`→`[killheavy]`, `정리해줘`(혼잡시)→`[reap, killheavy]`.
   자가검증: `python agent.py --selftest`.
 
 두 파일은 `train.py`와 **동일한 SYSTEM_PROMPT**를 사용(평가·추론 일관성).
 
 라이브 자동실행은 `repl(execute_fn=<QEMU 드라이버>)`에 드라이버를 연결하면 됨
-(QEMU 부팅 상태 필요; `agent/observer.py`의 `QemuDriver` 재사용 가능).
+(QEMU 부팅 상태 필요; `autonomous-agent/observer.py`의 `QemuDriver` 재사용 가능).
 
 ---
 

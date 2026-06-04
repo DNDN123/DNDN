@@ -49,8 +49,8 @@ from safety_guard import SafetyGuard
 # ---------------------------------------------------------------------------
 parser = argparse.ArgumentParser()
 parser.add_argument("--xv6-dir",
-                    default="../integration/xv6-riscv",
-                    help="path to integrated xv6 source")
+                    default="../os",
+                    help="path to the buildable xv6 source (top-level os/)")
 parser.add_argument("--interval", type=float, default=1.0,
                     help="snapshot period (seconds)")
 parser.add_argument("--duration", type=float, default=0,

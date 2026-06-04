@@ -8,7 +8,7 @@
 
 > 📌 **자연어 OS 셸(LLM 통합) 전체 설명은 [`docs/nl-os-agent.md`](docs/nl-os-agent.md)** 참조 —
 > 로컬 파인튜닝 모델(20종 인텐트), 학습 파이프라인(`scripts/`), 인텐트 실행기·안전가드
-> (`integration/host/executor.py`), 추상요청 분해 에이전트(`integration/host/agent.py`),
+> (`host/executor.py`), 추상요청 분해 에이전트(`host/agent.py`),
 > 신규 커널/유저 명령(`killall`/`killheavy`/`reap`/`uptime`/`sysinfo`/`tracepid`)을 다룹니다.
 
 ---
@@ -62,11 +62,11 @@
 ### 구현 완료
 | 항목 | 위치 | 상태 |
 |---|---|---|
-| 3-단계 MLFQ (HIGH/MID/LOW) + demotion + periodic boost | `smart-mlfq-xv6-patches/kernel/proc.c`, `trap.c` | ✅ |
+| 3-단계 MLFQ (HIGH/MID/LOW) + demotion + periodic boost | `legacy/smart-mlfq-xv6-patches/kernel/proc.c`, `trap.c` | ✅ |
 | I/O-aware queue retention (sleep 시 큐 레벨 유지) | `kernel/proc.c::sleep` | ✅ |
 | Multi-CPU safe priority changes (`boost_lock` + per-proc lock) | `kernel/proc.c` | ✅ |
 | 신규 syscall 4종: `setpri` / `getstats` / `settrace` / `forkpri` | `kernel/sysproc.c`, `syscall.h` | ✅ |
-| 자연어 → 실행 spec 변환 (Solar Pro 3) | `smart-mlfq-host/nl_shell.py` | ✅ |
+| 자연어 → 실행 spec 변환 (Solar Pro 3) | `legacy/smart-mlfq-host/nl_shell.py` | ✅ |
 | API 키 없을 때 휴리스틱 폴백 | `nl_shell.py` | ✅ |
 | 트레이스 파서 + 평가기 + 차트 (Gantt / bar) | `parse_trace.py`, `evaluator.py`, `viz.py` | ✅ |
 
@@ -130,65 +130,48 @@
 
 ```
 .
-├── README.md                       ← 이 파일
+├── README.md  CLAUDE.md            ← 문서
 ├── .gitignore
-├── smart-mlfq-host/                ← 호스트 측 Python (단독 슬라이스)
-│   ├── nl_shell.py                 ← 자연어 REPL ⭐
-│   │                                  • --diagnose-from FILE   (diagprog → Solar 진단)
-│   │                                  • --analyze-tracetool FILE  (tracetool dump → Solar 분석)
-│   ├── prompts.py                  ← Solar 프롬프트 4종
-│   ├── parse_trace.py              ← xv6 로그 → JSON
-│   ├── llm_hint.py                 ← batch 통계 → hints.txt
-│   ├── evaluator.py                ← turnaround / fairness 메트릭
-│   ├── viz.py                      ← Gantt + 막대 차트
-│   └── requirements.txt
-├── smart-mlfq-xv6-patches/         ← xv6 커널/유저 패치 묶음 (단독 슬라이스)
-│   ├── apply_patches.sh            ← 깨끗한 xv6-riscv 트리에 적용
-│   ├── kernel/                     ← proc.c, trap.c, sysproc.c, ...
-│   ├── user/                       ← nlrun.c, wrunner.c, *_burner.c
-│   ├── workloads/                  ← 워크로드 spec 6종
-│   └── README.md                   ← 패치 적용/검증 가이드
-├── integration/                    ← ⭐ 4팀 슬라이스 통합 결과 (단일 buildable 트리)
-│   ├── README.md                   ← 통합 개요 + 정량 평가 결과 요약
-│   ├── MERGE_NOTES.md              ← 충돌 결정 / K1~K4 fix 라벨 매핑
-│   ├── xv6-riscv/                  ← 통합 커널 + user 빌드 대상
-│   │   ├── kernel/                 ← MLFQ + trace + thread/futex + ps 모두
-│   │   ├── user/                   ← nlrun, wrunner, threadtest, tracetool, ps, setprio, ⭐ bgq
-│   │   └── workloads/              ← cpu_heavy/io_heavy/mixed/three_way/realprog/bgq
-│   └── host/                       ← 통합 호스트 Python (smart-mlfq-host 의 사본 + 어댑터)
-│       ├── nl_shell.py             ← 동일 (--analyze-tracetool 포함)
-│       └── adapters/
-│           ├── process_bridge.py   ← haneol — Process Intent 브리지
-│           └── thread_bridge.py    ← jinhwan — Thread Intent 브리지
-└── docs/
-    ├── syscall-allocation.md       ← 4팀 syscall 번호 분배표 (통합 기준)
-    ├── trace-format.md             ← TRACE/EXIT 라인 정식 스펙
-    ├── hints-format.md             ← hints.txt 포맷
-    ├── hello-world.md              ← 시연 재현 절차
-    ├── integration-checklist.md    ← 통합일 순서·충돌 해결
-    ├── security-policy.md          ← API 키 보관 + 사고 대응
-    └── charts/
-        ├── standalone/             ← 단독-슬라이스 정량 평가 결과
-        └── integration/            ← 통합 트리 정량 평가 결과 (재실행)
+├── os/                             ← ⭐ 빌드 대상 xv6 (4팀 통합 커널+유저)
+│   ├── kernel/                     ← MLFQ + reap + trace + thread/futex + ps
+│   ├── user/                       ← nlrun, ps, setprio, kill, killall, killheavy,
+│   │                                 reap, uptime, sysinfo, tracepid, *_burner, bgq ...
+│   └── workloads/                  ← cpu_heavy/io_heavy/mixed/three_way/realprog/bgq
+├── host/                           ← 호스트 Python (NL 브리지)
+│   ├── nl_shell.py                 ← 자연어 REPL
+│   ├── executor.py                 ← ★ M3: 인텐트→xv6 명령 + 안전가드
+│   ├── agent.py                    ← ★ M4: 추상요청("정리해줘") 다단계 분해
+│   ├── prompts.py  parse_trace.py  evaluator.py  viz.py
+│   └── adapters/                   ← process_bridge.py / thread_bridge.py
+├── ml/                             ← 모델 학습 (Windows/GPU)
+│   ├── data/                       ← seeds/, augmented*, train/test.jsonl
+│   ├── scripts/                    ← train, evaluate, build_train, augment_offline,
+│   │                                 gen_intent_seeds, compare, ask.py, run_all.sh
+│   └── models/                     ← smartmlfq-qwen-3b-r64-e10 (gitignored, 큼)
+├── autonomous-agent/               ← Phase-2 자율 스케줄러 에이전트 (별도)
+├── docs/                           ← nl-os-agent, syscall-allocation, trace-format,
+│                                     integration-overview, MERGE_NOTES, charts/ ...
+└── legacy/                         ← hyunsung 단독 백업본 (frozen archive)
+    ├── smart-mlfq-host/            ← 단독 호스트 Python
+    └── smart-mlfq-xv6-patches/     ← 단독 xv6 패치 묶음
 ```
 
-> 단독 슬라이스(`smart-mlfq-host/`, `smart-mlfq-xv6-patches/`)는 hyunsung 본인 작업물만 들어있어 백업 데모용으로 단독 빌드 가능. `integration/` 은 4팀 합본으로 통합 데모용. 둘은 의도적으로 공존합니다.
+> **`os/` + `host/` = 4팀 통합본**(메인 빌드/데모 대상). **`legacy/`** 는 hyunsung 단독 백업본(통합이 깨져도 단독 데모 가능) — frozen archive라 내부 경로는 그대로 둡니다.
 
 ---
 
 ## 6. Quick Start
 
-### 1) 커널 패치 적용 + 빌드
+### 1) xv6 빌드 (통합본 — 맥북/리눅스, RISC-V 툴체인 필요)
 ```bash
-cd smart-mlfq-xv6-patches
-./apply_patches.sh /path/to/xv6-riscv
-cd /path/to/xv6-riscv
-make clean && make
+cd os && make clean && make qemu
+# QEMU 안: ps / setprio / killall cpu_burner / killheavy / reap / uptime / sysinfo
+# (단독 백업본으로 빌드하려면 legacy/smart-mlfq-xv6-patches/apply_patches.sh 참조)
 ```
 
 ### 2) 호스트 Python 환경
 ```bash
-cd smart-mlfq-host
+cd host
 python3 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env       # UPSTAGE_API_KEY 입력 (없어도 동작)

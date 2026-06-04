@@ -5,8 +5,8 @@
 피하기 위한 체크리스트.
 
 > **Status (2026-05-27)**: 통합 작업은 2026-05-26~05-27에 완료. 본 체크리스트는
-> 그 작업 순서의 reference. 각 항목의 결과는 `integration/MERGE_NOTES.md` 및
-> `integration/README.md` §"진행 상황" 에 기록.
+> 그 작업 순서의 reference. 각 항목의 결과는 `docs/MERGE_NOTES.md` 및
+> `docs/integration-overview.md` §"진행 상황" 에 기록.
 >
 > 사전 가정: 각 슬라이스가 본인 브랜치에서 단독 빌드·시연 가능 상태.
 
@@ -15,7 +15,7 @@
 ## 0. 통합 전 합의 (회의 1회, ~30분)
 
 - [x] `docs/syscall-allocation.md` 표 확정 (minju 22~24 / jinhwan 25~29 / hyunsung 30~33 / haneol 34~35) — `MERGE_NOTES.md §1`
-- [x] 본인 외 슬라이스의 syscall 번호 이동 — 통합 시 일괄 적용 (`integration/xv6-riscv/kernel/syscall.h`)
+- [x] 본인 외 슬라이스의 syscall 번호 이동 — 통합 시 일괄 적용 (`os/kernel/syscall.h`)
 - [x] MLFQ 단일화 → hyunsung 채택, haneol 0..20 priority DROP (`MERGE_NOTES.md §2.1`)
 - [x] 호스트 NL 브리지 단일화 → `nl_shell.py` 기준, `nl_bridge.py`/`solar_bridge.py` 는 `adapters/` 모듈로 분리
 - [x] 통합 작업자: hyunsung (Scheduler 담당)
@@ -61,7 +61,7 @@ git merge origin/hyunsung   # 본인 슬라이스 먼저 (가장 큰 변경)
 ## 4. 통합 후 빌드/부팅 검증
 
 ```bash
-cd integration/xv6-riscv-tree  # 통합 트리 위치
+cd os-tree  # 통합 트리 위치
 make clean
 make                                 # 컴파일 통과해야 다음 단계
 make qemu CPUS=2                     # 부팅 + $ 프롬프트 확인
@@ -69,7 +69,7 @@ make qemu CPUS=2                     # 부팅 + $ 프롬프트 확인
 
 - [x] `make` 경고가 stock xv6 대비 늘지 않음 — `LOAD segment RWX` 단일 경고만 (stock 동일)
 - [x] `$` 프롬프트 진입 (init 안 죽음) — 5종 데모 정상 부팅 검증 (2026-05-26)
-- [x] `usertests -q` 통과 — Linux native FS (`/root`) 환경에서 `ALL TESTS PASSED` (quick 26 + slow 25). /mnt/c 환경에서는 9P/virtio-blk timing 한계로 `reparent2` 가 가끔 fork-fail 함 (코드 결함 아님). 환경 의존성 상세: `integration/MERGE_NOTES.md §6.2`. 격리 실험 binary: `user/forkstress.c` (`forkstress 1000` 어느 환경에서도 1000/1000).
+- [x] `usertests -q` 통과 — Linux native FS (`/root`) 환경에서 `ALL TESTS PASSED` (quick 26 + slow 25). /mnt/c 환경에서는 9P/virtio-blk timing 한계로 `reparent2` 가 가끔 fork-fail 함 (코드 결함 아님). 환경 의존성 상세: `docs/MERGE_NOTES.md §6.2`. 격리 실험 binary: `user/forkstress.c` (`forkstress 1000` 어느 환경에서도 1000/1000).
 
 ---
 
@@ -108,13 +108,13 @@ OK pid=4 level=2
 ## 6. 통합 후 정량 평가 재실행
 
 ```bash
-cd smart-mlfq-host
-XV6_DIR=/path/to/integration/xv6-riscv \
+cd legacy/smart-mlfq-host
+XV6_DIR=/path/to/os \
     OUT_ROOT=docs/charts/integration \
     ./run_eval_matrix.sh
 ```
 
-- [x] 단독 슬라이스와 동등하거나 더 좋은 결과 — `three_way` Δheur −7.3%, Δllm −5.8%; 회귀 없음 (`integration/MERGE_NOTES.md §5.3`)
+- [x] 단독 슬라이스와 동등하거나 더 좋은 결과 — `three_way` Δheur −7.3%, Δllm −5.8%; 회귀 없음 (`docs/MERGE_NOTES.md §5.3`)
 - [x] `docs/charts/integration/combined_report.txt` commit — 5b810d3
 
 ---

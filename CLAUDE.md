@@ -19,33 +19,24 @@ xv6-riscv(RISC-V 64-bit) 위에, **자연어 → OS 명령**으로 동작하는 
 ```
 LLM for OS/
 ├── CLAUDE.md  README.md                      ← 이 파일 / 사용자 문서
-├── LLM_RESEARCH_PROPOSAL.md  LLM_TRAINING_PLAN.md
-├── data/                                      ← 학습 데이터 (NL → spec)
-│   ├── seeds/01..07_*.jsonl                   ← 수동 시드 (07 = 확장 인텐트)
-│   ├── seeds.jsonl  augmented.jsonl  augmented_auto.jsonl
-│   └── train.jsonl  test.jsonl                ← build_train.py 산출 (gitignore: auto/models)
-├── scripts/                                   ← 학습 파이프라인 (Python, Windows/GPU)
-│   ├── gen_intent_seeds.py                    ← 확장 인텐트 시드 생성
-│   ├── augment_offline.py                     ← 무료 규칙기반 증강 (API 불필요)
-│   ├── build_train.py                         ← 그룹단위 split (누수 0) + --balance
-│   ├── train.py                               ← plain transformers+peft LoRA (bf16, cu128)
-│   ├── evaluate.py  compare.py                ← 정확도 / Solar 대비 비교
-│   └── requirements.txt  run_all.sh
-├── models/                                    ← 학습 산출물 (gitignored, 큼)
-│   └── smartmlfq-qwen-3b-r64-e10/{lora,merged}
-├── integration/
-│   ├── xv6-riscv/                             ← 통합 커널 + 유저 (빌드 대상; 맥북/리눅스)
-│   │   ├── kernel/  (proc.c=MLFQ+reap, sysproc.c, syscall.*)
-│   │   └── user/    (nlrun, ps, setprio, kill, killall, killheavy, reap,
-│   │                 uptime, sysinfo, tracepid, *_burner ...)
-│   └── host/                                  ← 호스트 Python
-│       ├── nl_shell.py                        ← 기존 NL→spec REPL
-│       ├── executor.py    ★ M3: 인텐트→xv6명령 + 안전가드
-│       ├── agent.py       ★ M4: 추상요청("정리해줘")→다단계 분해
-│       └── prompts.py  parse_trace.py  evaluator.py  viz.py
-├── smart-mlfq-host/  smart-mlfq-xv6-patches/  ← 단독 슬라이스(백업 데모용, 의도적 공존)
-├── agent/                                     ← Phase-2 자율 스케줄러 에이전트(별도)
-└── docs/  (charts, syscall-allocation, trace-format, ...)
+├── os/                                        ← ★ 빌드 대상 xv6 (맥북/리눅스)
+│   ├── kernel/  (proc.c=MLFQ+reap, sysproc.c, syscall.*)
+│   └── user/    (nlrun, ps, setprio, kill, killall, killheavy, reap,
+│                 uptime, sysinfo, tracepid, *_burner ...)
+├── host/                                      ← 호스트 Python (NL 브리지)
+│   ├── nl_shell.py                            ← 기존 NL→spec REPL
+│   ├── executor.py    ★ M3: 인텐트→xv6명령 + 안전가드
+│   ├── agent.py       ★ M4: 추상요청("정리해줘")→다단계 분해
+│   └── prompts.py  parse_trace.py  evaluator.py  viz.py  adapters/
+├── ml/                                        ← 모델 학습 (Windows/GPU)
+│   ├── data/   (seeds/01..07_*.jsonl, seeds.jsonl, augmented*, train/test.jsonl)
+│   ├── scripts/(gen_intent_seeds, augment_offline, build_train, train,
+│   │            evaluate, compare, ask.py, requirements.txt, run_all.sh)
+│   └── models/ (smartmlfq-qwen-3b-r64-e10/{lora,merged} — gitignored, 큼)
+├── autonomous-agent/                          ← Phase-2 자율 스케줄러 에이전트(별도)
+├── docs/   (nl-os-agent, syscall-allocation, trace-format, integration-*, charts/ ...)
+└── legacy/                                    ← hyunsung 단독 백업본 (smart-mlfq-host/-xv6-patches)
+                                                  frozen archive — 내부 경로는 그대로 둠
 ```
 
 ---
@@ -93,23 +84,24 @@ LLM for OS/
 
 ### 학습 (Windows + RTX 5070 Ti, Blackwell)
 ```powershell
-cd scripts
+cd ml\scripts
 python -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
 python -m pip install -r requirements.txt
 $env:PYTHONUTF8="1"                 # trl cp949 버그 우회 (필수)
-python train.py                      # qwen-3b r64 e10 → models/smartmlfq-qwen-3b-r64-e10
+python train.py                      # qwen-3b r64 e10 → ml/models/smartmlfq-qwen-3b-r64-e10
 python evaluate.py --backend hf --model ..\models\smartmlfq-qwen-3b-r64-e10\lora
+python ask.py "7번 프로세스 꺼줘"    # 즉석 점검 (NL→spec)
 ```
 
 ### xv6 빌드 (맥북/리눅스 — RISC-V 툴체인 필요, Windows 네이티브 불가)
 ```bash
-cd integration/xv6-riscv && make clean && make qemu
+cd os && make clean && make qemu
 # xv6: ps / killall cpu_burner / killheavy / reap / uptime / sysinfo
 ```
 
 ### 데이터 재생성 (GPU 불필요)
 ```powershell
-cd scripts
+cd ml\scripts
 python gen_intent_seeds.py
 python augment_offline.py --multiplier 8     # 무료, 결정론적
 python build_train.py                         # 누수 0 그룹 split
@@ -124,8 +116,9 @@ python build_train.py                         # 누수 0 그룹 split
 3. **xv6 빌드는 Windows 불가**: RISC-V gcc + qemu 필요 → 맥북/리눅스/WSL2.
 4. **syscall 추가는 6곳**: syscall.h(번호) / syscall.c(extern+배열) / sysproc.c(함수) / defs.h / usys.pl / user.h. 새 유저 프로그램은 Makefile UPROGS.
 5. **proc 테이블 락 순서**: `wait_lock` → `p->lock`. parent 접근은 wait_lock 안에서.
-6. **SYSTEM_PROMPT 동기화**: train/evaluate/executor 3곳이 다르면 평가가 불공정해지고 모델 동작이 틀어짐.
-7. **models/는 gitignore**: 수 GB. 커밋 금지.
+6. **SYSTEM_PROMPT 동기화**: `ml/scripts/train.py`·`evaluate.py`·`ask.py`·`host/executor.py` 4곳이 다르면 평가 불공정 + 모델 동작 틀어짐.
+7. **ml/models/는 gitignore**: 수 GB. 커밋 금지.
+8. **legacy/는 frozen archive**: hyunsung 단독 백업본. 내부 경로(smart-mlfq-*)는 그 시점 그대로 — 건드리지 말 것.
 
 ---
 
