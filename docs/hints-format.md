@@ -33,7 +33,7 @@ mixed_burner 1
 
 ## 생성
 
-`legacy/smart-mlfq-host/llm_hint.py` 가 baseline 트레이스 JSON 의 `EXIT` 이벤트들을
+`host/llm_hint.py` 가 baseline 트레이스 JSON 의 `EXIT` 이벤트들을
 프로그램명 단위로 평균(`run_ticks`, `io_blocks`) 낸 뒤 Solar Pro 3 에 질의하여
 이 파일을 만듭니다. API 키 부재 시에는 결정론적 휴리스틱:
 
@@ -45,7 +45,7 @@ mixed_burner 1
 
 ## 소비
 
-`legacy/smart-mlfq-xv6-patches/user/wrunner.c` 가 `hints.txt` 를 읽어 워크로드 spec 의
+`os/user/wrunner.c` 가 `hints.txt` 를 읽어 워크로드 spec 의
 각 프로그램을 fork 직후 `setpri(child_pid, level)` 로 큐에 배치합니다.
 
 ## 검증

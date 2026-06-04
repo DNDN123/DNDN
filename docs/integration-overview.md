@@ -83,7 +83,7 @@ sudo apt install -y gcc-riscv64-unknown-elf qemu-system-misc python3-venv
 ### 1. 호스트 Python 환경 (한 번만)
 
 ```bash
-# host 에 venv 생성 (또는 ~/legacy/smart-mlfq-host/venv 재활용)
+# host 에 venv 생성 (또는 ~/host/venv 재활용)
 cd host
 python3 -m venv venv
 source venv/bin/activate
@@ -228,7 +228,7 @@ ls ../../docs/charts/integration/*/solar_hint.stderr
 
 ## 정량 평가 결과 (2026-05-27 재실행)
 
-5/26 1차 실행은 venv 미활성화로 `llm_hint.py`가 import 단계에서 죽어 hints 파일이 생성되지 않은 채 돌아감 → heuristic/solar 모드가 사실상 baseline과 동일 조건이라 Δ% 값이 노이즈에 불과했음. 5/27 재실행은 `/root/legacy/smart-mlfq-host/venv` + `.env` 로 hints 정상 생성 확인 후 수행.
+5/26 1차 실행은 venv 미활성화로 `llm_hint.py`가 import 단계에서 죽어 hints 파일이 생성되지 않은 채 돌아감 → heuristic/solar 모드가 사실상 baseline과 동일 조건이라 Δ% 값이 노이즈에 불과했음. 5/27 재실행은 `/root/host/venv` + `.env` 로 hints 정상 생성 확인 후 수행.
 
 ### 워크로드별 핵심 Δ (avg_turnaround 기준, Δheur% / Δllm%)
 

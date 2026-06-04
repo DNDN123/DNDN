@@ -6,13 +6,13 @@
 ## 사전 준비
 
 - xv6-riscv 빌드 + qemu 부팅 환경 (WSL 또는 Linux)
-- `legacy/smart-mlfq-xv6-patches/apply_patches.sh` 적용 + `make qemu` 동작
-- 호스트: `legacy/smart-mlfq-host/.env` 에 `UPSTAGE_API_KEY=...` (없어도 휴리스틱으로 시연 가능)
+- `os/apply_patches.sh` 적용 + `make qemu` 동작
+- 호스트: `host/.env` 에 `UPSTAGE_API_KEY=...` (없어도 휴리스틱으로 시연 가능)
 
 ## 1) 자연어 → 큐 레벨 결정 (호스트)
 
 ```bash
-cd legacy/smart-mlfq-host
+cd host
 python3 nl_shell.py --once "Run a heavy job in background"
 ```
 
@@ -79,8 +79,8 @@ API 가 죽어도 데모가 안 깨진다는 증거.
 
 ## 관련 파일
 
-- `legacy/smart-mlfq-host/nl_shell.py` — 자연어 → spec REPL
-- `legacy/smart-mlfq-host/prompts.py` — `NL_TO_SPEC_PROMPT`
-- `legacy/smart-mlfq-xv6-patches/user/nlrun.c` — `forkpri` 로 큐 진입
-- `legacy/smart-mlfq-xv6-patches/kernel/proc.c` — `kforkpri()` 구현
+- `host/nl_shell.py` — 자연어 → spec REPL
+- `host/prompts.py` — `NL_TO_SPEC_PROMPT`
+- `os/user/nlrun.c` — `forkpri` 로 큐 진입
+- `os/kernel/proc.c` — `kforkpri()` 구현
 - `docs/trace-format.md` — TRACE/EXIT 라인 스펙

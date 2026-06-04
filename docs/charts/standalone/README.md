@@ -62,7 +62,7 @@ standalone/
 ## 재현 방법
 
 ```bash
-cd /root/legacy/smart-mlfq-host
+cd /root/host
 source venv/bin/activate
 OUT_ROOT=/root/mlfq-experiments/eval_full ./run_eval_matrix.sh
 ```

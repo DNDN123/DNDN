@@ -34,9 +34,7 @@ LLM for OS/
 │   │            evaluate, compare, ask.py, requirements.txt, run_all.sh)
 │   └── models/ (smartmlfq-qwen-3b-r64-e10/{lora,merged} — gitignored, 큼)
 ├── autonomous-agent/                          ← Phase-2 자율 스케줄러 에이전트(별도)
-├── docs/   (nl-os-agent, syscall-allocation, trace-format, integration-*, charts/ ...)
-└── legacy/                                    ← hyunsung 단독 백업본 (smart-mlfq-host/-xv6-patches)
-                                                  frozen archive — 내부 경로는 그대로 둠
+└── docs/   (nl-os-agent, syscall-allocation, trace-format, integration-*, charts/ ...)
 ```
 
 ---
@@ -117,8 +115,7 @@ python build_train.py                         # 누수 0 그룹 split
 4. **syscall 추가는 6곳**: syscall.h(번호) / syscall.c(extern+배열) / sysproc.c(함수) / defs.h / usys.pl / user.h. 새 유저 프로그램은 Makefile UPROGS.
 5. **proc 테이블 락 순서**: `wait_lock` → `p->lock`. parent 접근은 wait_lock 안에서.
 6. **SYSTEM_PROMPT 동기화**: `ml/scripts/train.py`·`evaluate.py`·`ask.py`·`host/executor.py` 4곳이 다르면 평가 불공정 + 모델 동작 틀어짐.
-7. **ml/models/는 gitignore**: 수 GB. 커밋 금지.
-8. **legacy/는 frozen archive**: hyunsung 단독 백업본. 내부 경로(smart-mlfq-*)는 그 시점 그대로 — 건드리지 말 것.
+7. **ml/models/는 gitignore**: 수 GB. 커밋 금지. (현재 lora+merged만 보존, 나머지 삭제됨)
 
 ---
 

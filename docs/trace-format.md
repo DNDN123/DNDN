@@ -7,7 +7,7 @@ xv6 커널이 콘솔로 emit하는 두 종류의 라인 — **`TRACE`**(스케�
 
 ## emit 주체
 
-두 라인 모두 `legacy/smart-mlfq-xv6-patches/kernel/proc.c` 의 두 지점에서 출력됩니다:
+두 라인 모두 `os/kernel/proc.c` 의 두 지점에서 출력됩니다:
 
 | 라인 | emit 위치 | 조건 |
 |---|---|---|

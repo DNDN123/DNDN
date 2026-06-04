@@ -26,7 +26,7 @@
 
 ## 정리 후 (2026-05-26 통합 시점 최종)
 
-- `hyunsung`: **30~33으로 이동 완료** (`legacy/smart-mlfq-xv6-patches/kernel/syscall.h`, `os/kernel/syscall.h`)
+- `hyunsung`: **30~33으로 이동 완료** (`os/kernel/syscall.h`, `os/kernel/syscall.h`)
 - `minju`:    **22~24 유지** (가장 먼저 commit, 트레이싱은 LLM 진단의 입구)
 - `jinhwan`:  **25~29로 이동 완료** (통합 시 `os/kernel/syscall.h`에 적용)
 - `haneol`:   **34~35로 신규 배정** (`sys_ps`=34, `sys_sysinfo`=35; 통합 시 합의)

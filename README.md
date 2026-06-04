@@ -62,11 +62,11 @@
 ### 구현 완료
 | 항목 | 위치 | 상태 |
 |---|---|---|
-| 3-단계 MLFQ (HIGH/MID/LOW) + demotion + periodic boost | `legacy/smart-mlfq-xv6-patches/kernel/proc.c`, `trap.c` | ✅ |
+| 3-단계 MLFQ (HIGH/MID/LOW) + demotion + periodic boost | `os/kernel/proc.c`, `trap.c` | ✅ |
 | I/O-aware queue retention (sleep 시 큐 레벨 유지) | `kernel/proc.c::sleep` | ✅ |
 | Multi-CPU safe priority changes (`boost_lock` + per-proc lock) | `kernel/proc.c` | ✅ |
 | 신규 syscall 4종: `setpri` / `getstats` / `settrace` / `forkpri` | `kernel/sysproc.c`, `syscall.h` | ✅ |
-| 자연어 → 실행 spec 변환 (Solar Pro 3) | `legacy/smart-mlfq-host/nl_shell.py` | ✅ |
+| 자연어 → 실행 spec 변환 (Solar Pro 3) | `host/nl_shell.py` | ✅ |
 | API 키 없을 때 휴리스틱 폴백 | `nl_shell.py` | ✅ |
 | 트레이스 파서 + 평가기 + 차트 (Gantt / bar) | `parse_trace.py`, `evaluator.py`, `viz.py` | ✅ |
 
@@ -149,14 +149,11 @@
 │   │                                 gen_intent_seeds, compare, ask.py, run_all.sh
 │   └── models/                     ← smartmlfq-qwen-3b-r64-e10 (gitignored, 큼)
 ├── autonomous-agent/               ← Phase-2 자율 스케줄러 에이전트 (별도)
-├── docs/                           ← nl-os-agent, syscall-allocation, trace-format,
-│                                     integration-overview, MERGE_NOTES, charts/ ...
-└── legacy/                         ← hyunsung 단독 백업본 (frozen archive)
-    ├── smart-mlfq-host/            ← 단독 호스트 Python
-    └── smart-mlfq-xv6-patches/     ← 단독 xv6 패치 묶음
+└── docs/                           ← nl-os-agent, syscall-allocation, trace-format,
+                                      integration-overview, MERGE_NOTES, charts/ ...
 ```
 
-> **`os/` + `host/` = 4팀 통합본**(메인 빌드/데모 대상). **`legacy/`** 는 hyunsung 단독 백업본(통합이 깨져도 단독 데모 가능) — frozen archive라 내부 경로는 그대로 둡니다.
+> **`os/`(커널) + `host/`(NL 브리지)** 가 메인 빌드/데모 대상. `ml/`은 모델 학습, `autonomous-agent/`는 Phase-2 실험.
 
 ---
 
@@ -166,7 +163,6 @@
 ```bash
 cd os && make clean && make qemu
 # QEMU 안: ps / setprio / killall cpu_burner / killheavy / reap / uptime / sysinfo
-# (단독 백업본으로 빌드하려면 legacy/smart-mlfq-xv6-patches/apply_patches.sh 참조)
 ```
 
 ### 2) 호스트 Python 환경

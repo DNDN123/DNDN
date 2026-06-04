@@ -1,6 +1,0 @@
-# Smart-MLFQ workload: io_heavy
-# All processes block frequently. Should retain HIGH priority.
-io_burner 20 0
-io_burner 15 0
-io_burner 25 1
-io_burner 18 2
