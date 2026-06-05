@@ -1,14 +1,16 @@
-# DNDN Project — xv6 위에서 자연어로 움직이는 OS
+# DNDN Project — 우리가 만든 xv6 위에서 자연어로 움직이는 OS
 
-> 4인 팀이 xv6-riscv 커널의 4개 슬라이스(**Scheduler · Syscall · Thread · Process**)를
-> 각자 구현해 **단일 빌드 트리로 통합**하고, 그 위에 **LLM(Upstage Solar Pro 3)이
-> 자연어 요청을 커널 스케줄링 힌트로 번역**하는 시스템을 올린 운영체제 프로젝트.
+> 4인 팀이 함께 xv6-riscv 커널의 4개 슬라이스(**Scheduler · Syscall · Thread · Process**)를
+> 직접 구현해 **하나의 빌드 트리로 통합**하고, 그 위에 **LLM(Upstage Solar Pro 3)은
+> *조언만* 하고 결정은 *커널이* 내리는** — 자연어로 움직이는 운영체제 프로젝트.
 >
 > **Team Project · Direction B (LLM for OS) · 2026 Spring** · GitHub: `DNDN123/DNDN`
 
 ### 한 줄 요약
-> **"LLM은 절대 커널 안에 들어오지 않는다. LLM은 *힌트* 만 주고, 실제 스케줄링 결정은
-> 우리가 직접 구현한 xv6 MLFQ가 내린다."**
+> **"우리가 만든 xv6 위에서, LLM은 *조언만* 하고 결정은 *커널이* 한다 — 자연어로 움직이는 OS."**
+>
+> LLM은 절대 커널 안에 들어오지 않는다. LLM은 *힌트* 만 주고, 실제 결정·실행·교정은
+> 우리가 직접 구현·통합한 xv6 커널(스케줄러·시스템콜·스레드·프로세스)이 내린다.
 
 ---
 
@@ -21,13 +23,18 @@
 1. **OS 내부 구현** — 스케줄러·시스템콜·스레드·프로세스를 커널 레벨 C로 작성
 2. **올바른 AI×OS 결합** — LLM은 "조언자"일 뿐, 실행·결정·교정은 OS가 담당 (thin wrapper 아님)
 
+> **4개 슬라이스는 따로 노는 모듈이 아니라 한 커널에서 맞물립니다.** 자연어로 띄운 작업은
+> **Scheduler**(`forkpri` → MLFQ)가 우선순위를 잡아 실행하고, 그 실행 흔적을 **Syscall**(per-pid trace)이
+> 기록하며, **Process**(`ps`/`sysinfo`)가 외부에서 관찰하고, 같은 프로세스 안에서 **Thread**(kthread+futex)가
+> 동시 실행·동기화를 담당합니다. 즉 *한 번의 데모 세션*에서 네 개념이 동시에 동작하는 게 핵심입니다.
+
 ---
 
 ## 2. 팀 구성 — OS 4개념을 한 조각씩
 
 | 슬라이스 | 담당 (브랜치) | 구현한 OS 개념 | 핵심 결과물 |
 |---|---|---|---|
-| **Scheduler** | 조현성 (`hyunsung`) | CPU 스케줄링 | 3-단계 MLFQ + LLM 힌트 + Solar 브리지 |
+| **Scheduler** | (`hyunsung`) | CPU 스케줄링 | 3-단계 MLFQ + LLM 큐 힌트 |
 | **Syscall** | (`minju`) | 시스템콜 | 통합 syscall 후킹 + per-pid trace JSON |
 | **Thread** | (`jinhwan`) | 스레드·동기화 | kthread + futex(mutex/condvar) |
 | **Process** | (`haneol`) | 프로세스 관리 | `ps` / `sysinfo` + 안전 가드 |
@@ -64,8 +71,12 @@
       │        (키 없으면 휴리스틱 폴백)
       ▼   "nlrun 2 cpu_burner 1000000"
 ════════ syscall 경계 — 여기서 LLM 격리 (2비트만 통과) ════════
-      ▼   xv6 KERNEL
-  forkpri(2) → 3-단계 MLFQ가 실제 스케줄링 (잘못된 힌트는 demotion이 자동 교정)
+      ▼   xv6 KERNEL  (4슬라이스가 한 트리에서 맞물림)
+  forkpri(2) ─► 3-단계 MLFQ가 실제 스케줄링      … Scheduler (잘못된 힌트는 demotion이 자동 교정)
+      │
+      ├─ thread_create / futex_wait·wake        … Thread   (프로세스 내 동시 실행·동기화)
+      ├─ trace_on / trace_stats                 … Syscall  (실행된 syscall을 per-pid 기록)
+      └─ ps / sysinfo                           … Process  (스케줄링 결과를 외부에서 관찰)
 ```
 
 ---
@@ -89,8 +100,11 @@
 
 | 항목 | 상태 | 근거 |
 |---|---|---|
-| 빌드 / 부팅 | ✅ PASS | WSL + QEMU |
-| 4팀 슬라이스 라이브 데모 | ✅ 4/4 | `ps` / `tracetool dump` / `nlrun` / `threadtest` / `bgq` |
+| 빌드 / 부팅 | ✅ PASS | WSL + QEMU, 단일 트리 |
+| 라이브 데모 · **Scheduler** | ✅ PASS | `nlrun 2 cpu_burner` → 3-단계 MLFQ 강등 관찰 + `getstats` |
+| 라이브 데모 · **Syscall** | ✅ PASS | `trace_on` 후 `tracetool dump` → per-pid syscall JSON |
+| 라이브 데모 · **Thread** | ✅ PASS | `threadtest` → kthread 생성·join + futex mutex/condvar |
+| 라이브 데모 · **Process** | ✅ PASS | `ps` / `sysinfo` 로 실행 중 프로세스·자원 관찰, `bgq` |
 | 정량 평가 (baseline/heuristic/Solar) | ✅ PASS | `three_way` avg_turnaround **−7.3% / −5.8%** |
 | 자동 회귀 (`sanity_check.sh`) | ✅ **8/8** | 2026-06-03 fresh ext4 재실행, exit 0 |
 | 통합·보안 수정 | ✅ | `K1~K7` (allocproc 누수, 배열 오버플로, thread teardown race, prompt-injection 가드 등) |
@@ -119,16 +133,11 @@
 │   ├── SLIDES.html / _EN      ← 발표 슬라이드 15장 (한/영)
 │   ├── DEMO.html              ← 브라우저 인터랙티브 데모
 │   └── demo.gif               ← 실제 QEMU 세션 캡처
-├── docs/                      ← 설계 문서 + 정량 평가 차트
-│   ├── syscall-allocation.md / trace-format.md / hints-format.md
-│   ├── hello-world.md / integration-checklist.md / security-policy.md
-│   └── charts/{standalone,integration}/   ← 워크로드별 평가 결과
-└── (../slice/)                ← 개인 단독 슬라이스 보관 (레포 밖, 아래 참고)
+└── docs/                      ← 설계 문서 + 정량 평가 차트
+    ├── syscall-allocation.md / trace-format.md / hints-format.md
+    ├── hello-world.md / integration-checklist.md / security-policy.md
+    └── charts/{standalone,integration}/   ← 워크로드별 평가 결과
 ```
-
-> **개인 단독 슬라이스**(`smart-mlfq-host/`, `smart-mlfq-xv6-patches/`)는 2026-06-03에
-> 레포 밖 형제 폴더 `../slice/` 로 분리했습니다. 작업 폴더는 **팀 통합 결과**(`integration/`)에
-> 집중하고, 개인 단독 산출물은 별도 보관(git 이력엔 남아 복원 가능). `hyunsung` 브랜치에도 보존돼 있습니다.
 
 ---
 
@@ -185,4 +194,4 @@ LLM 응답에 어떤 텍스트가 섞여도 커널엔 정수 한 개만 도달�
 
 - **xv6-riscv**: MIT License. 강의 제공 미수정 트리 위에 통합 패치를 적용.
 - **Solar Pro 3**: Upstage. OpenAI 호환 Chat Completions 엔드포인트로 호출.
-- **Team DNDN**: Scheduler(조현성) · Syscall(minju) · Thread(jinhwan) · Process(haneol).
+- **Team DNDN** (4인 공동): Scheduler(`hyunsung`) · Syscall(`minju`) · Thread(`jinhwan`) · Process(`haneol`).
