@@ -75,8 +75,16 @@ def build_command(spec: dict):
     if cmd in _WORKLOADS:
         if q not in (0, 1, 2):
             q = 1
-        tail = (" " + " ".join(map(str, args))) if args else ""
-        return f"nlrun {q} {cmd}{tail}", None
+        # Make "run a heavy workload" actually observable: clamp the iteration
+        # count to a heavy-but-safe range and background it (&) so the prompt
+        # returns and `ps` shows the process (its PRIO demoting under MLFQ).
+        try:
+            iters = int(args[0]) if args else 0
+        except (ValueError, TypeError):
+            iters = 0
+        iters = max(iters, 1_000_000_000)     # heavy enough to stay running
+        iters = min(iters, 2_000_000_000)     # < 2^31 (xv6 atoi is 32-bit int)
+        return f"nlrun {q} {cmd} {iters} &", None
     if cmd == "echo":
         return "echo " + " ".join(map(str, args)), None
     if cmd == "ls":
@@ -139,17 +147,27 @@ class SafetyGuard:
         if cmd == "explain":
             return Decision("allow", None, "informational; no OS action")
 
-        # kill: protect init/scheduler pids
+        # kill: protect init/scheduler pids; reject nonsensical pids
         if cmd == "kill" and args:
             try:
                 pid = int(args[0])
             except (ValueError, TypeError):
                 return Decision("reject", None, f"invalid pid {args[0]!r}")
+            if pid < 1 or pid > 1_000_000:          # xv6 pids are small positives
+                return Decision("reject", None, f"pid {pid} out of valid range")
             if pid in PROTECTED_PIDS:
                 return Decision("reject", None, f"pid {pid} is protected (init)")
 
-        # setpri: validate priority range
+        # setpri: validate pid (same as kill) and priority range
         if cmd == "setpri" and len(args) >= 2:
+            try:
+                spid = int(args[0])
+            except (ValueError, TypeError):
+                return Decision("reject", None, f"invalid pid {args[0]!r}")
+            if spid < 1 or spid > 1_000_000:
+                return Decision("reject", None, f"pid {spid} out of valid range")
+            if spid in PROTECTED_PIDS:
+                return Decision("reject", None, f"pid {spid} is protected (init)")
             try:
                 prio = int(args[1])
             except (ValueError, TypeError):
@@ -202,6 +220,42 @@ def classify(text: str, timeout: float = 30.0) -> dict:
         m = re.search(r"\{.*\}", raw, re.DOTALL)
         return json.loads(m.group(0)) if m else {"cmd": "reject", "args": [],
                                                   "queue_hint": 0, "reason": "unparseable"}
+
+
+# Conversational prompt — used ONLY for inputs that are not runnable commands
+# (the explain intent, or out-of-scope chat). Lets the model *talk* instead of
+# emitting an intent JSON. Deliberately NOT the SYSTEM_PROMPT.
+CHAT_PROMPT = (
+    "You are a concise, friendly assistant inside an xv6 operating-system shell. "
+    "The user said something that is not a runnable command. Answer their question "
+    "or respond conversationally in the SAME language they used (Korean or English), "
+    "in 1-2 short sentences. Plain prose only — no JSON, no markdown, no code."
+)
+
+
+def chat(text: str, timeout: float = 30.0) -> str:
+    """Ask the model for a conversational reply (general NL, no OS action)."""
+    import requests
+    base = os.environ.get("UPSTAGE_BASE_URL", "https://api.upstage.ai/v1")
+    model = os.environ.get("UPSTAGE_MODEL", "solar-pro3")
+    key = (os.environ.get("UPSTAGE_API_KEY")
+           or os.environ.get("SOLAR_API_KEY") or "not-needed")
+    r = requests.post(
+        f"{base}/chat/completions",
+        headers={"Authorization": f"Bearer {key}"},
+        json={
+            "model": model,
+            "messages": [
+                {"role": "system", "content": CHAT_PROMPT},
+                {"role": "user", "content": text},
+            ],
+            "temperature": 0.3,
+            "max_tokens": 160,
+        },
+        timeout=timeout,
+    )
+    r.raise_for_status()
+    return r.json()["choices"][0]["message"]["content"].strip()
 
 
 # ---------------------------------------------------------------------------

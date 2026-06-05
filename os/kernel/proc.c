@@ -549,11 +549,26 @@ scheduler(void)
       release(&boost_lock);
     }
 
+    // === Smart-MLFQ: round-robin WITHIN each level ===
+    // rr_cursor remembers the last proc we ran so the next scan starts just
+    // after it (wrapping around). Without this we always re-pick the lowest-
+    // index RUNNABLE proc at the top level and STARVE every higher-index proc
+    // at the same level — e.g. a fork storm leaves orphan children that never
+    // get scheduled, so they never exit, never get reaped, and the proc table
+    // fills up (xv6 usertests `reparent` then fails on fork exhaustion).
+    // Levels are still strictly ordered (0 before 1 before 2): we only rotate
+    // among equal-priority runnable procs. The static is shared across harts;
+    // races on it are benign (it is only a fairness hint).
+    static int rr_cursor = 0;
     int found = 0;
     for(int level = 0; level < MLFQ_LEVELS && !found; level++){
-      for(p = proc; p < &proc[NPROC]; p++) {
+      for(int off = 1; off <= NPROC && !found; off++){
+        int idx = (rr_cursor + off) % NPROC;
+        p = &proc[idx];
         acquire(&p->lock);
         if(p->state == RUNNABLE && p->priority == level) {
+          rr_cursor = idx;            // advance the round-robin hint
+
           // Snapshot trace info to print AFTER swtch — see comment above.
           int log_trace = p->trace_enabled;
           int log_tick  = ticks;

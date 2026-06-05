@@ -11,10 +11,18 @@
 ```
 host/
 ├── README.md               ← 이 파일
-├── requirements.txt        ← Python 의존성 (hyunsung 기준)
+├── requirements.txt        ← Python 의존성 (Solar/오프라인 백엔드)
+├── requirements-local.txt  ← 온디바이스 백엔드 추가 의존성 (torch/transformers/peft)
 ├── .env.example            ← API 키 / 경로 설정 템플릿
 │
-├── nl_shell.py             ← ⭐ 주 진입점: 자연어 → xv6 명령
+├── nlos.py                 ← ⭐ 라이브 진입점: 백엔드 선택 + 모델서버 + 브리지 한 방에
+├── nlbridge.py             ← QEMU 콘솔 감싸 @@NL 포착 → 번역 → 가드 → 명령 자동 주입
+├── model_server.py         ← 학습한 LoRA를 OpenAI 호환 /v1 로 서빙 (MPS/CUDA/CPU)
+├── test_nlos.py            ← 오프라인 테스트 52종 (모델·QEMU 불필요)
+│
+├── nl_shell.py             ← 기존 진입점: 자연어 → xv6 명령 (수동 복붙 흐름)
+├── executor.py             ← 인텐트 → xv6 명령 + SafetyGuard
+├── agent.py                ← 추상요청("정리해줘") → 다단계 분해
 ├── prompts.py              ← Solar 프롬프트 정의
 ├── parse_trace.py          ← xv6 콘솔 로그 → JSON
 ├── llm_hint.py             ← batch: baseline 통계 → Solar → hints.txt
@@ -32,7 +40,18 @@ host/
 
 ## 어떤 걸 언제 쓰는가
 
-`nl_shell.py` 가 모든 NL 도메인의 단일 진입점입니다. 도메인은 `--mode` 플래그로 지정:
+**라이브 NL-OS 셸(권장)** — xv6 안에서 `ask <자연어>` → 자동 실행:
+
+| 용도 | 명령 |
+|---|---|
+| 라이브 셸, 백엔드 자동 선택 | `python3 nlos.py` |
+| 온디바이스 학습모델로 강제 | `python3 nlos.py --backend local` |
+| Solar Pro 3 로 강제 | `python3 nlos.py --backend solar` |
+| LLM 없이 규칙(키·모델 불필요) | `python3 nlos.py --backend offline` |
+| 모델만 따로 서빙 | `python3 model_server.py` |
+| 오프라인 테스트 52종 | `python3 test_nlos.py` |
+
+**배치/평가 (기존 `nl_shell.py`)** — 도메인은 `--mode` 플래그로 지정:
 
 | 용도 | 명령 |
 |---|---|

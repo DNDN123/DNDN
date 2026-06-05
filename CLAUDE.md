@@ -21,12 +21,17 @@ LLM for OS/
 ├── CLAUDE.md  README.md                      ← 이 파일 / 사용자 문서
 ├── os/                                        ← ★ 빌드 대상 xv6 (맥북/리눅스)
 │   ├── kernel/  (proc.c=MLFQ+reap, sysproc.c, syscall.*)
-│   └── user/    (nlrun, ps, setprio, kill, killall, killheavy, reap,
-│                 uptime, sysinfo, tracepid, *_burner ...)
+│   └── user/    (ask ★라이브셸, nlrun, ps, setprio, kill, killall, killheavy,
+│                 reap, uptime, sysinfo, tracepid, *_burner ...)
 ├── host/                                      ← 호스트 Python (NL 브리지)
-│   ├── nl_shell.py                            ← 기존 NL→spec REPL
+│   ├── nlos.py        ★ 라이브 진입점: 백엔드선택+모델서버+브리지 한방에
+│   ├── nlbridge.py    ★ QEMU 콘솔 감싸 @@NL→번역→가드→자동주입
+│   ├── model_server.py★ 학습 LoRA를 OpenAI호환 /v1 서빙 (MPS/CUDA/CPU)
+│   ├── test_nlos.py    오프라인 테스트 52종 (모델·QEMU 불필요)
+│   ├── nl_shell.py     기존 NL→spec REPL (수동 복붙)
 │   ├── executor.py    ★ M3: 인텐트→xv6명령 + 안전가드
 │   ├── agent.py       ★ M4: 추상요청("정리해줘")→다단계 분해
+│   ├── requirements.txt(Solar/오프라인)  requirements-local.txt(온디바이스)
 │   └── prompts.py  parse_trace.py  evaluator.py  viz.py  adapters/
 ├── ml/                                        ← 모델 학습 (Windows/GPU)
 │   ├── data/   (seeds/01..07_*.jsonl, seeds.jsonl, augmented*, train/test.jsonl)
@@ -74,7 +79,27 @@ LLM for OS/
            executor.py: SafetyGuard      ─▶ allow / confirm / reject
                                             (kill 0·1 거부, kill/rm/killall/killheavy 확인)
 추상요청("정리해줘") ─▶ agent.py: ps 관찰 → [reap, killheavy ...] 분해 → 각각 가드
+일반대화(명령 아님): 모델 reject/explain ─▶ executor.chat(CHAT_PROMPT)로 모델이 prose 답변
+   (예: "타임슬라이스 설명해줘"→[assistant]답, "농담해줘"→[assistant]농담. 규칙 아닌 모델 생성.
+    단 "프로세스가 뭐야"류는 모델이 ps로 분류해 실행됨 — 일반대화는 부분 지원)
 ```
+
+### 라이브 실행 (xv6 콘솔 안에서 자연어 → 자동 실행)
+입력 방식 2가지(둘 다 동작):
+```
+(A) 접두사 없음(자동 폴백):  xv6 콘솔에 그냥 "무거운거 정리해줘" 입력
+     → xv6 sh가 exec 실패("exec 무거운거 failed") → nlbridge가 그 줄을 자연어로 재해석
+     → 단, 실패한 프로그램명 == 입력 첫 단어일 때만 발동(프로그램 내부 exec실패 오인 방지)
+(B) 명시적 ask:  ask <자연어> ─(os/user/ask.c)→ 콘솔에 "@@NL <자연어>" 송출 → nlbridge 포착
+   * 자연어가 진짜 명령어로 시작하면(예: "ls 정리") sh가 그 명령 실행 → 이땐 ask 사용
+공통: nlbridge → executor.classify(번역) → SafetyGuard → 같은 콘솔에 명령 자동 타이핑 → 커널 실행
+      nlos.py      ─ 백엔드 자동선택(solar/local/offline) + model_server 수명관리 + 브리지 기동
+      model_server.py ─ 학습 LoRA를 OpenAI 호환 /v1 로 서빙 (MPS/CUDA/CPU, 프롬프트는 미내장=중계)
+```
+- 진짜 명령(ps/ls/kill 7)은 가로채지 않아 즉시 실행. `NLBRIDGE_NOAUTO=1`로 자동폴백 끄면 ask 전용.
+- 백엔드 전환은 `UPSTAGE_BASE_URL`/`UPSTAGE_MODEL`만 바꿈. 브리지·가드·커널 동일.
+- 호스트↔게스트 콘솔 왕복 = IPC 채널 (OS 개념 추가).
+- 오프라인 검증: `python3 host/test_nlos.py` (52종, 모델·QEMU 불필요).
 
 ---
 
@@ -116,6 +141,8 @@ python build_train.py                         # 누수 0 그룹 split
 5. **proc 테이블 락 순서**: `wait_lock` → `p->lock`. parent 접근은 wait_lock 안에서.
 6. **SYSTEM_PROMPT 동기화**: `ml/scripts/train.py`·`evaluate.py`·`ask.py`·`host/executor.py` 4곳이 다르면 평가 불공정 + 모델 동작 틀어짐.
 7. **ml/models/는 gitignore**: 수 GB. 커밋 금지. (현재 lora+merged만 보존, 나머지 삭제됨)
+8. **fs.img는 부팅 간 영속**: QEMU가 디스크에 쓴 게 재부팅해도 남음. 게다가 커널만 바꾸면 `make fs.img`가 재생성 안 함. fs를 바꾸는 테스트(특히 usertests bigdir) 전엔 `rm os/fs.img && make -C os fs.img`로 클린 이미지. (이걸 몰라 bigdir 오탐을 며칠 헤맬 수 있음 — verification-report 참조)
+9. **MLFQ는 레벨 내 라운드로빈 필수**: 스케줄러가 매번 proc[0]부터 최저인덱스만 고르면 같은 레벨 고인덱스 프로세스가 영구 기아 → fork 폭주 시 proc 고갈(usertests reparent 실패). `scheduler()`의 `rr_cursor` 회전 유지할 것.
 
 ---
 
@@ -124,11 +151,21 @@ python build_train.py                         # 누수 0 그룹 split
 | 단계 | 상태 |
 |---|---|
 | 데이터 20인텐트 (한/영 ~반반, train 5951/test 1584) | ✅ |
-| 학습 (qwen-3b r64 e10) | ✅ 산출물 존재 (정확도는 evaluate.py 실행 필요) |
-| 커널 reap + 유저 killall/killheavy/reap/uptime/sysinfo/tracepid | ✅ 작성 (맥북 빌드 검증 대기) |
-| M3 executor + 안전가드 | ✅ 오프라인 검증 |
+| 학습 (qwen-3b r64 e10) | ✅ 산출물 존재. macOS MPS 라이브 추론 검증 (한/영 인텐트 정확) |
+| 커널 reap + 유저 killall/killheavy/reap/uptime/sysinfo/tracepid | ✅ macOS 빌드+실행 검증 (killheavy 실제 종료 확인) |
+| M3 executor + 안전가드 | ✅ 오프라인 검증 + 라이브 |
 | M4 agent (추상요청 분해) | ✅ 오프라인 검증 |
-| 라이브 자동실행(QEMU 드라이버 연결) | ⬜ 빌드 통과 후 연결 |
+| 라이브 자동실행(QEMU 드라이버 연결) | ✅ nlbridge.py/nlos.py — ask→번역→가드→자동주입→실행 전구간 라이브 검증 |
+| 온디바이스 서빙 (model_server.py, OpenAI호환) | ✅ MPS 라이브. CUDA/CPU 대응 코드 |
+| **커널 정확성 (xv6 usertests)** | ✅ **ALL TESTS PASSED (61)** — 클린 fs.img |
+| **검증 캠페인 + 버그수정** | ✅ 스케줄러 기아(라운드로빈), FSSIZE 2000→8000, 가드 강화. `docs/verification-report.md` |
+| **NL 모델 정확도 (전체 1854)** | ✅ cmd 98.2% / queue_hint 99.4% / 오류 1. 18/20 인텐트 ~100%, 소프트스팟: explain 94%·mixed_burner 90%(데이터로 개선 가능) |
+
+### 검증 도구 (이번 캠페인 산출)
+- `host/qemu_probe.py` — 결정론적 xv6 콘솔 드라이버(부팅 대기·명령 에코확인·`--until` 완료마커). fs 테스트 전 클린 이미지 필수.
+- `host/test_nlos.py` — 오프라인 52종(가드/매핑/센티넬/폴백/프리플라이트), 모델·QEMU 불필요.
+- `host/eval_sample.py` — 모델 정확도 무작위 샘플 측정.
+| 포터블/오프라인 (test_nlos.py 52종, 백엔드 3종) | ✅ |
 
 ## 범위 밖 (xv6에 기능 자체가 없음 — 추가 불가/비현실적)
 네트워크(다운로드), 유저/권한(sudo/chmod), 서비스/패키지매니저, 프로세스 일시정지(SIGSTOP).

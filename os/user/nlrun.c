@@ -39,8 +39,9 @@ main(int argc, char *argv[])
     exit(1);
   }
 
-  // Enable TRACE emission for self + (inherited by) children.
-  settrace(0, 1);
+  // NOTE: tracing is intentionally OFF here — it floods the NL-shell console
+  // with TRACE/EXIT lines. Scheduler behavior is still observable via `ps`
+  // (the PRIO column shows MLFQ demotion). Use `tracepid <pid> 1` to opt in.
 
   // forkpri puts the child directly into queue `level` (no race vs setpri).
   int pid = forkpri(level);

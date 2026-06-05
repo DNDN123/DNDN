@@ -132,10 +132,11 @@ main(int argc, char *argv[])
   iappend(rootino, &de, sizeof(de));
 
   for (i = 2; i < argc; i++) {
-    // get rid of "user/"
+    // get rid of any directory prefix ("user/", "workloads/", ...)
     char *shortname;
-    if (strncmp(argv[i], "user/", 5) == 0)
-      shortname = argv[i] + 5;
+    char *slash = strrchr(argv[i], '/');
+    if (slash)
+      shortname = slash + 1;
     else
       shortname = argv[i];
 

@@ -13,6 +13,69 @@
 
 ---
 
+## 0. 빠른 시작 — 라이브 자연어 OS 셸 (`ask`)
+
+xv6 콘솔 **안에서** 자연어로 말하면, 호스트 브리지가 LLM으로 인텐트를 뽑아
+안전가드를 통과시킨 뒤 그 명령을 같은 콘솔에 자동 입력해 커널이 실행합니다.
+LLM은 절대 커널에 들어가지 않습니다 — `kill 7` 같은 작은 명령만 syscall 경계를 넘습니다.
+
+```bash
+# 한 줄 실행 (백엔드 자동 선택: Solar 키 있으면 Solar, 없고 모델 있으면 온디바이스, 둘 다 없으면 규칙)
+cd host && python3 nlos.py
+
+# xv6 콘솔 안에서 — 그냥 자연어로 입력하면 됨 (접두사 불필요):
+$ 무거운 프로세스 정리해줘
+[bridge] (자연어로 해석) “무거운 프로세스 정리해줘”
+[bridge] -> killheavy
+killed heaviest pid 4 (cpu_burner, run_ticks=68)
+
+# 일반 명령(ps, ls, kill 7)은 그대로 즉시 실행. 명시적으로 `ask 무거운거 정리`도 가능.
+```
+
+> **동작 원리**: 입력한 줄을 xv6 셸이 명령으로 실행하려다 실패(`exec ... failed`)하면, 브리지가 그 줄을 자연어로 재해석해 번역·실행합니다. 진짜 명령은 가로채지 않아 빠릅니다. (실패한 프로그램명이 입력 첫 단어와 일치할 때만 발동 → 오작동 없음.) 자연어가 일반 명령어로 시작하면(예: `ls 정리해줘`) 셸이 그 명령으로 실행하니, 그럴 땐 `ask` 접두를 쓰세요.
+
+### 백엔드 3종 (코드 변경 0 — `nlos.py`가 환경변수만 세팅)
+
+| 백엔드 | 명령 | 필요 조건 |
+|---|---|---|
+| **Solar Pro 3** (클라우드, 과제 필수) | `python3 nlos.py --backend solar` | `UPSTAGE_API_KEY` |
+| **온디바이스** (직접 학습한 SLM) | `python3 nlos.py --backend local` | `pip install -r host/requirements-local.txt` + `ml/models/.../lora` |
+| **오프라인** (LLM 없이 규칙) | `python3 nlos.py --backend offline` | 없음 — 키·모델·네트워크 불필요 |
+
+> Solar ↔ 온디바이스 전환은 `UPSTAGE_BASE_URL`/`UPSTAGE_MODEL` 한 줄 차이.
+> 브리지·가드·커널·xv6 명령은 어느 백엔드든 **완전히 동일**합니다.
+
+### 구성 (이 트랙의 산출물)
+
+```
+xv6 콘솔:  ask <자연어>            ← os/user/ask.c  (콘솔에 @@NL 마커 송출)
+host:      nlos.py                ← 백엔드 선택 + 모델 서버 수명관리 + 브리지 기동
+           nlbridge.py            ← QEMU 콘솔 감싸 @@NL 포착 → 번역 → 가드 → 명령 자동 주입
+           model_server.py        ← 학습한 LoRA를 OpenAI 호환 /v1로 서빙 (MPS/CUDA/CPU)
+           executor.py            ← 인텐트 → xv6 명령 + SafetyGuard (kill 0·1 보호, 위험 확인)
+```
+
+호스트↔게스트 콘솔 왕복은 그 자체로 **IPC 채널**입니다(프로세스/스케줄링/동기화/스레드/시스템호출에
+더해 OS 개념 하나 추가). 자세한 동작은 [`docs/nl-os-agent.md`](docs/nl-os-agent.md).
+
+### 셋업 / 검증
+
+```bash
+# 1) xv6 빌드 (RISC-V 툴체인 필요 — macOS/Linux/WSL2; 윈도우 네이티브 불가)
+#    macOS:  brew install riscv64-elf-gcc qemu
+cd os && make
+# 2) 호스트 의존성
+cd ../host && pip install -r requirements.txt          # Solar/오프라인용 (requests 등)
+pip install -r requirements-local.txt                  # 온디바이스 백엔드 쓸 때만
+# 3) 오프라인 검증 (모델·QEMU 불필요 — 어느 머신에서나)
+python3 test_nlos.py        # 가드/명령매핑/센티넬/폴백/프리플라이트 52종
+python3 executor.py --selftest
+```
+
+`nlos.py`는 실행 전 툴체인을 점검하고, 빌드가 없으면 자동 빌드하며, 누락 시 OS별 안내를 출력합니다.
+
+---
+
 ## 1. 프로젝트 방향성
 
 ### 한 줄 요약

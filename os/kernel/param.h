@@ -9,7 +9,10 @@
 #define MAXOPBLOCKS  10  // max # of blocks any FS op writes
 #define LOGBLOCKS    (MAXOPBLOCKS*3)  // max data blocks in on-disk log
 #define NBUF         (MAXOPBLOCKS*3)  // size of disk block cache
-#define FSSIZE       2000  // size of file system in blocks
+#define FSSIZE       8000  // size of file system in blocks (raised from stock
+                           // 2000: this repo packs 40+ user programs into the
+                           // image, leaving too few free blocks for usertests'
+                           // writebig (MAXFILE=268). 8000 gives ample headroom.)
 #define MAXPATH      128   // maximum file path name
 #define USERSTACK    1     // user stack pages
 
