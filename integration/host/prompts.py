@@ -18,6 +18,15 @@ Your task is to analyze this snapshot and identify:
   - Whether the scheduler's queue placement matches the actual behaviour
   - Anything suspicious (starvation, runaway CPU, frozen process)
 
+Diagnosis guidance (MLFQ-specific):
+  - A process pinned at LOW (priority=2) with a large `run`, `io`=0, and
+    completion=0 has been demoted as CPU-bound but is no longer making
+    visible progress — flag it as a starvation/stuck candidate and put a
+    "setpri pid=N level=0" entry in `recommended` so an operator can boost it.
+  - A process at HIGH (priority=0) with completion=0 and healthy io is
+    behaving normally; list it under `healthy`.
+  - Use integer pids (not strings) in every list.
+
 Output a short JSON object:
 
   {{
@@ -115,6 +124,17 @@ unusual. Consider:
   - Repeated `trace_on`/`trace_off` → observer-effect, suspicious
   - Few syscalls with high `wait`/`pause` → mostly idle or waiting
 
+Queue levels: 0 = HIGH (short slice, interactive/latency-sensitive),
+1 = MID, 2 = LOW (long slice, CPU-bound/background). Pick `queue_hint`
+by verdict, and make sure `reason` AGREES with the number you output
+(do not say "HIGH" while emitting 2):
+  - io_heavy            -> 0 (HIGH): latency-sensitive I/O wants short slices
+  - spawner             -> 0 (HIGH): interactive launchers (shell-like) stay responsive
+  - idle                -> 0 (HIGH): mostly waiting, cheap to keep high
+  - cpu_heavy           -> 2 (LOW):  long CPU runs belong in the background
+  - failing | suspicious -> 1 (MID): neutral placement pending investigation
+  - normal              -> 1 (MID)
+
 Output a single JSON object with exactly these keys, no markdown fences:
 
   {{
@@ -122,7 +142,7 @@ Output a single JSON object with exactly these keys, no markdown fences:
     "summary":  "one English sentence describing the pattern",
     "concerns": ["short concern strings, [] if none"],
     "queue_hint": 0 | 1 | 2,
-    "reason":   "one sentence why that queue level"
+    "reason":   "one sentence why that queue level (must match the number)"
   }}
 
 Now analyze. Respond ONLY with the JSON object.

@@ -241,6 +241,58 @@ def render(spec: dict) -> str:
     )
 
 
+def repl_process():
+    """Full-auto process demo (haneol slice): boot xv6 in QEMU, then read
+    natural-language lines from stdin (interactive `> ` prompt OR piped input
+    for stdin auto-injection), translate each via adapters/process_bridge,
+    run the mapped command in the live xv6 shell, and print the response.
+
+    Works both interactively and when fed commands on stdin, e.g.:
+        printf 'show processes\\nset process 5 to low priority\\n' \\
+            | python nl_shell.py --mode process
+    """
+    from adapters import process_bridge
+
+    print("[nl_shell] process adapter — xv6 부팅 중 (make qemu)...")
+    try:
+        qemu = process_bridge.QEMUDriver()
+    except Exception as e:
+        print(f"[nl_shell] QEMU 부팅 실패: {type(e).__name__}: {e}",
+              file=sys.stderr)
+        print("[nl_shell] kernel/kernel 과 fs.img 가 빌드됐는지, qemu 가 PATH 에"
+              " 있는지 확인하세요.", file=sys.stderr)
+        return 1
+    print("[nl_shell] 준비 완료. 자연어를 입력하세요 (Ctrl-D 종료).")
+    try:
+        while True:
+            try:
+                line = input("> ").strip()
+            except (EOFError, KeyboardInterrupt):
+                print()
+                break
+            if not line:
+                continue
+            if line.lower() in {"exit", "quit", ":q"}:
+                break
+            intent = process_bridge.parse_nl(line)
+            reject = process_bridge.guard(intent)
+            if intent.type == "REJECT" or reject:
+                print(f"[nl_shell] 거부: {reject or intent.reason}")
+                continue
+            if intent.type == "EXPLAIN":
+                print(f"[xv6 응답] {intent.args.get('about', '(설명 없음)')}")
+                continue
+            cmd = process_bridge.to_xv6_cmd(intent)
+            if not cmd:
+                print(f"[nl_shell] 매핑 없는 intent: {intent.type}")
+                continue
+            out = process_bridge.summarize(intent, qemu.run(cmd))
+            print(f"[xv6 응답] {out}")
+    finally:
+        qemu.shutdown()
+    return 0
+
+
 def repl(exec_mode: bool):
     print("[nl_shell] DNDN Project natural-language shell")
     print("[nl_shell] type a request in plain language, or 'exit' to quit.")
@@ -552,8 +604,10 @@ def main():
                   f"  xv6 cmd : $ {cmd}\n")
             return 0
         spec = translate(args.once, use_cache=not args.no_cache)
-        print(render(spec))
+        print(f"[nl_shell] → xv6 명령: {spec_to_xv6_cmd(spec)}")
         return 0
+    if args.mode == "process":
+        return repl_process()
     repl(exec_mode=args.exec)
     return 0
 

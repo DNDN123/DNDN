@@ -27,27 +27,38 @@ from typing import Optional
 # --- Configuration ---------------------------------------------------------
 
 def _load_dotenv() -> None:
-    """Load KEY=VALUE lines from a sibling .env file into os.environ.
+    """Load KEY=VALUE lines from a .env file into os.environ.
     Existing env vars take precedence so shell exports still win.
+
+    The real key lives in host/.env (one level up from this adapters/ dir),
+    so check there as well as a local adapters/.env. Without the parent path
+    a standalone `python process_bridge.py` run would never see the key and
+    silently fall back to the tiny offline parser.
     """
-    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
-    if not os.path.exists(path):
-        return
-    with open(path) as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("#") or "=" not in line:
-                continue
-            k, v = line.split("=", 1)
-            k, v = k.strip(), v.strip().strip('"').strip("'")
-            os.environ.setdefault(k, v)
+    here = os.path.dirname(os.path.abspath(__file__))
+    candidates = [
+        os.path.join(here, ".env"),            # adapters/.env (optional override)
+        os.path.join(here, "..", ".env"),      # host/.env (where the key lives)
+    ]
+    for path in candidates:
+        if not os.path.exists(path):
+            continue
+        with open(path) as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                k, v = line.split("=", 1)
+                k, v = k.strip(), v.strip().strip('"').strip("'")
+                os.environ.setdefault(k, v)
 
 
 _load_dotenv()
 
 XV6_DIR = os.environ.get(
     "XV6_DIR",
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "xv6-riscv"),
+    # this file lives at integration/host/adapters/, xv6 is at integration/xv6-riscv
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "xv6-riscv"),
 )
 SOLAR_API_KEY = os.environ.get("UPSTAGE_API_KEY") or os.environ.get("SOLAR_API_KEY")
 SOLAR_BASE_URL = os.environ.get("UPSTAGE_BASE_URL", "https://api.upstage.ai/v1")
@@ -219,7 +230,13 @@ class QEMUDriver:
     # over long REPL sessions).
     _MAX_BUF = 1 << 20  # 1 MiB
 
-    def __init__(self, xv6_dir: str = XV6_DIR, boot_wait: float = 4.0):
+    def __init__(self, xv6_dir: str = XV6_DIR, boot_wait: float = 4.0,
+                 boot_timeout: float = 60.0):
+        if not os.path.isdir(xv6_dir):
+            raise RuntimeError(
+                f"xv6 dir not found: {xv6_dir!r}. Set XV6_DIR or run from the "
+                f"correct tree (integration/host)."
+            )
         # preexec_fn=os.setsid is POSIX-only. On Windows there's no setsid
         # and Popen would AttributeError. Skip process-group setup there;
         # QEMU still terminates correctly via proc.terminate()/kill().
@@ -238,8 +255,36 @@ class QEMUDriver:
         self._buf_lock = threading.Lock()
         self._reader = threading.Thread(target=self._drain_forever, daemon=True)
         self._reader.start()
-        time.sleep(boot_wait)  # let kernel boot + sh start
+        self._wait_for_boot(boot_wait, boot_timeout)
 
+    def _wait_for_boot(self, min_wait: float, timeout: float) -> None:
+        """Block until xv6 has actually booted to a shell prompt, rather than
+        sleeping a fixed interval. `make qemu` may first recompile the tree
+        (tens of seconds) before QEMU even starts; with a fixed 4s wait the
+        first commands get written into the *compiler's* stdin and silently
+        lost, so the REPL looks dead ("아무것도 안 떠"). Poll the output buffer
+        for the boot banner / shell prompt instead, up to `timeout`."""
+        # xv6 prints "init: starting sh" then sh shows "$ ". Either marker
+        # means the shell is ready to accept commands.
+        markers = (b"init: starting sh", b"$ ")
+        deadline = time.time() + timeout
+        while time.time() < deadline:
+            if self.proc.poll() is not None:
+                raise RuntimeError(
+                    f"QEMU/make exited during boot (returncode={self.proc.returncode}). "
+                    f"Build error or qemu missing? Last output:\n"
+                    f"{self._snapshot().decode(errors='replace')[-2000:]}"
+                )
+            buf = self._snapshot()
+            if any(m in buf for m in markers):
+                time.sleep(0.5)  # let the prompt settle
+                return
+            time.sleep(0.2)
+        # Timed out waiting for the prompt — fall back to the old fixed wait
+        # so a banner-format change doesn't hard-fail, but warn loudly.
+        print("  ⚠  부팅 마커를 못 봤습니다 (셸 프롬프트 미검출) — 그래도 진행합니다. "
+              "응답이 비면 빌드/부팅 로그를 확인하세요.", file=sys.stderr)
+        time.sleep(min_wait)
         if self.proc.poll() is not None:
             raise RuntimeError(
                 f"QEMU exited during boot (returncode={self.proc.returncode}). "
