@@ -72,3 +72,9 @@ integration/_sources/
 # pull from. Not part of this project's deliverable; excluded so `git add .`
 # can never accidentally commit external course material to our repo.
 lecture-repo/
+
+# "LLM for OS" — frozen standalone snapshot of the teammate's NL-shell project
+# (extracted .zip, includes __MACOSX cruft and a ~479MB Qwen-3B LoRA weight).
+# The relevant pieces were ported into integration/; this 500MB source tree is a
+# local-only reference and must never be committed (model weights, fs.img, .o).
+LLM for OS/

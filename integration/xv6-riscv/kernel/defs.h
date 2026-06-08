@@ -86,6 +86,7 @@ void            printfinit(void);
 // proc.c
 int             cpuid(void);
 void            kexit(int);
+int             proc_reap_zombies(void);   // NL-shell cleanup (ported from "LLM for OS")
 int             kfork(void);
 int             growproc(int);
 void            proc_mapstacks(pagetable_t);

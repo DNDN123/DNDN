@@ -45,3 +45,5 @@
 // --- haneol (process) ---
 #define SYS_ps       34
 #define SYS_sysinfo  35
+// --- NL-shell cleanup (ported from haneol "LLM for OS") ---
+#define SYS_reap     36

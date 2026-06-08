@@ -1,8 +1,10 @@
 # DNDN Project — 우리가 만든 xv6 위에서 자연어로 움직이는 OS
 
 > 4인 팀이 함께 xv6-riscv 커널의 4개 슬라이스(**Scheduler · Syscall · Thread · Process**)를
-> 직접 구현해 **하나의 빌드 트리로 통합**하고, 그 위에 **LLM(Upstage Solar Pro 3)은
-> *조언만* 하고 결정은 *커널이* 내리는** — 자연어로 움직이는 운영체제 프로젝트.
+> 직접 구현해 **하나의 빌드 트리로 통합**하고, 그 위에 **xv6 콘솔 안에서 바로 자연어로
+> OS를 조작하는 NL-shell**을 얹었다. 번역 두뇌는 **클라우드(Solar Pro 3)와 우리가
+> 파인튜닝한 온디바이스 모델(Qwen-3B LoRA)을 같은 인터페이스로 교체**할 수 있고,
+> **LLM은 *조언만* 하고 결정·실행·교정은 *커널이* 내린다.**
 >
 > **Team Project · Direction B (LLM for OS) · 2026 Spring** · GitHub: `DNDN123/DNDN`
 
@@ -11,6 +13,23 @@
 >
 > LLM은 절대 커널 안에 들어오지 않는다. LLM은 *힌트* 만 주고, 실제 결정·실행·교정은
 > 우리가 직접 구현·통합한 xv6 커널(스케줄러·시스템콜·스레드·프로세스)이 내린다.
+
+### 최종 발표 — NL-shell 확장 (이번 통합의 핵심)
+> 기존엔 **호스트(PC) 셸**에서만 자연어를 받았다. 최종본은 한 걸음 더 나아가
+> **xv6 게스트 콘솔 안에서 직접** 평범한 한국어/영어를 입력하면 커널 명령으로 번역·실행된다:
+>
+> ```
+> $ 무거운 프로세스 정리해줘
+> exec 무거운 failed              ← xv6 sh: 실제 명령이 아님
+> [bridge] (자연어로 해석) ...     ← 브리지가 그 줄을 다시 해석
+> [bridge] -> killheavy           ← 번역 후 같은 콘솔에 주입, xv6가 실행
+> ```
+>
+> - **실제 명령(`ps`, `ls`, `kill 7`)은 가로채지 않고** 그대로 빠르게 실행. xv6가 exec에
+>   실패한 줄(첫 단어가 프로그램이 아닌 줄)만 자연어로 간주.
+> - 번역 백엔드는 **온디바이스 파인튜닝 모델 → Solar → 오프라인 규칙** 순으로 자동 선택
+>   (`nlos.py` 한 줄 실행). 어떤 백엔드든 **브리지·가드·커널·xv6 명령은 동일**.
+> - LLM은 여전히 커널 밖. 콘솔 경계를 넘는 건 **번역된 짧은 명령 한 줄뿐.**
 
 ---
 
@@ -64,20 +83,27 @@
 ## 4. 시스템 구조 / 데이터 흐름
 
 ```
-[유저 자연어]  "무거운 작업 백그라운드로 돌려줘"
-      │
-      ▼   HOST (Python)
-  nl_shell.py → Solar Pro 3 → JSON spec → 검증·안전가드 → 큐 레벨 정수로 축약
-      │        (키 없으면 휴리스틱 폴백)
+[유저 자연어]  "무거운 작업 백그라운드로 돌려줘"   ──┐ 두 진입점, 같은 파이프라인
+      │ (A) 호스트 셸: nlos.py / nl_shell.py     │
+      │ (B) xv6 콘솔 안에서 직접 입력 → nlbridge  │
+      ▼   번역 두뇌 (백엔드 교체 가능)            │
+  온디바이스 Qwen-3B LoRA  ─또는─  Solar Pro 3  ─또는─  오프라인 규칙
+      │  → JSON spec {cmd,args,queue_hint,reason} → SafetyGuard(안전가드) → 명령 문자열
       ▼   "nlrun 2 cpu_burner 1000000"
-════════ syscall 경계 — 여기서 LLM 격리 (2비트만 통과) ════════
+════════ syscall/콘솔 경계 — 여기서 LLM 격리 (번역된 명령 한 줄만 통과) ════════
       ▼   xv6 KERNEL  (4슬라이스가 한 트리에서 맞물림)
   forkpri(2) ─► 3-단계 MLFQ가 실제 스케줄링      … Scheduler (잘못된 힌트는 demotion이 자동 교정)
       │
       ├─ thread_create / futex_wait·wake        … Thread   (프로세스 내 동시 실행·동기화)
       ├─ trace_on / trace_stats                 … Syscall  (실행된 syscall을 per-pid 기록)
-      └─ ps / sysinfo                           … Process  (스케줄링 결과를 외부에서 관찰)
+      ├─ ps / sysinfo                           … Process  (스케줄링 결과를 외부에서 관찰)
+      └─ reap / killheavy / killall             … NL-shell (정리·제어 요청을 안전 가드로 실행)
 ```
+
+> **NL-shell 의도(intent) 20종** — 워크로드(cpu/io/mixed) · 파일(ls/cat/rm/mkdir/ln/echo) ·
+> 프로세스(ps/kill/setpri/trace) · 정리(killall/killheavy/reap) · 시스템(uptime/sysinfo) ·
+> 정보(explain) · 거부(reject). `SafetyGuard`가 pid 0/1 종료를 차단하고 파괴적 명령은
+> 확인을 요구합니다. `explain`/`reject`는 OS를 건드리지 않습니다.
 
 ---
 
@@ -90,9 +116,12 @@
 | 25~29 | `jinhwan` | `thread_create/join/exit` + `futex_wait/wake` |
 | 30~33 | `hyunsung` | `setpri` / `getstats` / `settrace` / `forkpri` |
 | 34~35 | `haneol` | `ps` / `sysinfo` |
+| 36 | NL-shell | `reap` (버려진 좀비를 init으로 reparent해 안전 정리) |
 
-> 4팀이 모두 22~25 영역을 쓰려 한 게 가장 큰 충돌이었고, 위 표로 합의해 14개 syscall이
-> 충돌 없이 공존합니다. 상세 결정 근거는 `integration/MERGE_NOTES.md`.
+> 4팀이 모두 22~25 영역을 쓰려 한 게 가장 큰 충돌이었고, 위 표로 합의해 15개 syscall이
+> 충돌 없이 공존합니다. `reap`(36)은 NL-shell의 `정리해줘` 류 요청을 받쳐주는 syscall로,
+> `freeproc()`를 직접 부르지 않고 init의 검증된 `wait()` 경로로만 좀비를 회수합니다.
+> 상세 결정 근거는 `integration/MERGE_NOTES.md`.
 
 ---
 
@@ -105,6 +134,7 @@
 | 라이브 데모 · **Syscall** | ✅ PASS | `trace_on` 후 `tracetool dump` → per-pid syscall JSON |
 | 라이브 데모 · **Thread** | ✅ PASS | `threadtest` → kthread 생성·join + futex mutex/condvar |
 | 라이브 데모 · **Process** | ✅ PASS | `ps` / `sysinfo` 로 실행 중 프로세스·자원 관찰, `bgq` |
+| 라이브 데모 · **NL-shell** | ✅ PASS | xv6 콘솔에서 `무거운 프로세스 정리해줘` → `killheavy`, `reap` 회수 |
 | 정량 평가 (baseline/heuristic/Solar) | ✅ PASS | `three_way` avg_turnaround **−7.3% / −5.8%** |
 | 자동 회귀 (`sanity_check.sh`) | ✅ **8/8** | 2026-06-03 fresh ext4 재실행, exit 0 |
 | 통합·보안 수정 | ✅ | `K1~K7` (allocproc 누수, 배열 오버플로, thread teardown race, prompt-injection 가드 등) |
@@ -118,21 +148,29 @@
 ├── README.md                  ← 이 파일 (프로젝트 개요)
 ├── integration/               ← ⭐ 4팀 통합 결과 (메인 산출물)
 │   ├── xv6-riscv/             ← 통합 커널 + user + workloads (빌드 대상)
-│   │   ├── kernel/            ← MLFQ + trace + thread/futex + ps 전부
-│   │   ├── user/              ← nlrun, wrunner, threadtest, tracetool, ps, setprio, bgq …
+│   │   ├── kernel/            ← MLFQ + trace + thread/futex + ps + reap 전부
+│   │   ├── user/              ← nlrun, wrunner, threadtest, tracetool, ps, bgq …
+│   │   │                         + NL-shell 도구: ask, killall, killheavy, reap,
+│   │   │                           tracepid, uptime, sysinfo
 │   │   └── workloads/         ← cpu_heavy / io_heavy / mixed / three_way / realprog / bgq …
-│   ├── host/                  ← 호스트 Python (3-레이어)
-│   │   ├── nl_shell.py        ← ⭐ Hot path — 자연어 → 큐 레벨 (단일 진입점)
+│   ├── host/                  ← 호스트 Python
+│   │   ├── nlos.py            ← ⭐ NL-shell 런처 (백엔드 자동 선택: local→solar→offline)
+│   │   ├── nlbridge.py        ← ⭐ xv6 콘솔 ↔ 자연어 브리지 (QEMU 콘솔 미러링·주입)
+│   │   ├── executor.py        ← intent 분류 + build_command + SafetyGuard (20종)
+│   │   ├── model_server.py    ← 온디바이스 Qwen-3B LoRA 추론 서버 (OpenAI 호환)
+│   │   ├── qemu_probe.py      ← QEMU 부팅·프롬프트 감지 헬퍼
+│   │   ├── nl_shell.py        ← 호스트 셸 진입점 (자연어 → 큐 레벨)
 │   │   ├── nl_demo.py         ← 터미널 데모 (자연어 → MLFQ 시뮬레이션)
 │   │   ├── adapters/          ← process / thread Intent 브리지
-│   │   ├── ops/supervisor.py  ← Cold path — OS-grounded 감사 LLM
-│   │   └── dev_chat.py        ← Dev path — 자유 대화 (평가 경로 밖)
+│   │   └── test_nlos.py       ← NL-shell 단위 테스트
 │   ├── MERGE_NOTES.md         ← 충돌 결정 / K1~K7 fix 매핑
 │   ├── sanity_check.sh        ← 한 줄 자동 회귀 (build+boot+8 마커)
 │   ├── REPORT.html / _EN      ← 보고서 (한/영)
 │   ├── SLIDES.html / _EN      ← 발표 슬라이드 15장 (한/영)
+│   ├── SLIDES_NLSHELL.html    ← ⭐ 최종 발표 — NL-shell 확장 통합 덱
 │   ├── DEMO.html              ← 브라우저 인터랙티브 데모
-│   └── demo.gif               ← 실제 QEMU 세션 캡처
+│   ├── demo.gif               ← 실제 QEMU 세션 캡처
+│   └── chat_demo.gif          ← 콘솔 내부 자연어 대화 세션 캡처
 └── docs/                      ← 설계 문서 + 정량 평가 차트
     ├── syscall-allocation.md / trace-format.md / hints-format.md
     ├── hello-world.md / integration-checklist.md / security-policy.md
@@ -145,10 +183,12 @@
 
 | 산출물 | 위치 | 설명 |
 |---|---|---|
-| **통합 트리** | `integration/xv6-riscv/` | 빌드·부팅 가능한 단일 xv6 |
+| **통합 트리** | `integration/xv6-riscv/` | 빌드·부팅 가능한 단일 xv6 (NL-shell 도구 포함) |
+| **NL-shell 런처** | `integration/host/nlos.py` | ⭐ xv6 콘솔에서 자연어로 OS 조작 (백엔드 자동 선택) |
+| **온디바이스 모델** | Qwen-3B LoRA (`ml/models/...`, 로컬 전용) | 파인튜닝 번역 모델, Solar와 교체 가능 |
 | **보고서** | `integration/REPORT.html`, `REPORT_EN.html` | 한/영 기술 보고서 |
-| **슬라이드** | `integration/SLIDES.html`, `SLIDES_EN.html` | 한/영 발표 덱 (15장, 방향키·PDF 인쇄) |
-| **데모 GIF** | `integration/demo.gif` | 실제 QEMU 세션 (4슬라이스 + 통합) |
+| **슬라이드** | `integration/SLIDES.html` / `_EN` / `SLIDES_NLSHELL.html` | 한/영 발표 덱 + 최종 NL-shell 확장 덱 |
+| **데모 GIF** | `integration/demo.gif`, `chat_demo.gif` | QEMU 세션 (4슬라이스) + 콘솔 내부 자연어 대화 |
 | **인터랙티브 데모** | `integration/DEMO.html` | 브라우저: 자연어 → 큐 → MLFQ 애니메이션 |
 | **터미널 데모** | `integration/host/nl_demo.py` | 셸: 자연어 → 큐 → MLFQ 시뮬레이션 |
 | **회귀 자동화** | `integration/sanity_check.sh` | build + boot + 8 마커 검증 (8/8) |
@@ -170,8 +210,16 @@ make qemu CPUS=2
 # 3) 한 줄 회귀 검증
 XV6_DIR=integration/xv6-riscv bash integration/sanity_check.sh        # → 8/8 PASS
 
-# 4) 자연어 → OS 데모 (호스트, 키 없어도 휴리스틱으로 동작)
+# 4) ⭐ NL-shell — xv6 콘솔 안에서 직접 자연어로 OS 조작 (백엔드 자동 선택)
 cd integration/host
+python3 nlos.py                    # 로컬 모델 있으면 그걸로, 없으면 Solar, 둘 다 없으면 오프라인 규칙
+python3 nlos.py --backend local    # 온디바이스 파인튜닝 모델 강제 (Qwen-3B LoRA)
+python3 nlos.py --backend solar    # Solar Pro 3 강제 (UPSTAGE_API_KEY 필요)
+python3 nlos.py --backend offline  # LLM 없이 결정론적 규칙 (키/모델 없는 시연용)
+#   xv6 콘솔에서:  무거운 프로세스 정리해줘   → killheavy
+#                  7번 프로세스 꺼줘          → kill 7
+
+# 5) 자연어 → OS 데모 (호스트 셸, 키 없어도 휴리스틱으로 동작)
 python3 nl_shell.py --once "Run a heavy job in background"   # → nlrun 2 cpu_burner ...
 python3 nl_demo.py  --once "밤새 돌려도 되는 통계 집계"        # → 큐 번역 + MLFQ 애니메이션
 ```

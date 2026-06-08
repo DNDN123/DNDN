@@ -63,3 +63,5 @@ entry("futex_wake");
 # === haneol: process listing ===
 entry("ps");
 entry("sysinfo");
+# === NL-shell cleanup (ported from "LLM for OS") ===
+entry("reap");

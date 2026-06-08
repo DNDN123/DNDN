@@ -113,6 +113,8 @@ extern uint64 sys_futex_wake(void);
 // === haneol: process listing ===
 extern uint64 sys_ps(void);
 extern uint64 sys_sysinfo(void);
+// === NL-shell cleanup (ported from "LLM for OS") ===
+extern uint64 sys_reap(void);
 
 static uint64 (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -153,6 +155,8 @@ static uint64 (*syscalls[])(void) = {
 // === haneol: process listing ===
 [SYS_ps]      sys_ps,
 [SYS_sysinfo] sys_sysinfo,
+// === NL-shell cleanup (ported from "LLM for OS") ===
+[SYS_reap]    sys_reap,
 };
 
 void

@@ -1,0 +1,19 @@
+# Extra deps for the ON-DEVICE backend (host/model_server.py) — serving your
+# fine-tuned model locally instead of calling Solar. Not needed for the Solar
+# or offline backends.
+#
+#   pip install -r host/requirements-local.txt
+#
+# macOS (Apple Silicon): the default wheels include MPS support — nothing else
+#   to do; model_server.py picks MPS automatically.
+# Windows + NVIDIA GPU: install a CUDA-matched torch FIRST, then this file:
+#   pip install torch --index-url https://download.pytorch.org/whl/cu121   (or cu128 for Blackwell)
+#   pip install -r host/requirements-local.txt
+# CPU only: works but slow; the default torch wheel is fine.
+
+torch>=2.2.0
+transformers>=4.45.0
+peft>=0.13.0
+accelerate>=1.0.0
+sentencepiece>=0.2.0
+protobuf>=4.25.0

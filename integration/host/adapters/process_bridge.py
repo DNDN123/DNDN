@@ -104,8 +104,31 @@ Allowed args by type:
   EXPLAIN:  {"about": "free text"}             -> answer w/o running anything
   REJECT:   {}                                 -> request is unsafe / out of scope
 
-Refuse (REJECT) anything that targets pid 1, modifies the kernel, or runs
-programs not in the user/ directory of xv6.
+Runnable programs for SPAWN — use ONLY these names (pick the closest fit;
+never invent a program name):
+  cpu_burner <N>    CPU-bound loop of N iterations (heavy / compute / batch /
+                    "background" jobs)
+  io_burner <N>     I/O-bound, N short reads (file / read / disk / IO work)
+  mixed_burner <N>  alternating CPU burst + sleep, N iterations (mixed load)
+  ls  ps  cat  echo  wc  grep  setprio  tracetool  threadtest  diagprog
+  nlrun  wrunner  rrunner
+
+Normalising SPAWN requests (do this BEFORE deciding to REJECT):
+  - A vague "run a heavy / long / background / compute job" with no program
+    named -> SPAWN cpu_burner with a large N. "some I/O / file work" ->
+    io_burner. "a mixed job" -> mixed_burner. Always emit a concrete name
+    from the list above, never REJECT just because no program was named.
+  - Convert spoken/written numbers to an integer count N:
+      "5만" / "오만" / "50k"        -> 50000
+      "백만" / "1 million" / "1m"   -> 1000000
+      "천번" / "1k"                 -> 1000
+    If no count is given, default cpu_burner->1000000, io_burner->50,
+    mixed_burner->100000.
+
+Refuse (REJECT) only genuinely unsafe / out-of-scope requests: anything that
+targets pid 1, modifies the kernel, or asks for a program not in the list
+above. Do NOT reject a normal "run a job" request — map it to cpu_burner/
+io_burner/mixed_burner as described.
 Output JSON only — no markdown, no commentary.
 """
 

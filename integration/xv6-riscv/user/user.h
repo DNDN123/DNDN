@@ -78,6 +78,9 @@ struct sysinfo;    // forward decl; full def in kernel/sysinfo.h
 int ps(struct procinfo *buf, int max);
 int sysinfo(struct sysinfo *info);
 
+// === NL-shell cleanup (ported from haneol "LLM for OS") ===
+int reap(void);   // force-reap abandoned zombies; returns count
+
 // ulib.c
 int stat(const char*, struct stat*);
 char* strcpy(char*, const char*);
