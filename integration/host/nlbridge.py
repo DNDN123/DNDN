@@ -54,7 +54,12 @@ except ImportError:
     _HAVE_TERMIOS = False
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OS_DIR = os.path.join(REPO, "os")
+# xv6 source tree. Lives at integration/xv6-riscv; older layouts symlinked it as
+# integration/os, so fall back to that. XV6_DIR overrides both.
+OS_DIR = (os.environ.get("XV6_DIR")
+          or next((os.path.join(REPO, d) for d in ("xv6-riscv", "os")
+                   if os.path.isdir(os.path.join(REPO, d))),
+                  os.path.join(REPO, "xv6-riscv")))
 SENTINEL = "@@NL "
 
 
