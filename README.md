@@ -232,6 +232,10 @@ cd integration/host && python3 nlos.py --backend local
 │   │   ├── nl_demo.py         ← 터미널 데모 (자연어 → MLFQ 시뮬레이션)
 │   │   ├── adapters/          ← process / thread Intent 브리지
 │   │   └── test_nlos.py       ← NL-shell 단위 테스트
+│   ├── ml/                     ← 온디바이스 모델 학습·서빙 자산
+│   │   ├── scripts/            ← 증류 파이프라인: gen_intent_seeds → augment → build_train → train → evaluate/compare
+│   │   ├── data/               ← seeds / augmented / train.jsonl / test.jsonl (그룹 split, 누수 0)
+│   │   └── models/            ← 학습된 Qwen-3B LoRA 가중치 (~472MB, .gitignore — 커밋 안 함)
 │   ├── MERGE_NOTES.md         ← 충돌 결정 / K1~K7 fix 매핑
 │   ├── sanity_check.sh        ← 한 줄 자동 회귀 (build+boot+8 마커)
 │   ├── REPORT.html / _EN      ← 보고서 (한/영)

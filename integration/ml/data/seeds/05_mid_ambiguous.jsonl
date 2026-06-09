@@ -1,0 +1,50 @@
+{"user": "보통 작업 하나 돌려줘", "spec": {"cmd": "mixed_burner", "args": ["500"], "queue_hint": 1, "reason": "Mixed/unspecified workload, default to MID"}}
+{"user": "그냥 적당히 돌려", "spec": {"cmd": "mixed_burner", "args": ["1000"], "queue_hint": 1, "reason": "Ambiguous request, default MID"}}
+{"user": "mixed_burner 500", "spec": {"cmd": "mixed_burner", "args": ["500"], "queue_hint": 1, "reason": "Mixed workload"}}
+{"user": "중간 정도 짜리 하나", "spec": {"cmd": "mixed_burner", "args": ["800"], "queue_hint": 1, "reason": "Mid-size workload"}}
+{"user": "mixed_burner 천번", "spec": {"cmd": "mixed_burner", "args": ["1000"], "queue_hint": 1, "reason": "Mixed workload, default MID"}}
+{"user": "cpu_burner 50만번", "spec": {"cmd": "cpu_burner", "args": ["500000"], "queue_hint": 1, "reason": "Medium CPU workload"}}
+{"user": "그저 그런 작업", "spec": {"cmd": "mixed_burner", "args": ["600"], "queue_hint": 1, "reason": "Unspecified workload, default MID"}}
+{"user": "뭐 하나 돌려놔", "spec": {"cmd": "mixed_burner", "args": ["500"], "queue_hint": 1, "reason": "Ambiguous, default MID"}}
+{"user": "mixed_burner 1500", "spec": {"cmd": "mixed_burner", "args": ["1500"], "queue_hint": 1, "reason": "Mid-large mixed workload"}}
+{"user": "cpu_burner 적당히 30만", "spec": {"cmd": "cpu_burner", "args": ["300000"], "queue_hint": 1, "reason": "Medium CPU workload"}}
+{"user": "보통 크기 io_burner 200", "spec": {"cmd": "io_burner", "args": ["200"], "queue_hint": 1, "reason": "Medium I/O workload"}}
+{"user": "io_burner 150 적당히", "spec": {"cmd": "io_burner", "args": ["150"], "queue_hint": 1, "reason": "Medium I/O"}}
+{"user": "io_burner 250 mid", "spec": {"cmd": "io_burner", "args": ["250"], "queue_hint": 1, "reason": "Mid-size I/O workload"}}
+{"user": "mixed_burner 보통 800", "spec": {"cmd": "mixed_burner", "args": ["800"], "queue_hint": 1, "reason": "Mid mixed workload"}}
+{"user": "그냥 한번 돌려보자", "spec": {"cmd": "mixed_burner", "args": ["500"], "queue_hint": 1, "reason": "Ambiguous, default MID"}}
+{"user": "cpu_burner 백만번 정도", "spec": {"cmd": "cpu_burner", "args": ["1000000"], "queue_hint": 1, "reason": "Mid CPU workload"}}
+{"user": "적절한 크기 mixed_burner 700", "spec": {"cmd": "mixed_burner", "args": ["700"], "queue_hint": 1, "reason": "Mid mixed workload"}}
+{"user": "그냥 디폴트로", "spec": {"cmd": "mixed_burner", "args": ["500"], "queue_hint": 1, "reason": "Default workload, MID"}}
+{"user": "그저 보통으로 처리해", "spec": {"cmd": "mixed_burner", "args": ["600"], "queue_hint": 1, "reason": "Default MID"}}
+{"user": "딱히 우선순위 없음 mixed 1200", "spec": {"cmd": "mixed_burner", "args": ["1200"], "queue_hint": 1, "reason": "No specific priority, MID default"}}
+{"user": "run a medium-sized job", "spec": {"cmd": "mixed_burner", "args": ["500"], "queue_hint": 1, "reason": "Medium workload"}}
+{"user": "nothing special, just run mixed_burner", "spec": {"cmd": "mixed_burner", "args": ["500"], "queue_hint": 1, "reason": "Unspecified, default MID"}}
+{"user": "moderate task mixed_burner 800", "spec": {"cmd": "mixed_burner", "args": ["800"], "queue_hint": 1, "reason": "Moderate workload"}}
+{"user": "mid-tier cpu_burner 400000", "spec": {"cmd": "cpu_burner", "args": ["400000"], "queue_hint": 1, "reason": "Medium CPU work"}}
+{"user": "average io_burner 175", "spec": {"cmd": "io_burner", "args": ["175"], "queue_hint": 1, "reason": "Average I/O workload"}}
+{"user": "kinda medium mixed_burner 1100", "spec": {"cmd": "mixed_burner", "args": ["1100"], "queue_hint": 1, "reason": "Medium mixed workload"}}
+{"user": "default workload", "spec": {"cmd": "mixed_burner", "args": ["500"], "queue_hint": 1, "reason": "Default MID workload"}}
+{"user": "run something unspecified", "spec": {"cmd": "mixed_burner", "args": ["500"], "queue_hint": 1, "reason": "Ambiguous request, default MID"}}
+{"user": "ambiguous task — pick a sensible default", "spec": {"cmd": "mixed_burner", "args": ["600"], "queue_hint": 1, "reason": "Default MID for ambiguous"}}
+{"user": "just a normal job", "spec": {"cmd": "mixed_burner", "args": ["500"], "queue_hint": 1, "reason": "Normal job, MID"}}
+{"user": "regular workload mixed 900", "spec": {"cmd": "mixed_burner", "args": ["900"], "queue_hint": 1, "reason": "Regular mixed workload"}}
+{"user": "cpu_burner mid size 600000", "spec": {"cmd": "cpu_burner", "args": ["600000"], "queue_hint": 1, "reason": "Mid-size CPU work"}}
+{"user": "io_burner moderate 300", "spec": {"cmd": "io_burner", "args": ["300"], "queue_hint": 1, "reason": "Moderate I/O"}}
+{"user": "no preference mixed_burner 750", "spec": {"cmd": "mixed_burner", "args": ["750"], "queue_hint": 1, "reason": "No preference, default MID"}}
+{"user": "mixed_burner 1300 normal", "spec": {"cmd": "mixed_burner", "args": ["1300"], "queue_hint": 1, "reason": "Normal mixed workload"}}
+{"user": "mid-level cpu_burner 700000", "spec": {"cmd": "cpu_burner", "args": ["700000"], "queue_hint": 1, "reason": "Mid CPU work"}}
+{"user": "조금 무거운데 막 무겁진 않은 작업 cpu_burner 800000", "spec": {"cmd": "cpu_burner", "args": ["800000"], "queue_hint": 1, "reason": "Moderately heavy, MID tier"}}
+{"user": "딱 mid 정도로 mixed 1000", "spec": {"cmd": "mixed_burner", "args": ["1000"], "queue_hint": 1, "reason": "Explicitly MID requested"}}
+{"user": "MID 큐에 mixed_burner 1400", "spec": {"cmd": "mixed_burner", "args": ["1400"], "queue_hint": 1, "reason": "MID queue requested"}}
+{"user": "어중간한 거 하나 io_burner 220", "spec": {"cmd": "io_burner", "args": ["220"], "queue_hint": 1, "reason": "Mid-tier I/O"}}
+{"user": "cpu_burner 500000 적당히", "spec": {"cmd": "cpu_burner", "args": ["500000"], "queue_hint": 1, "reason": "Mid CPU work"}}
+{"user": "mixed 작업이라 일단 mid", "spec": {"cmd": "mixed_burner", "args": ["1000"], "queue_hint": 1, "reason": "Mixed workload, default MID"}}
+{"user": "in-between size cpu_burner 900000", "spec": {"cmd": "cpu_burner", "args": ["900000"], "queue_hint": 1, "reason": "In-between size CPU"}}
+{"user": "balanced workload mixed_burner 950", "spec": {"cmd": "mixed_burner", "args": ["950"], "queue_hint": 1, "reason": "Balanced mixed workload"}}
+{"user": "io_burner 350 평범", "spec": {"cmd": "io_burner", "args": ["350"], "queue_hint": 1, "reason": "Regular I/O"}}
+{"user": "moderate compute cpu_burner 850000", "spec": {"cmd": "cpu_burner", "args": ["850000"], "queue_hint": 1, "reason": "Moderate CPU work"}}
+{"user": "별 특징 없는 mixed 650", "spec": {"cmd": "mixed_burner", "args": ["650"], "queue_hint": 1, "reason": "Unremarkable mixed workload"}}
+{"user": "그저 일반적 io_burner 280", "spec": {"cmd": "io_burner", "args": ["280"], "queue_hint": 1, "reason": "Generic I/O workload"}}
+{"user": "일반 사이즈 cpu_burner 750000", "spec": {"cmd": "cpu_burner", "args": ["750000"], "queue_hint": 1, "reason": "Regular-size CPU"}}
+{"user": "ordinary mixed_burner 1050", "spec": {"cmd": "mixed_burner", "args": ["1050"], "queue_hint": 1, "reason": "Ordinary mixed workload"}}

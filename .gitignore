@@ -73,6 +73,11 @@ integration/_sources/
 # can never accidentally commit external course material to our repo.
 lecture-repo/
 
+# On-device fine-tuned model weights copied into integration/ for the local
+# backend (nlos.py DEFAULT_MODEL). ~472MB LoRA adapter — never commit; reproduce
+# via ml/scripts/train.py or copy from the "LLM for OS" reference tree.
+integration/ml/models/
+
 # "LLM for OS" — frozen standalone snapshot of the teammate's NL-shell project
 # (extracted .zip, includes __MACOSX cruft and a ~479MB Qwen-3B LoRA weight).
 # The relevant pieces were ported into integration/; this 500MB source tree is a

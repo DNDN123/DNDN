@@ -1,0 +1,150 @@
+{"user": "뒤에서 무거운 계산 하나 돌려", "spec": {"cmd": "cpu_burner", "args": ["2000000"], "queue_hint": 2, "reason": "Heavy CPU work backgrounded"}}
+{"user": "백그라운드에서 큰 계산 좀", "spec": {"cmd": "cpu_burner", "args": ["2000000"], "queue_hint": 2, "reason": "Heavy CPU work backgrounded"}}
+{"user": "200만번 무거운 계산 백그라", "spec": {"cmd": "cpu_burner", "args": ["2000000"], "queue_hint": 2, "reason": "Heavy CPU work backgrounded"}}
+{"user": "헤비한 계산 백으로 cpu_burner 2M", "spec": {"cmd": "cpu_burner", "args": ["2000000"], "queue_hint": 2, "reason": "Heavy CPU work backgrounded"}}
+{"user": "큰 계산 뒤에 cpu_burner 2백만", "spec": {"cmd": "cpu_burner", "args": ["2000000"], "queue_hint": 2, "reason": "Heavy CPU work backgrounded"}}
+{"user": "천만번 cpu_burner", "spec": {"cmd": "cpu_burner", "args": ["10000000"], "queue_hint": 2, "reason": "Very heavy CPU workload"}}
+{"user": "cpu_burner 만번 가즈아", "spec": {"cmd": "cpu_burner", "args": ["10000000"], "queue_hint": 2, "reason": "Very heavy CPU workload"}}
+{"user": "cpu_burner 1000만 헤비", "spec": {"cmd": "cpu_burner", "args": ["10000000"], "queue_hint": 2, "reason": "Very heavy CPU workload"}}
+{"user": "cpu_burner 10M 무겁게", "spec": {"cmd": "cpu_burner", "args": ["10000000"], "queue_hint": 2, "reason": "Very heavy CPU workload"}}
+{"user": "백그라 cpu_burner 1천만", "spec": {"cmd": "cpu_burner", "args": ["10000000"], "queue_hint": 2, "reason": "Very heavy CPU workload"}}
+{"user": "큰 계산 백에서 돌려 5M", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Heavy CPU work backgrounded"}}
+{"user": "cpu_burner 500만 백그라운드", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Heavy CPU work backgrounded"}}
+{"user": "큰 계산 뒤에 5백만", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Heavy CPU work backgrounded"}}
+{"user": "백 cpu_burner 5M 한판", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Heavy CPU work backgrounded"}}
+{"user": "백그라 큰 거 5백만 좀", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Heavy CPU work backgrounded"}}
+{"user": "헤비한 작업 백그라 cpu_burner 3M", "spec": {"cmd": "cpu_burner", "args": ["3000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "무거운 작업 뒤로 3백만", "spec": {"cmd": "cpu_burner", "args": ["3000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "cpu_burner 300만 백그라", "spec": {"cmd": "cpu_burner", "args": ["3000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "헤비 작업 뒤에", "spec": {"cmd": "cpu_burner", "args": ["3000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "3M cpu_burner 백그라운드", "spec": {"cmd": "cpu_burner", "args": ["3000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "무거운 거 하나 돌리고 가벼운 거", "spec": {"cmd": "cpu_burner", "args": ["3000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "큰 거 하나 돌려놓고", "spec": {"cmd": "cpu_burner", "args": ["3000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "무거운 거 일단 백 cpu_burner 3000000", "spec": {"cmd": "cpu_burner", "args": ["3000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "무거운 작업 뒤에 두고", "spec": {"cmd": "cpu_burner", "args": ["3000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "무거운 거 백에서 cpu_burner 3M", "spec": {"cmd": "cpu_burner", "args": ["3000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "긴 cpu_burner 5M", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Long CPU workload"}}
+{"user": "cpu_burner 길게 500만", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Long CPU workload"}}
+{"user": "오래 도는 cpu_burner 500만", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Long CPU workload"}}
+{"user": "long burner 5백만", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Long CPU workload"}}
+{"user": "cpu_burner 길게 한판 5M", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Long CPU workload"}}
+{"user": "오래 걸려도 되는 cpu_burner 8M", "spec": {"cmd": "cpu_burner", "args": ["8000000"], "queue_hint": 2, "reason": "Long CPU workload, LOW queue"}}
+{"user": "8백만번 긴 cpu", "spec": {"cmd": "cpu_burner", "args": ["8000000"], "queue_hint": 2, "reason": "Long CPU workload, LOW queue"}}
+{"user": "cpu_burner 800만 LOW", "spec": {"cmd": "cpu_burner", "args": ["8000000"], "queue_hint": 2, "reason": "Long CPU workload, LOW queue"}}
+{"user": "오래 가는 계산 8M", "spec": {"cmd": "cpu_burner", "args": ["8000000"], "queue_hint": 2, "reason": "Long CPU workload, LOW queue"}}
+{"user": "긴 burn 800만번 부탁", "spec": {"cmd": "cpu_burner", "args": ["8000000"], "queue_hint": 2, "reason": "Long CPU workload, LOW queue"}}
+{"user": "batch cpu_burner 200만", "spec": {"cmd": "cpu_burner", "args": ["2000000"], "queue_hint": 2, "reason": "Batch CPU workload"}}
+{"user": "배치 cpu_burner 2M", "spec": {"cmd": "cpu_burner", "args": ["2000000"], "queue_hint": 2, "reason": "Batch CPU workload"}}
+{"user": "200만번 배치", "spec": {"cmd": "cpu_burner", "args": ["2000000"], "queue_hint": 2, "reason": "Batch CPU workload"}}
+{"user": "큰 batch 작업 cpu_burner 200만", "spec": {"cmd": "cpu_burner", "args": ["2000000"], "queue_hint": 2, "reason": "Batch CPU workload"}}
+{"user": "cpu_burner 200만 배치잡", "spec": {"cmd": "cpu_burner", "args": ["2000000"], "queue_hint": 2, "reason": "Batch CPU workload"}}
+{"user": "cpu_burner 백 100만", "spec": {"cmd": "cpu_burner", "args": ["1000000"], "queue_hint": 2, "reason": "CPU workload backgrounded"}}
+{"user": "백그라 cpu_burner 1M", "spec": {"cmd": "cpu_burner", "args": ["1000000"], "queue_hint": 2, "reason": "CPU workload backgrounded"}}
+{"user": "100만번 백그라운드", "spec": {"cmd": "cpu_burner", "args": ["1000000"], "queue_hint": 2, "reason": "CPU workload backgrounded"}}
+{"user": "cpu_burner 일백만 뒤에", "spec": {"cmd": "cpu_burner", "args": ["1000000"], "queue_hint": 2, "reason": "CPU workload backgrounded"}}
+{"user": "cpu_burner 100만 백그라", "spec": {"cmd": "cpu_burner", "args": ["1000000"], "queue_hint": 2, "reason": "CPU workload backgrounded"}}
+{"user": "긴 계산 백에 4M", "spec": {"cmd": "cpu_burner", "args": ["4000000"], "queue_hint": 2, "reason": "Long CPU backgrounded"}}
+{"user": "긴 cpu_burner 400만 뒤로", "spec": {"cmd": "cpu_burner", "args": ["4000000"], "queue_hint": 2, "reason": "Long CPU backgrounded"}}
+{"user": "오래 도는 거 백 4백만", "spec": {"cmd": "cpu_burner", "args": ["4000000"], "queue_hint": 2, "reason": "Long CPU backgrounded"}}
+{"user": "cpu_burner 4M 백그라", "spec": {"cmd": "cpu_burner", "args": ["4000000"], "queue_hint": 2, "reason": "Long CPU backgrounded"}}
+{"user": "긴 cpu_burner 4M 뒤에 처리", "spec": {"cmd": "cpu_burner", "args": ["4000000"], "queue_hint": 2, "reason": "Long CPU backgrounded"}}
+{"user": "compute heavy 6M", "spec": {"cmd": "cpu_burner", "args": ["6000000"], "queue_hint": 2, "reason": "Compute heavy task"}}
+{"user": "헤비 컴퓨트 cpu_burner 6백만", "spec": {"cmd": "cpu_burner", "args": ["6000000"], "queue_hint": 2, "reason": "Compute heavy task"}}
+{"user": "cpu_burner 6M compute-heavy", "spec": {"cmd": "cpu_burner", "args": ["6000000"], "queue_hint": 2, "reason": "Compute heavy task"}}
+{"user": "무겁게 6백만번", "spec": {"cmd": "cpu_burner", "args": ["6000000"], "queue_hint": 2, "reason": "Compute heavy task"}}
+{"user": "cpu 6M compute 무겁게", "spec": {"cmd": "cpu_burner", "args": ["6000000"], "queue_hint": 2, "reason": "Compute heavy task"}}
+{"user": "cpu_burner 1500만 매우 무겁게", "spec": {"cmd": "cpu_burner", "args": ["15000000"], "queue_hint": 2, "reason": "Very heavy CPU workload"}}
+{"user": "15M cpu_burner 헤비", "spec": {"cmd": "cpu_burner", "args": ["15000000"], "queue_hint": 2, "reason": "Very heavy CPU workload"}}
+{"user": "엄청 무거운 cpu 천오백만", "spec": {"cmd": "cpu_burner", "args": ["15000000"], "queue_hint": 2, "reason": "Very heavy CPU workload"}}
+{"user": "백그라 cpu_burner 15M", "spec": {"cmd": "cpu_burner", "args": ["15000000"], "queue_hint": 2, "reason": "Very heavy CPU workload"}}
+{"user": "정말 무거운 cpu_burner 1500만", "spec": {"cmd": "cpu_burner", "args": ["15000000"], "queue_hint": 2, "reason": "Very heavy CPU workload"}}
+{"user": "백 5M cpu_burner 헤비", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "cpu_burner 500만 백에서", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "5백만 백그라 헤비", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "백그라 5M cpu_burner", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "5M heavy cpu 백그라운드", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "느리게 돌아도 되는 큰 거 3M", "spec": {"cmd": "cpu_burner", "args": ["3000000"], "queue_hint": 2, "reason": "Non-urgent heavy work, LOW queue"}}
+{"user": "non-urgent cpu_burner 3M", "spec": {"cmd": "cpu_burner", "args": ["3000000"], "queue_hint": 2, "reason": "Non-urgent heavy work, LOW queue"}}
+{"user": "급하지 않은 큰 cpu_burner 3백만", "spec": {"cmd": "cpu_burner", "args": ["3000000"], "queue_hint": 2, "reason": "Non-urgent heavy work, LOW queue"}}
+{"user": "안 급한 큰 계산 cpu_burner 3M", "spec": {"cmd": "cpu_burner", "args": ["3000000"], "queue_hint": 2, "reason": "Non-urgent heavy work, LOW queue"}}
+{"user": "느긋한 3M cpu", "spec": {"cmd": "cpu_burner", "args": ["3000000"], "queue_hint": 2, "reason": "Non-urgent heavy work, LOW queue"}}
+{"user": "cpu_burner 천만 백", "spec": {"cmd": "cpu_burner", "args": ["10000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "background cpu_burner 10M", "spec": {"cmd": "cpu_burner", "args": ["10000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "백그라 1천만번", "spec": {"cmd": "cpu_burner", "args": ["10000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "천만 cpu_burner background", "spec": {"cmd": "cpu_burner", "args": ["10000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "큰 거 천만번 뒤로", "spec": {"cmd": "cpu_burner", "args": ["10000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "천천히 백에서 4M cpu", "spec": {"cmd": "cpu_burner", "args": ["4000000"], "queue_hint": 2, "reason": "Long-running CPU work"}}
+{"user": "천천히 도는 cpu_burner 4백만", "spec": {"cmd": "cpu_burner", "args": ["4000000"], "queue_hint": 2, "reason": "Long-running CPU work"}}
+{"user": "천천히 4M cpu_burner 좀", "spec": {"cmd": "cpu_burner", "args": ["4000000"], "queue_hint": 2, "reason": "Long-running CPU work"}}
+{"user": "느리게 cpu_burner 400만", "spec": {"cmd": "cpu_burner", "args": ["4000000"], "queue_hint": 2, "reason": "Long-running CPU work"}}
+{"user": "slow cpu_burner 4M 백", "spec": {"cmd": "cpu_burner", "args": ["4000000"], "queue_hint": 2, "reason": "Long-running CPU work"}}
+{"user": "cpu_burner 800만 길게", "spec": {"cmd": "cpu_burner", "args": ["8000000"], "queue_hint": 2, "reason": "Long CPU burn"}}
+{"user": "긴 burner 800만", "spec": {"cmd": "cpu_burner", "args": ["8000000"], "queue_hint": 2, "reason": "Long CPU burn"}}
+{"user": "8백만 길게 burn", "spec": {"cmd": "cpu_burner", "args": ["8000000"], "queue_hint": 2, "reason": "Long CPU burn"}}
+{"user": "8M cpu_burner long burn", "spec": {"cmd": "cpu_burner", "args": ["8000000"], "queue_hint": 2, "reason": "Long CPU burn"}}
+{"user": "cpu_burner 8백만번 길게 burn", "spec": {"cmd": "cpu_burner", "args": ["8000000"], "queue_hint": 2, "reason": "Long CPU burn"}}
+{"user": "3M heavy cpu_burner", "spec": {"cmd": "cpu_burner", "args": ["3000000"], "queue_hint": 2, "reason": "Heavy CPU workload"}}
+{"user": "헤비 3M cpu_burner", "spec": {"cmd": "cpu_burner", "args": ["3000000"], "queue_hint": 2, "reason": "Heavy CPU workload"}}
+{"user": "3백만 무겁게 cpu", "spec": {"cmd": "cpu_burner", "args": ["3000000"], "queue_hint": 2, "reason": "Heavy CPU workload"}}
+{"user": "cpu_burner heavy 3 million", "spec": {"cmd": "cpu_burner", "args": ["3000000"], "queue_hint": 2, "reason": "Heavy CPU workload"}}
+{"user": "3M cpu_burner 헤비하게", "spec": {"cmd": "cpu_burner", "args": ["3000000"], "queue_hint": 2, "reason": "Heavy CPU workload"}}
+{"user": "큰 burn 200만번", "spec": {"cmd": "cpu_burner", "args": ["2000000"], "queue_hint": 2, "reason": "Heavy CPU workload"}}
+{"user": "burner 한판 200만", "spec": {"cmd": "cpu_burner", "args": ["2000000"], "queue_hint": 2, "reason": "Heavy CPU workload"}}
+{"user": "cpu_burner 2M big burn", "spec": {"cmd": "cpu_burner", "args": ["2000000"], "queue_hint": 2, "reason": "Heavy CPU workload"}}
+{"user": "2백만 burner 한판", "spec": {"cmd": "cpu_burner", "args": ["2000000"], "queue_hint": 2, "reason": "Heavy CPU workload"}}
+{"user": "한판 burn 2M", "spec": {"cmd": "cpu_burner", "args": ["2000000"], "queue_hint": 2, "reason": "Heavy CPU workload"}}
+{"user": "오래 도는 거 또 7M", "spec": {"cmd": "cpu_burner", "args": ["7000000"], "queue_hint": 2, "reason": "Long CPU workload"}}
+{"user": "cpu_burner 7백만 오래", "spec": {"cmd": "cpu_burner", "args": ["7000000"], "queue_hint": 2, "reason": "Long CPU workload"}}
+{"user": "긴 cpu 7M 부탁", "spec": {"cmd": "cpu_burner", "args": ["7000000"], "queue_hint": 2, "reason": "Long CPU workload"}}
+{"user": "7M cpu_burner long", "spec": {"cmd": "cpu_burner", "args": ["7000000"], "queue_hint": 2, "reason": "Long CPU workload"}}
+{"user": "7백만번 cpu_burner 길게", "spec": {"cmd": "cpu_burner", "args": ["7000000"], "queue_hint": 2, "reason": "Long CPU workload"}}
+{"user": "엄청 길게 cpu_burner 1200만", "spec": {"cmd": "cpu_burner", "args": ["12000000"], "queue_hint": 2, "reason": "Very long CPU workload"}}
+{"user": "cpu_burner 12M 매우 길게", "spec": {"cmd": "cpu_burner", "args": ["12000000"], "queue_hint": 2, "reason": "Very long CPU workload"}}
+{"user": "12백만 cpu 길게 burn", "spec": {"cmd": "cpu_burner", "args": ["12000000"], "queue_hint": 2, "reason": "Very long CPU workload"}}
+{"user": "1200만번 cpu_burner 길게", "spec": {"cmd": "cpu_burner", "args": ["12000000"], "queue_hint": 2, "reason": "Very long CPU workload"}}
+{"user": "cpu_burner 1천2백만 길게", "spec": {"cmd": "cpu_burner", "args": ["12000000"], "queue_hint": 2, "reason": "Very long CPU workload"}}
+{"user": "처리량 6M cpu_burner", "spec": {"cmd": "cpu_burner", "args": ["6000000"], "queue_hint": 2, "reason": "Throughput-oriented heavy task"}}
+{"user": "throughput 위주 6백만", "spec": {"cmd": "cpu_burner", "args": ["6000000"], "queue_hint": 2, "reason": "Throughput-oriented heavy task"}}
+{"user": "처리량 6M 헤비", "spec": {"cmd": "cpu_burner", "args": ["6000000"], "queue_hint": 2, "reason": "Throughput-oriented heavy task"}}
+{"user": "6M throughput-heavy cpu", "spec": {"cmd": "cpu_burner", "args": ["6000000"], "queue_hint": 2, "reason": "Throughput-oriented heavy task"}}
+{"user": "처리량 우선 6백만번", "spec": {"cmd": "cpu_burner", "args": ["6000000"], "queue_hint": 2, "reason": "Throughput-oriented heavy task"}}
+{"user": "background compute 450만", "spec": {"cmd": "cpu_burner", "args": ["4500000"], "queue_hint": 2, "reason": "Background CPU compute"}}
+{"user": "백그라 cpu 450만", "spec": {"cmd": "cpu_burner", "args": ["4500000"], "queue_hint": 2, "reason": "Background CPU compute"}}
+{"user": "cpu_burner 4.5M background", "spec": {"cmd": "cpu_burner", "args": ["4500000"], "queue_hint": 2, "reason": "Background CPU compute"}}
+{"user": "백 cpu_burner 4500000", "spec": {"cmd": "cpu_burner", "args": ["4500000"], "queue_hint": 2, "reason": "Background CPU compute"}}
+{"user": "백그라운드 cpu 4.5M", "spec": {"cmd": "cpu_burner", "args": ["4500000"], "queue_hint": 2, "reason": "Background CPU compute"}}
+{"user": "오래걸리는 cpu_burner 1천만", "spec": {"cmd": "cpu_burner", "args": ["10000000"], "queue_hint": 2, "reason": "Long CPU workload"}}
+{"user": "long-running burner 10M", "spec": {"cmd": "cpu_burner", "args": ["10000000"], "queue_hint": 2, "reason": "Long CPU workload"}}
+{"user": "cpu_burner 10M 길게 오래", "spec": {"cmd": "cpu_burner", "args": ["10000000"], "queue_hint": 2, "reason": "Long CPU workload"}}
+{"user": "오래 도는 cpu_burner 천만", "spec": {"cmd": "cpu_burner", "args": ["10000000"], "queue_hint": 2, "reason": "Long CPU workload"}}
+{"user": "긴 10백만 cpu_burner", "spec": {"cmd": "cpu_burner", "args": ["10000000"], "queue_hint": 2, "reason": "Long CPU workload"}}
+{"user": "느긋한 5M cpu_burner", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Non-urgent heavy work"}}
+{"user": "5백만번 느긋하게", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Non-urgent heavy work"}}
+{"user": "안 급한 5M cpu", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Non-urgent heavy work"}}
+{"user": "cpu_burner 5M 천천히", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Non-urgent heavy work"}}
+{"user": "non-urgent 5백만 cpu", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Non-urgent heavy work"}}
+{"user": "백그라 cpu_burner 5M", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "5백만 백그라운드 cpu", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "background 5M cpu_burner heavy", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "백 헤비 5M", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "백그라 5백만 무겁게", "spec": {"cmd": "cpu_burner", "args": ["5000000"], "queue_hint": 2, "reason": "Heavy CPU backgrounded"}}
+{"user": "LOW 큐 cpu_burner 2M", "spec": {"cmd": "cpu_burner", "args": ["2000000"], "queue_hint": 2, "reason": "LOW queue placement requested"}}
+{"user": "low priority cpu_burner 200만", "spec": {"cmd": "cpu_burner", "args": ["2000000"], "queue_hint": 2, "reason": "LOW queue placement requested"}}
+{"user": "LOW에 cpu_burner 2백만", "spec": {"cmd": "cpu_burner", "args": ["2000000"], "queue_hint": 2, "reason": "LOW queue placement requested"}}
+{"user": "낮은 우선순위 cpu_burner 2M", "spec": {"cmd": "cpu_burner", "args": ["2000000"], "queue_hint": 2, "reason": "LOW queue placement requested"}}
+{"user": "low queue 2M cpu", "spec": {"cmd": "cpu_burner", "args": ["2000000"], "queue_hint": 2, "reason": "LOW queue placement requested"}}
+{"user": "백 batch cpu_burner 9M", "spec": {"cmd": "cpu_burner", "args": ["9000000"], "queue_hint": 2, "reason": "Background batch job"}}
+{"user": "background batch 9백만", "spec": {"cmd": "cpu_burner", "args": ["9000000"], "queue_hint": 2, "reason": "Background batch job"}}
+{"user": "백그라 배치잡 9M", "spec": {"cmd": "cpu_burner", "args": ["9000000"], "queue_hint": 2, "reason": "Background batch job"}}
+{"user": "9M batch background cpu", "spec": {"cmd": "cpu_burner", "args": ["9000000"], "queue_hint": 2, "reason": "Background batch job"}}
+{"user": "9백만번 배치 백그라", "spec": {"cmd": "cpu_burner", "args": ["9000000"], "queue_hint": 2, "reason": "Background batch job"}}
+{"user": "io_burner 500 큰 거", "spec": {"cmd": "io_burner", "args": ["500"], "queue_hint": 2, "reason": "Large I/O batch job"}}
+{"user": "io_burner 큰 거 500", "spec": {"cmd": "io_burner", "args": ["500"], "queue_hint": 2, "reason": "Large I/O batch job"}}
+{"user": "큰 io 500번", "spec": {"cmd": "io_burner", "args": ["500"], "queue_hint": 2, "reason": "Large I/O batch job"}}
+{"user": "io_burner 500번 큰 batch", "spec": {"cmd": "io_burner", "args": ["500"], "queue_hint": 2, "reason": "Large I/O batch job"}}
+{"user": "large io_burner 500", "spec": {"cmd": "io_burner", "args": ["500"], "queue_hint": 2, "reason": "Large I/O batch job"}}
+{"user": "io_burner 1000 큰 배치", "spec": {"cmd": "io_burner", "args": ["1000"], "queue_hint": 2, "reason": "Large I/O batch"}}
+{"user": "io_burner 천번 백그라", "spec": {"cmd": "io_burner", "args": ["1000"], "queue_hint": 2, "reason": "Large I/O batch"}}
+{"user": "io 천번 큰 배치", "spec": {"cmd": "io_burner", "args": ["1000"], "queue_hint": 2, "reason": "Large I/O batch"}}
+{"user": "1000번 큰 io 배치", "spec": {"cmd": "io_burner", "args": ["1000"], "queue_hint": 2, "reason": "Large I/O batch"}}
+{"user": "io_burner 1k 백그라", "spec": {"cmd": "io_burner", "args": ["1000"], "queue_hint": 2, "reason": "Large I/O batch"}}

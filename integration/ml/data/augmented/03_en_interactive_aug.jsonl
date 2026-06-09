@@ -1,0 +1,147 @@
+{"user": "quickly echo hello", "spec": {"cmd": "echo", "args": ["hello"], "queue_hint": 0, "reason": "short interactive print"}}
+{"user": "echo hello pronto", "spec": {"cmd": "echo", "args": ["hello"], "queue_hint": 0, "reason": "short interactive print"}}
+{"user": "echo hello asap", "spec": {"cmd": "echo", "args": ["hello"], "queue_hint": 0, "reason": "short interactive print"}}
+{"user": "echo hello right now", "spec": {"cmd": "echo", "args": ["hello"], "queue_hint": 0, "reason": "short interactive print"}}
+{"user": "echo hello fast plz", "spec": {"cmd": "echo", "args": ["hello"], "queue_hint": 0, "reason": "short interactive print"}}
+{"user": "print hello quickly", "spec": {"cmd": "echo", "args": ["hello"], "queue_hint": 0, "reason": "short interactive print"}}
+{"user": "fast print: hello", "spec": {"cmd": "echo", "args": ["hello"], "queue_hint": 0, "reason": "short interactive print"}}
+{"user": "rapidly print hello", "spec": {"cmd": "echo", "args": ["hello"], "queue_hint": 0, "reason": "short interactive print"}}
+{"user": "print hello instantly", "spec": {"cmd": "echo", "args": ["hello"], "queue_hint": 0, "reason": "short interactive print"}}
+{"user": "spit out hello", "spec": {"cmd": "echo", "args": ["hello"], "queue_hint": 0, "reason": "short interactive print"}}
+{"user": "a quick echo test", "spec": {"cmd": "echo", "args": ["test"], "queue_hint": 0, "reason": "short interactive print"}}
+{"user": "quick test echo", "spec": {"cmd": "echo", "args": ["test"], "queue_hint": 0, "reason": "short interactive print"}}
+{"user": "echo test fast", "spec": {"cmd": "echo", "args": ["test"], "queue_hint": 0, "reason": "short interactive print"}}
+{"user": "echo 'test' quickly", "spec": {"cmd": "echo", "args": ["test"], "queue_hint": 0, "reason": "short interactive print"}}
+{"user": "just echo test", "spec": {"cmd": "echo", "args": ["test"], "queue_hint": 0, "reason": "short interactive print"}}
+{"user": "ok print please", "spec": {"cmd": "echo", "args": ["ok"], "queue_hint": 0, "reason": "short print"}}
+{"user": "echo ok now", "spec": {"cmd": "echo", "args": ["ok"], "queue_hint": 0, "reason": "short print"}}
+{"user": "just say ok", "spec": {"cmd": "echo", "args": ["ok"], "queue_hint": 0, "reason": "short print"}}
+{"user": "ok output", "spec": {"cmd": "echo", "args": ["ok"], "queue_hint": 0, "reason": "short print"}}
+{"user": "print 'ok' quick", "spec": {"cmd": "echo", "args": ["ok"], "queue_hint": 0, "reason": "short print"}}
+{"user": "ready echo", "spec": {"cmd": "echo", "args": ["ready"], "queue_hint": 0, "reason": "short status print"}}
+{"user": "echo 'ready'", "spec": {"cmd": "echo", "args": ["ready"], "queue_hint": 0, "reason": "short status print"}}
+{"user": "print ready quickly", "spec": {"cmd": "echo", "args": ["ready"], "queue_hint": 0, "reason": "short status print"}}
+{"user": "say ready", "spec": {"cmd": "echo", "args": ["ready"], "queue_hint": 0, "reason": "short status print"}}
+{"user": "show ready", "spec": {"cmd": "echo", "args": ["ready"], "queue_hint": 0, "reason": "short status print"}}
+{"user": "say hi quickly", "spec": {"cmd": "echo", "args": ["hi"], "queue_hint": 0, "reason": "short print"}}
+{"user": "hi quick print", "spec": {"cmd": "echo", "args": ["hi"], "queue_hint": 0, "reason": "short print"}}
+{"user": "give me a hi", "spec": {"cmd": "echo", "args": ["hi"], "queue_hint": 0, "reason": "short print"}}
+{"user": "print hi pls", "spec": {"cmd": "echo", "args": ["hi"], "queue_hint": 0, "reason": "short print"}}
+{"user": "echo hi now", "spec": {"cmd": "echo", "args": ["hi"], "queue_hint": 0, "reason": "short print"}}
+{"user": "print done now", "spec": {"cmd": "echo", "args": ["done"], "queue_hint": 0, "reason": "latency-sensitive print"}}
+{"user": "echo done quickly", "spec": {"cmd": "echo", "args": ["done"], "queue_hint": 0, "reason": "latency-sensitive print"}}
+{"user": "print 'done' right now", "spec": {"cmd": "echo", "args": ["done"], "queue_hint": 0, "reason": "latency-sensitive print"}}
+{"user": "echo done asap", "spec": {"cmd": "echo", "args": ["done"], "queue_hint": 0, "reason": "latency-sensitive print"}}
+{"user": "print done instant", "spec": {"cmd": "echo", "args": ["done"], "queue_hint": 0, "reason": "latency-sensitive print"}}
+{"user": "echo world fast", "spec": {"cmd": "echo", "args": ["world"], "queue_hint": 0, "reason": "short interactive print"}}
+{"user": "print world quickly", "spec": {"cmd": "echo", "args": ["world"], "queue_hint": 0, "reason": "short interactive print"}}
+{"user": "echo 'world' fast", "spec": {"cmd": "echo", "args": ["world"], "queue_hint": 0, "reason": "short interactive print"}}
+{"user": "world echo plz", "spec": {"cmd": "echo", "args": ["world"], "queue_hint": 0, "reason": "short interactive print"}}
+{"user": "say world", "spec": {"cmd": "echo", "args": ["world"], "queue_hint": 0, "reason": "short interactive print"}}
+{"user": "give me a fast hello", "spec": {"cmd": "echo", "args": ["hello"], "queue_hint": 0, "reason": "short print"}}
+{"user": "a quick hello plz", "spec": {"cmd": "echo", "args": ["hello"], "queue_hint": 0, "reason": "short print"}}
+{"user": "say hello fast", "spec": {"cmd": "echo", "args": ["hello"], "queue_hint": 0, "reason": "short print"}}
+{"user": "echo me a hello", "spec": {"cmd": "echo", "args": ["hello"], "queue_hint": 0, "reason": "short print"}}
+{"user": "send a quick hello", "spec": {"cmd": "echo", "args": ["hello"], "queue_hint": 0, "reason": "short print"}}
+{"user": "alive one-shot", "spec": {"cmd": "echo", "args": ["alive"], "queue_hint": 0, "reason": "status print"}}
+{"user": "echo alive once", "spec": {"cmd": "echo", "args": ["alive"], "queue_hint": 0, "reason": "status print"}}
+{"user": "print 'alive' fast", "spec": {"cmd": "echo", "args": ["alive"], "queue_hint": 0, "reason": "status print"}}
+{"user": "alive echo plz", "spec": {"cmd": "echo", "args": ["alive"], "queue_hint": 0, "reason": "status print"}}
+{"user": "echo alive", "spec": {"cmd": "echo", "args": ["alive"], "queue_hint": 0, "reason": "status print"}}
+{"user": "print pong", "spec": {"cmd": "echo", "args": ["pong"], "queue_hint": 0, "reason": "short interactive output"}}
+{"user": "echo pong fast", "spec": {"cmd": "echo", "args": ["pong"], "queue_hint": 0, "reason": "short interactive output"}}
+{"user": "pong echo", "spec": {"cmd": "echo", "args": ["pong"], "queue_hint": 0, "reason": "short interactive output"}}
+{"user": "echo 'pong' now", "spec": {"cmd": "echo", "args": ["pong"], "queue_hint": 0, "reason": "short interactive output"}}
+{"user": "respond with pong", "spec": {"cmd": "echo", "args": ["pong"], "queue_hint": 0, "reason": "short interactive output"}}
+{"user": "echo a small string", "spec": {"cmd": "echo", "args": ["short"], "queue_hint": 0, "reason": "trivial print"}}
+{"user": "tiny echo short", "spec": {"cmd": "echo", "args": ["short"], "queue_hint": 0, "reason": "trivial print"}}
+{"user": "print short", "spec": {"cmd": "echo", "args": ["short"], "queue_hint": 0, "reason": "trivial print"}}
+{"user": "echo short text", "spec": {"cmd": "echo", "args": ["short"], "queue_hint": 0, "reason": "trivial print"}}
+{"user": "say short", "spec": {"cmd": "echo", "args": ["short"], "queue_hint": 0, "reason": "trivial print"}}
+{"user": "fast echo test123", "spec": {"cmd": "echo", "args": ["test123"], "queue_hint": 0, "reason": "fast interactive print"}}
+{"user": "echo test123 now", "spec": {"cmd": "echo", "args": ["test123"], "queue_hint": 0, "reason": "fast interactive print"}}
+{"user": "print test123 quick", "spec": {"cmd": "echo", "args": ["test123"], "queue_hint": 0, "reason": "fast interactive print"}}
+{"user": "test123 echo plz", "spec": {"cmd": "echo", "args": ["test123"], "queue_hint": 0, "reason": "fast interactive print"}}
+{"user": "echo 'test123' fast", "spec": {"cmd": "echo", "args": ["test123"], "queue_hint": 0, "reason": "fast interactive print"}}
+{"user": "one line echo now", "spec": {"cmd": "echo", "args": ["line"], "queue_hint": 0, "reason": "single-line interactive print"}}
+{"user": "single line print", "spec": {"cmd": "echo", "args": ["line"], "queue_hint": 0, "reason": "single-line interactive print"}}
+{"user": "print one line", "spec": {"cmd": "echo", "args": ["line"], "queue_hint": 0, "reason": "single-line interactive print"}}
+{"user": "echo one line interactive", "spec": {"cmd": "echo", "args": ["line"], "queue_hint": 0, "reason": "single-line interactive print"}}
+{"user": "quick line echo", "spec": {"cmd": "echo", "args": ["line"], "queue_hint": 0, "reason": "single-line interactive print"}}
+{"user": "low-latency hi", "spec": {"cmd": "echo", "args": ["hi"], "queue_hint": 0, "reason": "latency-sensitive print"}}
+{"user": "echo hi very fast", "spec": {"cmd": "echo", "args": ["hi"], "queue_hint": 0, "reason": "latency-sensitive print"}}
+{"user": "hi as fast as you can", "spec": {"cmd": "echo", "args": ["hi"], "queue_hint": 0, "reason": "latency-sensitive print"}}
+{"user": "interactive hi echo", "spec": {"cmd": "echo", "args": ["hi"], "queue_hint": 0, "reason": "latency-sensitive print"}}
+{"user": "echo hi quickly please", "spec": {"cmd": "echo", "args": ["hi"], "queue_hint": 0, "reason": "latency-sensitive print"}}
+{"user": "please ls", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "interactive directory listing"}}
+{"user": "could you ls", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "interactive directory listing"}}
+{"user": "ls right now", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "interactive directory listing"}}
+{"user": "ls thanks", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "interactive directory listing"}}
+{"user": "quick ls", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "interactive directory listing"}}
+{"user": "show me what's in this folder", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "show contents of this directory", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "what files are here", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "list everything in here", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "directory listing pls", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "tell me what's in the folder", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "files here", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "what's in this dir", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "current folder content", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "see folder", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "list files fast", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "fast directory listing"}}
+{"user": "ls fast", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "fast directory listing"}}
+{"user": "quick file list", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "fast directory listing"}}
+{"user": "fast ls", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "fast directory listing"}}
+{"user": "list now", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "fast directory listing"}}
+{"user": "do ls", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "just ls", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "perform ls", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "run ls", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "execute ls", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "ls right away", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "interactive directory listing"}}
+{"user": "immediate ls", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "interactive directory listing"}}
+{"user": "ls quick", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "interactive directory listing"}}
+{"user": "snap ls", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "interactive directory listing"}}
+{"user": "ls asap", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "interactive directory listing"}}
+{"user": "display directory", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "print dir contents", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "dir content please", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "list contents of dir", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "show this dir", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "dir", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "directory list", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "directory contents please", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "what folders", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "files in here", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "list dir contents", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "list this dir", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "ls -l? just ls", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "ls in this dir", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "show files in this dir", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "just do ls", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "ls plz", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "directory listing"}}
+{"user": "cat the README", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "cat README please", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "README cat", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "echo README — no use cat", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "open the README", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "show README to me", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "README contents", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "I'd like to see README", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "show contents of README", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "let me see README", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "open README quickly", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small interactive file read"}}
+{"user": "fast open README", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small interactive file read"}}
+{"user": "quick README open", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small interactive file read"}}
+{"user": "open README fast plz", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small interactive file read"}}
+{"user": "rapid README open", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small interactive file read"}}
+{"user": "please read README", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "read README for me", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "kindly cat README", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "could you read README", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "would you mind cat README", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "display the README file", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "display README content", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "show README file", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "render README", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
+{"user": "print README contents", "spec": {"cmd": "cat", "args": ["README"], "queue_hint": 0, "reason": "small file read"}}
