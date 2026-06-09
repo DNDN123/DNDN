@@ -39,6 +39,7 @@ from __future__ import annotations
 import os
 import re
 import sys
+import time
 import shutil
 import threading
 import subprocess
@@ -258,6 +259,11 @@ def main() -> int:
         # to (maybe) re-interpret is read back from xv6's own echo in the main
         # loop, which reflects exactly what the shell received (immune to async
         # injection, dropped bytes, and line-editing).
+        #
+        # Throttle: 30 ms after each read chunk. Korean chars are 3 bytes each;
+        # without a pause, a burst of paste/IME-composed bytes overwhelms xv6's
+        # UART FIFO while cpu_burner is running, causing '?' replacement chars.
+        # 30 ms is imperceptible at human typing speed (~5 chars/sec = 200 ms gap).
         try:
             while True:
                 data = os.read(stdin_fd, 1024)
@@ -266,6 +272,7 @@ def main() -> int:
                 with write_lock:
                     proc.stdin.write(data)
                     proc.stdin.flush()
+                time.sleep(0.03)
         except Exception:
             pass
 
