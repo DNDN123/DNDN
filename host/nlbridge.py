@@ -255,24 +255,47 @@ def main() -> int:
     stdin_fd = sys.stdin.fileno()
 
     def feed_stdin():
-        # Forward keystrokes verbatim. We do NOT track input here — the command
-        # to (maybe) re-interpret is read back from xv6's own echo in the main
-        # loop, which reflects exactly what the shell received (immune to async
-        # injection, dropped bytes, and line-editing).
+        # Forward keystrokes into xv6, with two fixes for the Korean console:
         #
-        # Throttle: 30 ms after each read chunk. Korean chars are 3 bytes each;
-        # without a pause, a burst of paste/IME-composed bytes overwhelms xv6's
-        # UART FIFO while cpu_burner is running, causing '?' replacement chars.
-        # 30 ms is imperceptible at human typing speed (~5 chars/sec = 200 ms gap).
+        # 1. Per-byte throttle (10 ms): prevents bursting 3 bytes of a Korean
+        #    char into the QEMU 16550A FIFO faster than xv6 drains it, which
+        #    caused the '?' replacement chars under CPU load.
+        #
+        # 2. UTF-8-aware backspace: xv6's consoleintr removes 1 byte per BS/DEL,
+        #    but Korean chars are 3 bytes. We track each printable char's byte
+        #    width and expand one DEL into N DELs so the whole char is erased.
+        char_widths = []   # byte-count of each printable char on the current line
         try:
             while True:
                 data = os.read(stdin_fd, 1024)
                 if not data:
                     break
+                out_bytes = bytearray()
+                i = 0
+                while i < len(data):
+                    b = data[i]
+                    if b in (0x7f, 0x08):              # DEL / Backspace
+                        n = char_widths.pop() if char_widths else 1
+                        out_bytes.extend([0x7f] * n)   # remove n bytes on xv6 side
+                        i += 1
+                    else:
+                        # Determine UTF-8 character width from the lead byte.
+                        if b >= 0xF0:    w = 4          # 4-byte (rare emoji etc.)
+                        elif b >= 0xE0:  w = 3          # 3-byte — Korean / CJK
+                        elif b >= 0xC0:  w = 2          # 2-byte
+                        else:            w = 1          # ASCII / control
+                        chunk = data[i:i + w]
+                        out_bytes.extend(chunk)
+                        if b >= 0x20:                  # printable → track width
+                            char_widths.append(len(chunk))
+                        elif b in (0x0a, 0x0d):        # Enter — line is committed
+                            char_widths.clear()
+                        i += w
                 with write_lock:
-                    proc.stdin.write(data)
-                    proc.stdin.flush()
-                time.sleep(0.03)
+                    for byte in out_bytes:
+                        proc.stdin.write(bytes([byte]))
+                        proc.stdin.flush()
+                        time.sleep(0.01)               # 10 ms/byte → 30 ms/Korean char
         except Exception:
             pass
 
