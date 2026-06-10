@@ -1,0 +1,591 @@
+{"user": "프로세스 목록", "spec": {"cmd": "ps", "args": [], "queue_hint": 0, "reason": "list active processes"}}
+{"user": "프로세스 목록 보여줘", "spec": {"cmd": "ps", "args": [], "queue_hint": 0, "reason": "list active processes"}}
+{"user": "지금 뭐 돌고 있어?", "spec": {"cmd": "ps", "args": [], "queue_hint": 0, "reason": "list active processes"}}
+{"user": "실행 중인 프로세스 알려줘", "spec": {"cmd": "ps", "args": [], "queue_hint": 0, "reason": "list active processes"}}
+{"user": "프로세스 상태 보여줘", "spec": {"cmd": "ps", "args": [], "queue_hint": 0, "reason": "list active processes"}}
+{"user": "ps", "spec": {"cmd": "ps", "args": [], "queue_hint": 0, "reason": "list active processes"}}
+{"user": "ps 보여줘", "spec": {"cmd": "ps", "args": [], "queue_hint": 0, "reason": "list active processes"}}
+{"user": "돌아가는 거 다 보여줘", "spec": {"cmd": "ps", "args": [], "queue_hint": 0, "reason": "list active processes"}}
+{"user": "프로세스 리스트", "spec": {"cmd": "ps", "args": [], "queue_hint": 0, "reason": "list active processes"}}
+{"user": "list processes", "spec": {"cmd": "ps", "args": [], "queue_hint": 0, "reason": "list active processes"}}
+{"user": "show running processes", "spec": {"cmd": "ps", "args": [], "queue_hint": 0, "reason": "list active processes"}}
+{"user": "what's running", "spec": {"cmd": "ps", "args": [], "queue_hint": 0, "reason": "list active processes"}}
+{"user": "show the process table", "spec": {"cmd": "ps", "args": [], "queue_hint": 0, "reason": "list active processes"}}
+{"user": "list all processes", "spec": {"cmd": "ps", "args": [], "queue_hint": 0, "reason": "list active processes"}}
+{"user": "ps please", "spec": {"cmd": "ps", "args": [], "queue_hint": 0, "reason": "list active processes"}}
+{"user": "which processes are active", "spec": {"cmd": "ps", "args": [], "queue_hint": 0, "reason": "list active processes"}}
+{"user": "22번 프로세스 꺼줘", "spec": {"cmd": "kill", "args": ["22"], "queue_hint": 0, "reason": "kill pid 22"}}
+{"user": "11번 프로세스 꺼줘", "spec": {"cmd": "kill", "args": ["11"], "queue_hint": 0, "reason": "kill pid 11"}}
+{"user": "27번 프로세스 꺼줘", "spec": {"cmd": "kill", "args": ["27"], "queue_hint": 0, "reason": "kill pid 27"}}
+{"user": "5번 프로세스 꺼줘", "spec": {"cmd": "kill", "args": ["5"], "queue_hint": 0, "reason": "kill pid 5"}}
+{"user": "6번 프로세스 꺼줘", "spec": {"cmd": "kill", "args": ["6"], "queue_hint": 0, "reason": "kill pid 6"}}
+{"user": "8번 프로세스 꺼줘", "spec": {"cmd": "kill", "args": ["8"], "queue_hint": 0, "reason": "kill pid 8"}}
+{"user": "25번 죽여", "spec": {"cmd": "kill", "args": ["25"], "queue_hint": 0, "reason": "kill pid 25"}}
+{"user": "39번 죽여", "spec": {"cmd": "kill", "args": ["39"], "queue_hint": 0, "reason": "kill pid 39"}}
+{"user": "5번 죽여", "spec": {"cmd": "kill", "args": ["5"], "queue_hint": 0, "reason": "kill pid 5"}}
+{"user": "34번 죽여", "spec": {"cmd": "kill", "args": ["34"], "queue_hint": 0, "reason": "kill pid 34"}}
+{"user": "15번 죽여", "spec": {"cmd": "kill", "args": ["15"], "queue_hint": 0, "reason": "kill pid 15"}}
+{"user": "4번 죽여", "spec": {"cmd": "kill", "args": ["4"], "queue_hint": 0, "reason": "kill pid 4"}}
+{"user": "pid 7 종료해줘", "spec": {"cmd": "kill", "args": ["7"], "queue_hint": 0, "reason": "kill pid 7"}}
+{"user": "pid 29 종료해줘", "spec": {"cmd": "kill", "args": ["29"], "queue_hint": 0, "reason": "kill pid 29"}}
+{"user": "pid 28 종료해줘", "spec": {"cmd": "kill", "args": ["28"], "queue_hint": 0, "reason": "kill pid 28"}}
+{"user": "pid 6 종료해줘", "spec": {"cmd": "kill", "args": ["6"], "queue_hint": 0, "reason": "kill pid 6"}}
+{"user": "pid 17 종료해줘", "spec": {"cmd": "kill", "args": ["17"], "queue_hint": 0, "reason": "kill pid 17"}}
+{"user": "pid 40 종료해줘", "spec": {"cmd": "kill", "args": ["40"], "queue_hint": 0, "reason": "kill pid 40"}}
+{"user": "37번 종료", "spec": {"cmd": "kill", "args": ["37"], "queue_hint": 0, "reason": "kill pid 37"}}
+{"user": "29번 종료", "spec": {"cmd": "kill", "args": ["29"], "queue_hint": 0, "reason": "kill pid 29"}}
+{"user": "5번 종료", "spec": {"cmd": "kill", "args": ["5"], "queue_hint": 0, "reason": "kill pid 5"}}
+{"user": "9번 종료", "spec": {"cmd": "kill", "args": ["9"], "queue_hint": 0, "reason": "kill pid 9"}}
+{"user": "16번 종료", "spec": {"cmd": "kill", "args": ["16"], "queue_hint": 0, "reason": "kill pid 16"}}
+{"user": "38번 종료", "spec": {"cmd": "kill", "args": ["38"], "queue_hint": 0, "reason": "kill pid 38"}}
+{"user": "프로세스 38 kill", "spec": {"cmd": "kill", "args": ["38"], "queue_hint": 0, "reason": "kill pid 38"}}
+{"user": "프로세스 39 kill", "spec": {"cmd": "kill", "args": ["39"], "queue_hint": 0, "reason": "kill pid 39"}}
+{"user": "프로세스 27 kill", "spec": {"cmd": "kill", "args": ["27"], "queue_hint": 0, "reason": "kill pid 27"}}
+{"user": "프로세스 5 kill", "spec": {"cmd": "kill", "args": ["5"], "queue_hint": 0, "reason": "kill pid 5"}}
+{"user": "프로세스 16 kill", "spec": {"cmd": "kill", "args": ["16"], "queue_hint": 0, "reason": "kill pid 16"}}
+{"user": "프로세스 4 kill", "spec": {"cmd": "kill", "args": ["4"], "queue_hint": 0, "reason": "kill pid 4"}}
+{"user": "37번 멈춰줘", "spec": {"cmd": "kill", "args": ["37"], "queue_hint": 0, "reason": "kill pid 37"}}
+{"user": "10번 멈춰줘", "spec": {"cmd": "kill", "args": ["10"], "queue_hint": 0, "reason": "kill pid 10"}}
+{"user": "20번 멈춰줘", "spec": {"cmd": "kill", "args": ["20"], "queue_hint": 0, "reason": "kill pid 20"}}
+{"user": "28번 멈춰줘", "spec": {"cmd": "kill", "args": ["28"], "queue_hint": 0, "reason": "kill pid 28"}}
+{"user": "11번 멈춰줘", "spec": {"cmd": "kill", "args": ["11"], "queue_hint": 0, "reason": "kill pid 11"}}
+{"user": "9번 멈춰줘", "spec": {"cmd": "kill", "args": ["9"], "queue_hint": 0, "reason": "kill pid 9"}}
+{"user": "38번 끝내", "spec": {"cmd": "kill", "args": ["38"], "queue_hint": 0, "reason": "kill pid 38"}}
+{"user": "21번 끝내", "spec": {"cmd": "kill", "args": ["21"], "queue_hint": 0, "reason": "kill pid 21"}}
+{"user": "37번 끝내", "spec": {"cmd": "kill", "args": ["37"], "queue_hint": 0, "reason": "kill pid 37"}}
+{"user": "13번 끝내", "spec": {"cmd": "kill", "args": ["13"], "queue_hint": 0, "reason": "kill pid 13"}}
+{"user": "8번 끝내", "spec": {"cmd": "kill", "args": ["8"], "queue_hint": 0, "reason": "kill pid 8"}}
+{"user": "14번 끝내", "spec": {"cmd": "kill", "args": ["14"], "queue_hint": 0, "reason": "kill pid 14"}}
+{"user": "25번 강제 종료", "spec": {"cmd": "kill", "args": ["25"], "queue_hint": 0, "reason": "kill pid 25"}}
+{"user": "8번 강제 종료", "spec": {"cmd": "kill", "args": ["8"], "queue_hint": 0, "reason": "kill pid 8"}}
+{"user": "37번 강제 종료", "spec": {"cmd": "kill", "args": ["37"], "queue_hint": 0, "reason": "kill pid 37"}}
+{"user": "6번 강제 종료", "spec": {"cmd": "kill", "args": ["6"], "queue_hint": 0, "reason": "kill pid 6"}}
+{"user": "5번 강제 종료", "spec": {"cmd": "kill", "args": ["5"], "queue_hint": 0, "reason": "kill pid 5"}}
+{"user": "15번 강제 종료", "spec": {"cmd": "kill", "args": ["15"], "queue_hint": 0, "reason": "kill pid 15"}}
+{"user": "kill pid 33", "spec": {"cmd": "kill", "args": ["33"], "queue_hint": 0, "reason": "kill pid 33"}}
+{"user": "kill pid 36", "spec": {"cmd": "kill", "args": ["36"], "queue_hint": 0, "reason": "kill pid 36"}}
+{"user": "kill pid 29", "spec": {"cmd": "kill", "args": ["29"], "queue_hint": 0, "reason": "kill pid 29"}}
+{"user": "kill pid 22", "spec": {"cmd": "kill", "args": ["22"], "queue_hint": 0, "reason": "kill pid 22"}}
+{"user": "kill pid 31", "spec": {"cmd": "kill", "args": ["31"], "queue_hint": 0, "reason": "kill pid 31"}}
+{"user": "kill pid 39", "spec": {"cmd": "kill", "args": ["39"], "queue_hint": 0, "reason": "kill pid 39"}}
+{"user": "terminate process 25", "spec": {"cmd": "kill", "args": ["25"], "queue_hint": 0, "reason": "kill pid 25"}}
+{"user": "terminate process 21", "spec": {"cmd": "kill", "args": ["21"], "queue_hint": 0, "reason": "kill pid 21"}}
+{"user": "terminate process 17", "spec": {"cmd": "kill", "args": ["17"], "queue_hint": 0, "reason": "kill pid 17"}}
+{"user": "terminate process 13", "spec": {"cmd": "kill", "args": ["13"], "queue_hint": 0, "reason": "kill pid 13"}}
+{"user": "terminate process 38", "spec": {"cmd": "kill", "args": ["38"], "queue_hint": 0, "reason": "kill pid 38"}}
+{"user": "terminate process 7", "spec": {"cmd": "kill", "args": ["7"], "queue_hint": 0, "reason": "kill pid 7"}}
+{"user": "kill 38", "spec": {"cmd": "kill", "args": ["38"], "queue_hint": 0, "reason": "kill pid 38"}}
+{"user": "kill 21", "spec": {"cmd": "kill", "args": ["21"], "queue_hint": 0, "reason": "kill pid 21"}}
+{"user": "kill 35", "spec": {"cmd": "kill", "args": ["35"], "queue_hint": 0, "reason": "kill pid 35"}}
+{"user": "kill 33", "spec": {"cmd": "kill", "args": ["33"], "queue_hint": 0, "reason": "kill pid 33"}}
+{"user": "kill 23", "spec": {"cmd": "kill", "args": ["23"], "queue_hint": 0, "reason": "kill pid 23"}}
+{"user": "kill 30", "spec": {"cmd": "kill", "args": ["30"], "queue_hint": 0, "reason": "kill pid 30"}}
+{"user": "stop process 20", "spec": {"cmd": "kill", "args": ["20"], "queue_hint": 0, "reason": "kill pid 20"}}
+{"user": "stop process 6", "spec": {"cmd": "kill", "args": ["6"], "queue_hint": 0, "reason": "kill pid 6"}}
+{"user": "stop process 9", "spec": {"cmd": "kill", "args": ["9"], "queue_hint": 0, "reason": "kill pid 9"}}
+{"user": "stop process 34", "spec": {"cmd": "kill", "args": ["34"], "queue_hint": 0, "reason": "kill pid 34"}}
+{"user": "stop process 28", "spec": {"cmd": "kill", "args": ["28"], "queue_hint": 0, "reason": "kill pid 28"}}
+{"user": "stop process 12", "spec": {"cmd": "kill", "args": ["12"], "queue_hint": 0, "reason": "kill pid 12"}}
+{"user": "end process 23", "spec": {"cmd": "kill", "args": ["23"], "queue_hint": 0, "reason": "kill pid 23"}}
+{"user": "end process 11", "spec": {"cmd": "kill", "args": ["11"], "queue_hint": 0, "reason": "kill pid 11"}}
+{"user": "end process 33", "spec": {"cmd": "kill", "args": ["33"], "queue_hint": 0, "reason": "kill pid 33"}}
+{"user": "end process 28", "spec": {"cmd": "kill", "args": ["28"], "queue_hint": 0, "reason": "kill pid 28"}}
+{"user": "end process 4", "spec": {"cmd": "kill", "args": ["4"], "queue_hint": 0, "reason": "kill pid 4"}}
+{"user": "end process 6", "spec": {"cmd": "kill", "args": ["6"], "queue_hint": 0, "reason": "kill pid 6"}}
+{"user": "kill the process with pid 37", "spec": {"cmd": "kill", "args": ["37"], "queue_hint": 0, "reason": "kill pid 37"}}
+{"user": "kill the process with pid 38", "spec": {"cmd": "kill", "args": ["38"], "queue_hint": 0, "reason": "kill pid 38"}}
+{"user": "kill the process with pid 22", "spec": {"cmd": "kill", "args": ["22"], "queue_hint": 0, "reason": "kill pid 22"}}
+{"user": "kill the process with pid 23", "spec": {"cmd": "kill", "args": ["23"], "queue_hint": 0, "reason": "kill pid 23"}}
+{"user": "kill the process with pid 24", "spec": {"cmd": "kill", "args": ["24"], "queue_hint": 0, "reason": "kill pid 24"}}
+{"user": "kill the process with pid 33", "spec": {"cmd": "kill", "args": ["33"], "queue_hint": 0, "reason": "kill pid 33"}}
+{"user": "39번 우선순위 높여", "spec": {"cmd": "setpri", "args": ["39", "0"], "queue_hint": 0, "reason": "set pid 39 priority to HIGH"}}
+{"user": "31번 우선순위 높여", "spec": {"cmd": "setpri", "args": ["31", "0"], "queue_hint": 0, "reason": "set pid 31 priority to HIGH"}}
+{"user": "6번 우선순위 높여", "spec": {"cmd": "setpri", "args": ["6", "0"], "queue_hint": 0, "reason": "set pid 6 priority to HIGH"}}
+{"user": "7번 우선순위 올려", "spec": {"cmd": "setpri", "args": ["7", "0"], "queue_hint": 0, "reason": "set pid 7 priority to HIGH"}}
+{"user": "19번 우선순위 올려", "spec": {"cmd": "setpri", "args": ["19", "0"], "queue_hint": 0, "reason": "set pid 19 priority to HIGH"}}
+{"user": "32번 우선순위 올려", "spec": {"cmd": "setpri", "args": ["32", "0"], "queue_hint": 0, "reason": "set pid 32 priority to HIGH"}}
+{"user": "6번 높은 큐로", "spec": {"cmd": "setpri", "args": ["6", "0"], "queue_hint": 0, "reason": "set pid 6 priority to HIGH"}}
+{"user": "5번 높은 큐로", "spec": {"cmd": "setpri", "args": ["5", "0"], "queue_hint": 0, "reason": "set pid 5 priority to HIGH"}}
+{"user": "21번 높은 큐로", "spec": {"cmd": "setpri", "args": ["21", "0"], "queue_hint": 0, "reason": "set pid 21 priority to HIGH"}}
+{"user": "38번 HIGH로 보내", "spec": {"cmd": "setpri", "args": ["38", "0"], "queue_hint": 0, "reason": "set pid 38 priority to HIGH"}}
+{"user": "30번 HIGH로 보내", "spec": {"cmd": "setpri", "args": ["30", "0"], "queue_hint": 0, "reason": "set pid 30 priority to HIGH"}}
+{"user": "20번 HIGH로 보내", "spec": {"cmd": "setpri", "args": ["20", "0"], "queue_hint": 0, "reason": "set pid 20 priority to HIGH"}}
+{"user": "raise priority of pid 26", "spec": {"cmd": "setpri", "args": ["26", "0"], "queue_hint": 0, "reason": "set pid 26 priority to HIGH"}}
+{"user": "raise priority of pid 24", "spec": {"cmd": "setpri", "args": ["24", "0"], "queue_hint": 0, "reason": "set pid 24 priority to HIGH"}}
+{"user": "raise priority of pid 3", "spec": {"cmd": "setpri", "args": ["3", "0"], "queue_hint": 0, "reason": "set pid 3 priority to HIGH"}}
+{"user": "set to high of pid 31", "spec": {"cmd": "setpri", "args": ["31", "0"], "queue_hint": 0, "reason": "set pid 31 priority to HIGH"}}
+{"user": "set to high of pid 24", "spec": {"cmd": "setpri", "args": ["24", "0"], "queue_hint": 0, "reason": "set pid 24 priority to HIGH"}}
+{"user": "set to high of pid 12", "spec": {"cmd": "setpri", "args": ["12", "0"], "queue_hint": 0, "reason": "set pid 12 priority to HIGH"}}
+{"user": "prioritize of pid 9", "spec": {"cmd": "setpri", "args": ["9", "0"], "queue_hint": 0, "reason": "set pid 9 priority to HIGH"}}
+{"user": "prioritize of pid 33", "spec": {"cmd": "setpri", "args": ["33", "0"], "queue_hint": 0, "reason": "set pid 33 priority to HIGH"}}
+{"user": "prioritize of pid 5", "spec": {"cmd": "setpri", "args": ["5", "0"], "queue_hint": 0, "reason": "set pid 5 priority to HIGH"}}
+{"user": "15번 우선순위 보통으로", "spec": {"cmd": "setpri", "args": ["15", "1"], "queue_hint": 0, "reason": "set pid 15 priority to MID"}}
+{"user": "20번 우선순위 보통으로", "spec": {"cmd": "setpri", "args": ["20", "1"], "queue_hint": 0, "reason": "set pid 20 priority to MID"}}
+{"user": "10번 우선순위 보통으로", "spec": {"cmd": "setpri", "args": ["10", "1"], "queue_hint": 0, "reason": "set pid 10 priority to MID"}}
+{"user": "17번 중간 큐로", "spec": {"cmd": "setpri", "args": ["17", "1"], "queue_hint": 0, "reason": "set pid 17 priority to MID"}}
+{"user": "27번 중간 큐로", "spec": {"cmd": "setpri", "args": ["27", "1"], "queue_hint": 0, "reason": "set pid 27 priority to MID"}}
+{"user": "33번 중간 큐로", "spec": {"cmd": "setpri", "args": ["33", "1"], "queue_hint": 0, "reason": "set pid 33 priority to MID"}}
+{"user": "7번 MID로", "spec": {"cmd": "setpri", "args": ["7", "1"], "queue_hint": 0, "reason": "set pid 7 priority to MID"}}
+{"user": "12번 MID로", "spec": {"cmd": "setpri", "args": ["12", "1"], "queue_hint": 0, "reason": "set pid 12 priority to MID"}}
+{"user": "30번 MID로", "spec": {"cmd": "setpri", "args": ["30", "1"], "queue_hint": 0, "reason": "set pid 30 priority to MID"}}
+{"user": "set to mid of pid 27", "spec": {"cmd": "setpri", "args": ["27", "1"], "queue_hint": 0, "reason": "set pid 27 priority to MID"}}
+{"user": "set to mid of pid 37", "spec": {"cmd": "setpri", "args": ["37", "1"], "queue_hint": 0, "reason": "set pid 37 priority to MID"}}
+{"user": "set to mid of pid 19", "spec": {"cmd": "setpri", "args": ["19", "1"], "queue_hint": 0, "reason": "set pid 19 priority to MID"}}
+{"user": "normal priority of pid 10", "spec": {"cmd": "setpri", "args": ["10", "1"], "queue_hint": 0, "reason": "set pid 10 priority to MID"}}
+{"user": "normal priority of pid 29", "spec": {"cmd": "setpri", "args": ["29", "1"], "queue_hint": 0, "reason": "set pid 29 priority to MID"}}
+{"user": "normal priority of pid 37", "spec": {"cmd": "setpri", "args": ["37", "1"], "queue_hint": 0, "reason": "set pid 37 priority to MID"}}
+{"user": "19번 우선순위 낮춰", "spec": {"cmd": "setpri", "args": ["19", "2"], "queue_hint": 0, "reason": "set pid 19 priority to LOW"}}
+{"user": "28번 우선순위 낮춰", "spec": {"cmd": "setpri", "args": ["28", "2"], "queue_hint": 0, "reason": "set pid 28 priority to LOW"}}
+{"user": "24번 우선순위 낮춰", "spec": {"cmd": "setpri", "args": ["24", "2"], "queue_hint": 0, "reason": "set pid 24 priority to LOW"}}
+{"user": "26번 우선순위 내려", "spec": {"cmd": "setpri", "args": ["26", "2"], "queue_hint": 0, "reason": "set pid 26 priority to LOW"}}
+{"user": "16번 우선순위 내려", "spec": {"cmd": "setpri", "args": ["16", "2"], "queue_hint": 0, "reason": "set pid 16 priority to LOW"}}
+{"user": "11번 우선순위 내려", "spec": {"cmd": "setpri", "args": ["11", "2"], "queue_hint": 0, "reason": "set pid 11 priority to LOW"}}
+{"user": "7번 낮은 큐로", "spec": {"cmd": "setpri", "args": ["7", "2"], "queue_hint": 0, "reason": "set pid 7 priority to LOW"}}
+{"user": "13번 낮은 큐로", "spec": {"cmd": "setpri", "args": ["13", "2"], "queue_hint": 0, "reason": "set pid 13 priority to LOW"}}
+{"user": "11번 낮은 큐로", "spec": {"cmd": "setpri", "args": ["11", "2"], "queue_hint": 0, "reason": "set pid 11 priority to LOW"}}
+{"user": "16번 LOW로 보내", "spec": {"cmd": "setpri", "args": ["16", "2"], "queue_hint": 0, "reason": "set pid 16 priority to LOW"}}
+{"user": "2번 LOW로 보내", "spec": {"cmd": "setpri", "args": ["2", "2"], "queue_hint": 0, "reason": "set pid 2 priority to LOW"}}
+{"user": "33번 LOW로 보내", "spec": {"cmd": "setpri", "args": ["33", "2"], "queue_hint": 0, "reason": "set pid 33 priority to LOW"}}
+{"user": "39번 뒤로 보내", "spec": {"cmd": "setpri", "args": ["39", "2"], "queue_hint": 0, "reason": "set pid 39 priority to LOW"}}
+{"user": "13번 뒤로 보내", "spec": {"cmd": "setpri", "args": ["13", "2"], "queue_hint": 0, "reason": "set pid 13 priority to LOW"}}
+{"user": "18번 뒤로 보내", "spec": {"cmd": "setpri", "args": ["18", "2"], "queue_hint": 0, "reason": "set pid 18 priority to LOW"}}
+{"user": "lower priority of pid 20", "spec": {"cmd": "setpri", "args": ["20", "2"], "queue_hint": 0, "reason": "set pid 20 priority to LOW"}}
+{"user": "lower priority of pid 2", "spec": {"cmd": "setpri", "args": ["2", "2"], "queue_hint": 0, "reason": "set pid 2 priority to LOW"}}
+{"user": "lower priority of pid 11", "spec": {"cmd": "setpri", "args": ["11", "2"], "queue_hint": 0, "reason": "set pid 11 priority to LOW"}}
+{"user": "deprioritize of pid 28", "spec": {"cmd": "setpri", "args": ["28", "2"], "queue_hint": 0, "reason": "set pid 28 priority to LOW"}}
+{"user": "deprioritize of pid 36", "spec": {"cmd": "setpri", "args": ["36", "2"], "queue_hint": 0, "reason": "set pid 36 priority to LOW"}}
+{"user": "deprioritize of pid 25", "spec": {"cmd": "setpri", "args": ["25", "2"], "queue_hint": 0, "reason": "set pid 25 priority to LOW"}}
+{"user": "set to low of pid 38", "spec": {"cmd": "setpri", "args": ["38", "2"], "queue_hint": 0, "reason": "set pid 38 priority to LOW"}}
+{"user": "set to low of pid 22", "spec": {"cmd": "setpri", "args": ["22", "2"], "queue_hint": 0, "reason": "set pid 22 priority to LOW"}}
+{"user": "set to low of pid 10", "spec": {"cmd": "setpri", "args": ["10", "2"], "queue_hint": 0, "reason": "set pid 10 priority to LOW"}}
+{"user": "34번 우선순위 0로", "spec": {"cmd": "setpri", "args": ["34", "0"], "queue_hint": 0, "reason": "set pid 34 to prio 0"}}
+{"user": "set pid 34 priority 0", "spec": {"cmd": "setpri", "args": ["34", "0"], "queue_hint": 0, "reason": "set pid 34 to prio 0"}}
+{"user": "5번 우선순위 1로", "spec": {"cmd": "setpri", "args": ["5", "1"], "queue_hint": 0, "reason": "set pid 5 to prio 1"}}
+{"user": "set pid 5 priority 1", "spec": {"cmd": "setpri", "args": ["5", "1"], "queue_hint": 0, "reason": "set pid 5 to prio 1"}}
+{"user": "31번 우선순위 2로", "spec": {"cmd": "setpri", "args": ["31", "2"], "queue_hint": 0, "reason": "set pid 31 to prio 2"}}
+{"user": "set pid 31 priority 2", "spec": {"cmd": "setpri", "args": ["31", "2"], "queue_hint": 0, "reason": "set pid 31 to prio 2"}}
+{"user": "37번 우선순위 1로", "spec": {"cmd": "setpri", "args": ["37", "1"], "queue_hint": 0, "reason": "set pid 37 to prio 1"}}
+{"user": "set pid 37 priority 1", "spec": {"cmd": "setpri", "args": ["37", "1"], "queue_hint": 0, "reason": "set pid 37 to prio 1"}}
+{"user": "27번 우선순위 0로", "spec": {"cmd": "setpri", "args": ["27", "0"], "queue_hint": 0, "reason": "set pid 27 to prio 0"}}
+{"user": "set pid 27 priority 0", "spec": {"cmd": "setpri", "args": ["27", "0"], "queue_hint": 0, "reason": "set pid 27 to prio 0"}}
+{"user": "36번 우선순위 0로", "spec": {"cmd": "setpri", "args": ["36", "0"], "queue_hint": 0, "reason": "set pid 36 to prio 0"}}
+{"user": "set pid 36 priority 0", "spec": {"cmd": "setpri", "args": ["36", "0"], "queue_hint": 0, "reason": "set pid 36 to prio 0"}}
+{"user": "35번 우선순위 0로", "spec": {"cmd": "setpri", "args": ["35", "0"], "queue_hint": 0, "reason": "set pid 35 to prio 0"}}
+{"user": "set pid 35 priority 0", "spec": {"cmd": "setpri", "args": ["35", "0"], "queue_hint": 0, "reason": "set pid 35 to prio 0"}}
+{"user": "40번 우선순위 0로", "spec": {"cmd": "setpri", "args": ["40", "0"], "queue_hint": 0, "reason": "set pid 40 to prio 0"}}
+{"user": "set pid 40 priority 0", "spec": {"cmd": "setpri", "args": ["40", "0"], "queue_hint": 0, "reason": "set pid 40 to prio 0"}}
+{"user": "a.txt 지워줘", "spec": {"cmd": "rm", "args": ["a.txt"], "queue_hint": 0, "reason": "delete file a.txt"}}
+{"user": "tmp.txt 지워줘", "spec": {"cmd": "rm", "args": ["tmp.txt"], "queue_hint": 0, "reason": "delete file tmp.txt"}}
+{"user": "data.log 지워줘", "spec": {"cmd": "rm", "args": ["data.log"], "queue_hint": 0, "reason": "delete file data.log"}}
+{"user": "scratch 지워줘", "spec": {"cmd": "rm", "args": ["scratch"], "queue_hint": 0, "reason": "delete file scratch"}}
+{"user": "cache.dat 삭제해줘", "spec": {"cmd": "rm", "args": ["cache.dat"], "queue_hint": 0, "reason": "delete file cache.dat"}}
+{"user": "foo.txt 삭제해줘", "spec": {"cmd": "rm", "args": ["foo.txt"], "queue_hint": 0, "reason": "delete file foo.txt"}}
+{"user": "data.log 삭제해줘", "spec": {"cmd": "rm", "args": ["data.log"], "queue_hint": 0, "reason": "delete file data.log"}}
+{"user": "scratch 삭제해줘", "spec": {"cmd": "rm", "args": ["scratch"], "queue_hint": 0, "reason": "delete file scratch"}}
+{"user": "cache.dat 제거", "spec": {"cmd": "rm", "args": ["cache.dat"], "queue_hint": 0, "reason": "delete file cache.dat"}}
+{"user": "tmp.txt 제거", "spec": {"cmd": "rm", "args": ["tmp.txt"], "queue_hint": 0, "reason": "delete file tmp.txt"}}
+{"user": "data.log 제거", "spec": {"cmd": "rm", "args": ["data.log"], "queue_hint": 0, "reason": "delete file data.log"}}
+{"user": "scratch 제거", "spec": {"cmd": "rm", "args": ["scratch"], "queue_hint": 0, "reason": "delete file scratch"}}
+{"user": "cache.dat 지워", "spec": {"cmd": "rm", "args": ["cache.dat"], "queue_hint": 0, "reason": "delete file cache.dat"}}
+{"user": "foo.txt 지워", "spec": {"cmd": "rm", "args": ["foo.txt"], "queue_hint": 0, "reason": "delete file foo.txt"}}
+{"user": "data.log 지워", "spec": {"cmd": "rm", "args": ["data.log"], "queue_hint": 0, "reason": "delete file data.log"}}
+{"user": "test.bin 지워", "spec": {"cmd": "rm", "args": ["test.bin"], "queue_hint": 0, "reason": "delete file test.bin"}}
+{"user": "파일 old.txt 삭제", "spec": {"cmd": "rm", "args": ["old.txt"], "queue_hint": 0, "reason": "delete file old.txt"}}
+{"user": "파일 test.bin 삭제", "spec": {"cmd": "rm", "args": ["test.bin"], "queue_hint": 0, "reason": "delete file test.bin"}}
+{"user": "파일 tmp.txt 삭제", "spec": {"cmd": "rm", "args": ["tmp.txt"], "queue_hint": 0, "reason": "delete file tmp.txt"}}
+{"user": "파일 out.csv 삭제", "spec": {"cmd": "rm", "args": ["out.csv"], "queue_hint": 0, "reason": "delete file out.csv"}}
+{"user": "delete notes.md", "spec": {"cmd": "rm", "args": ["notes.md"], "queue_hint": 0, "reason": "delete file notes.md"}}
+{"user": "delete out.csv", "spec": {"cmd": "rm", "args": ["out.csv"], "queue_hint": 0, "reason": "delete file out.csv"}}
+{"user": "delete scratch", "spec": {"cmd": "rm", "args": ["scratch"], "queue_hint": 0, "reason": "delete file scratch"}}
+{"user": "delete old.txt", "spec": {"cmd": "rm", "args": ["old.txt"], "queue_hint": 0, "reason": "delete file old.txt"}}
+{"user": "remove data.log", "spec": {"cmd": "rm", "args": ["data.log"], "queue_hint": 0, "reason": "delete file data.log"}}
+{"user": "remove cache.dat", "spec": {"cmd": "rm", "args": ["cache.dat"], "queue_hint": 0, "reason": "delete file cache.dat"}}
+{"user": "remove a.txt", "spec": {"cmd": "rm", "args": ["a.txt"], "queue_hint": 0, "reason": "delete file a.txt"}}
+{"user": "remove old.txt", "spec": {"cmd": "rm", "args": ["old.txt"], "queue_hint": 0, "reason": "delete file old.txt"}}
+{"user": "rm a.txt", "spec": {"cmd": "rm", "args": ["a.txt"], "queue_hint": 0, "reason": "delete file a.txt"}}
+{"user": "rm cache.dat", "spec": {"cmd": "rm", "args": ["cache.dat"], "queue_hint": 0, "reason": "delete file cache.dat"}}
+{"user": "rm notes.md", "spec": {"cmd": "rm", "args": ["notes.md"], "queue_hint": 0, "reason": "delete file notes.md"}}
+{"user": "rm foo.txt", "spec": {"cmd": "rm", "args": ["foo.txt"], "queue_hint": 0, "reason": "delete file foo.txt"}}
+{"user": "delete the file tmp.txt", "spec": {"cmd": "rm", "args": ["tmp.txt"], "queue_hint": 0, "reason": "delete file tmp.txt"}}
+{"user": "delete the file data.log", "spec": {"cmd": "rm", "args": ["data.log"], "queue_hint": 0, "reason": "delete file data.log"}}
+{"user": "delete the file out.csv", "spec": {"cmd": "rm", "args": ["out.csv"], "queue_hint": 0, "reason": "delete file out.csv"}}
+{"user": "delete the file a.txt", "spec": {"cmd": "rm", "args": ["a.txt"], "queue_hint": 0, "reason": "delete file a.txt"}}
+{"user": "tmp 폴더 만들어", "spec": {"cmd": "mkdir", "args": ["tmp"], "queue_hint": 0, "reason": "create directory tmp"}}
+{"user": "data 폴더 만들어", "spec": {"cmd": "mkdir", "args": ["data"], "queue_hint": 0, "reason": "create directory data"}}
+{"user": "out 폴더 만들어", "spec": {"cmd": "mkdir", "args": ["out"], "queue_hint": 0, "reason": "create directory out"}}
+{"user": "build 폴더 만들어", "spec": {"cmd": "mkdir", "args": ["build"], "queue_hint": 0, "reason": "create directory build"}}
+{"user": "디렉토리 logs 생성", "spec": {"cmd": "mkdir", "args": ["logs"], "queue_hint": 0, "reason": "create directory logs"}}
+{"user": "디렉토리 build 생성", "spec": {"cmd": "mkdir", "args": ["build"], "queue_hint": 0, "reason": "create directory build"}}
+{"user": "디렉토리 tmp 생성", "spec": {"cmd": "mkdir", "args": ["tmp"], "queue_hint": 0, "reason": "create directory tmp"}}
+{"user": "디렉토리 test 생성", "spec": {"cmd": "mkdir", "args": ["test"], "queue_hint": 0, "reason": "create directory test"}}
+{"user": "test 디렉토리 만들어줘", "spec": {"cmd": "mkdir", "args": ["test"], "queue_hint": 0, "reason": "create directory test"}}
+{"user": "out 디렉토리 만들어줘", "spec": {"cmd": "mkdir", "args": ["out"], "queue_hint": 0, "reason": "create directory out"}}
+{"user": "tmp 디렉토리 만들어줘", "spec": {"cmd": "mkdir", "args": ["tmp"], "queue_hint": 0, "reason": "create directory tmp"}}
+{"user": "logs 디렉토리 만들어줘", "spec": {"cmd": "mkdir", "args": ["logs"], "queue_hint": 0, "reason": "create directory logs"}}
+{"user": "폴더 tmp 생성해줘", "spec": {"cmd": "mkdir", "args": ["tmp"], "queue_hint": 0, "reason": "create directory tmp"}}
+{"user": "폴더 out 생성해줘", "spec": {"cmd": "mkdir", "args": ["out"], "queue_hint": 0, "reason": "create directory out"}}
+{"user": "폴더 logs 생성해줘", "spec": {"cmd": "mkdir", "args": ["logs"], "queue_hint": 0, "reason": "create directory logs"}}
+{"user": "폴더 test 생성해줘", "spec": {"cmd": "mkdir", "args": ["test"], "queue_hint": 0, "reason": "create directory test"}}
+{"user": "make a directory called out", "spec": {"cmd": "mkdir", "args": ["out"], "queue_hint": 0, "reason": "create directory out"}}
+{"user": "make a directory called build", "spec": {"cmd": "mkdir", "args": ["build"], "queue_hint": 0, "reason": "create directory build"}}
+{"user": "make a directory called test", "spec": {"cmd": "mkdir", "args": ["test"], "queue_hint": 0, "reason": "create directory test"}}
+{"user": "make a directory called src", "spec": {"cmd": "mkdir", "args": ["src"], "queue_hint": 0, "reason": "create directory src"}}
+{"user": "create folder out", "spec": {"cmd": "mkdir", "args": ["out"], "queue_hint": 0, "reason": "create directory out"}}
+{"user": "create folder bin", "spec": {"cmd": "mkdir", "args": ["bin"], "queue_hint": 0, "reason": "create directory bin"}}
+{"user": "create folder build", "spec": {"cmd": "mkdir", "args": ["build"], "queue_hint": 0, "reason": "create directory build"}}
+{"user": "create folder tmp", "spec": {"cmd": "mkdir", "args": ["tmp"], "queue_hint": 0, "reason": "create directory tmp"}}
+{"user": "mkdir data", "spec": {"cmd": "mkdir", "args": ["data"], "queue_hint": 0, "reason": "create directory data"}}
+{"user": "mkdir src", "spec": {"cmd": "mkdir", "args": ["src"], "queue_hint": 0, "reason": "create directory src"}}
+{"user": "mkdir build", "spec": {"cmd": "mkdir", "args": ["build"], "queue_hint": 0, "reason": "create directory build"}}
+{"user": "mkdir bin", "spec": {"cmd": "mkdir", "args": ["bin"], "queue_hint": 0, "reason": "create directory bin"}}
+{"user": "new directory data", "spec": {"cmd": "mkdir", "args": ["data"], "queue_hint": 0, "reason": "create directory data"}}
+{"user": "new directory build", "spec": {"cmd": "mkdir", "args": ["build"], "queue_hint": 0, "reason": "create directory build"}}
+{"user": "new directory tmp", "spec": {"cmd": "mkdir", "args": ["tmp"], "queue_hint": 0, "reason": "create directory tmp"}}
+{"user": "new directory bin", "spec": {"cmd": "mkdir", "args": ["bin"], "queue_hint": 0, "reason": "create directory bin"}}
+{"user": "out.csv 를 logs.lnk 로 링크", "spec": {"cmd": "ln", "args": ["out.csv", "logs.lnk"], "queue_hint": 0, "reason": "hard-link out.csv to logs.lnk"}}
+{"user": "link notes.md to bin.lnk", "spec": {"cmd": "ln", "args": ["notes.md", "bin.lnk"], "queue_hint": 0, "reason": "hard-link notes.md to bin.lnk"}}
+{"user": "ln old.txt out.lnk", "spec": {"cmd": "ln", "args": ["old.txt", "out.lnk"], "queue_hint": 0, "reason": "hard-link old.txt to out.lnk"}}
+{"user": "out.csv 를 out.lnk 로 링크", "spec": {"cmd": "ln", "args": ["out.csv", "out.lnk"], "queue_hint": 0, "reason": "hard-link out.csv to out.lnk"}}
+{"user": "old.txt 링크 build.lnk 만들어", "spec": {"cmd": "ln", "args": ["old.txt", "build.lnk"], "queue_hint": 0, "reason": "hard-link old.txt to build.lnk"}}
+{"user": "link a.txt to data.lnk", "spec": {"cmd": "ln", "args": ["a.txt", "data.lnk"], "queue_hint": 0, "reason": "hard-link a.txt to data.lnk"}}
+{"user": "old.txt 를 bin.lnk 로 링크", "spec": {"cmd": "ln", "args": ["old.txt", "bin.lnk"], "queue_hint": 0, "reason": "hard-link old.txt to bin.lnk"}}
+{"user": "a.txt 를 out.lnk 로 링크", "spec": {"cmd": "ln", "args": ["a.txt", "out.lnk"], "queue_hint": 0, "reason": "hard-link a.txt to out.lnk"}}
+{"user": "data.log 링크 src.lnk 만들어", "spec": {"cmd": "ln", "args": ["data.log", "src.lnk"], "queue_hint": 0, "reason": "hard-link data.log to src.lnk"}}
+{"user": "ln a.txt test.lnk", "spec": {"cmd": "ln", "args": ["a.txt", "test.lnk"], "queue_hint": 0, "reason": "hard-link a.txt to test.lnk"}}
+{"user": "ln out.csv build.lnk", "spec": {"cmd": "ln", "args": ["out.csv", "build.lnk"], "queue_hint": 0, "reason": "hard-link out.csv to build.lnk"}}
+{"user": "a.txt 를 src.lnk 로 링크", "spec": {"cmd": "ln", "args": ["a.txt", "src.lnk"], "queue_hint": 0, "reason": "hard-link a.txt to src.lnk"}}
+{"user": "tmp.txt 링크 test.lnk 만들어", "spec": {"cmd": "ln", "args": ["tmp.txt", "test.lnk"], "queue_hint": 0, "reason": "hard-link tmp.txt to test.lnk"}}
+{"user": "ln foo.txt test.lnk", "spec": {"cmd": "ln", "args": ["foo.txt", "test.lnk"], "queue_hint": 0, "reason": "hard-link foo.txt to test.lnk"}}
+{"user": "link tmp.txt to bin.lnk", "spec": {"cmd": "ln", "args": ["tmp.txt", "bin.lnk"], "queue_hint": 0, "reason": "hard-link tmp.txt to bin.lnk"}}
+{"user": "tmp.txt 를 test.lnk 로 링크", "spec": {"cmd": "ln", "args": ["tmp.txt", "test.lnk"], "queue_hint": 0, "reason": "hard-link tmp.txt to test.lnk"}}
+{"user": "foo.txt 링크 build.lnk 만들어", "spec": {"cmd": "ln", "args": ["foo.txt", "build.lnk"], "queue_hint": 0, "reason": "hard-link foo.txt to build.lnk"}}
+{"user": "test.bin 링크 data.lnk 만들어", "spec": {"cmd": "ln", "args": ["test.bin", "data.lnk"], "queue_hint": 0, "reason": "hard-link test.bin to data.lnk"}}
+{"user": "foo.txt 링크 tmp.lnk 만들어", "spec": {"cmd": "ln", "args": ["foo.txt", "tmp.lnk"], "queue_hint": 0, "reason": "hard-link foo.txt to tmp.lnk"}}
+{"user": "link notes.md to data.lnk", "spec": {"cmd": "ln", "args": ["notes.md", "data.lnk"], "queue_hint": 0, "reason": "hard-link notes.md to data.lnk"}}
+{"user": "cat foo.txt", "spec": {"cmd": "cat", "args": ["foo.txt"], "queue_hint": 0, "reason": "read file foo.txt"}}
+{"user": "read data.log", "spec": {"cmd": "cat", "args": ["data.log"], "queue_hint": 0, "reason": "read file data.log"}}
+{"user": "show tmp.txt", "spec": {"cmd": "cat", "args": ["tmp.txt"], "queue_hint": 0, "reason": "read file tmp.txt"}}
+{"user": "old.txt 내용 보여줘", "spec": {"cmd": "cat", "args": ["old.txt"], "queue_hint": 0, "reason": "read file old.txt"}}
+{"user": "notes.md 열어줘", "spec": {"cmd": "cat", "args": ["notes.md"], "queue_hint": 0, "reason": "read file notes.md"}}
+{"user": "cat out.csv", "spec": {"cmd": "cat", "args": ["out.csv"], "queue_hint": 0, "reason": "read file out.csv"}}
+{"user": "show test.bin", "spec": {"cmd": "cat", "args": ["test.bin"], "queue_hint": 0, "reason": "read file test.bin"}}
+{"user": "read a.txt", "spec": {"cmd": "cat", "args": ["a.txt"], "queue_hint": 0, "reason": "read file a.txt"}}
+{"user": "read scratch", "spec": {"cmd": "cat", "args": ["scratch"], "queue_hint": 0, "reason": "read file scratch"}}
+{"user": "show cache.dat", "spec": {"cmd": "cat", "args": ["cache.dat"], "queue_hint": 0, "reason": "read file cache.dat"}}
+{"user": "파일 목록", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "list files in cwd"}}
+{"user": "ls", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "list files in cwd"}}
+{"user": "ls 보여줘", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "list files in cwd"}}
+{"user": "여기 뭐 있어?", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "list files in cwd"}}
+{"user": "list files", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "list files in cwd"}}
+{"user": "show files", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "list files in cwd"}}
+{"user": "디렉토리 내용", "spec": {"cmd": "ls", "args": [], "queue_hint": 0, "reason": "list files in cwd"}}
+{"user": "업타임", "spec": {"cmd": "uptime", "args": [], "queue_hint": 0, "reason": "report system uptime"}}
+{"user": "업타임 알려줘", "spec": {"cmd": "uptime", "args": [], "queue_hint": 0, "reason": "report system uptime"}}
+{"user": "얼마나 켜져 있었어?", "spec": {"cmd": "uptime", "args": [], "queue_hint": 0, "reason": "report system uptime"}}
+{"user": "부팅한 지 얼마나 됐어?", "spec": {"cmd": "uptime", "args": [], "queue_hint": 0, "reason": "report system uptime"}}
+{"user": "시스템 켜진 지 얼마나 됐어", "spec": {"cmd": "uptime", "args": [], "queue_hint": 0, "reason": "report system uptime"}}
+{"user": "가동 시간", "spec": {"cmd": "uptime", "args": [], "queue_hint": 0, "reason": "report system uptime"}}
+{"user": "가동 시간 보여줘", "spec": {"cmd": "uptime", "args": [], "queue_hint": 0, "reason": "report system uptime"}}
+{"user": "틱 얼마나 지났어?", "spec": {"cmd": "uptime", "args": [], "queue_hint": 0, "reason": "report system uptime"}}
+{"user": "uptime", "spec": {"cmd": "uptime", "args": [], "queue_hint": 0, "reason": "report system uptime"}}
+{"user": "uptime 보여줘", "spec": {"cmd": "uptime", "args": [], "queue_hint": 0, "reason": "report system uptime"}}
+{"user": "how long has the system been up", "spec": {"cmd": "uptime", "args": [], "queue_hint": 0, "reason": "report system uptime"}}
+{"user": "system uptime", "spec": {"cmd": "uptime", "args": [], "queue_hint": 0, "reason": "report system uptime"}}
+{"user": "show uptime", "spec": {"cmd": "uptime", "args": [], "queue_hint": 0, "reason": "report system uptime"}}
+{"user": "how long since boot", "spec": {"cmd": "uptime", "args": [], "queue_hint": 0, "reason": "report system uptime"}}
+{"user": "ticks since boot", "spec": {"cmd": "uptime", "args": [], "queue_hint": 0, "reason": "report system uptime"}}
+{"user": "what's the uptime", "spec": {"cmd": "uptime", "args": [], "queue_hint": 0, "reason": "report system uptime"}}
+{"user": "시스템 정보", "spec": {"cmd": "sysinfo", "args": [], "queue_hint": 0, "reason": "report system info (free mem, nproc)"}}
+{"user": "시스템 정보 보여줘", "spec": {"cmd": "sysinfo", "args": [], "queue_hint": 0, "reason": "report system info (free mem, nproc)"}}
+{"user": "메모리 얼마 남았어?", "spec": {"cmd": "sysinfo", "args": [], "queue_hint": 0, "reason": "report system info (free mem, nproc)"}}
+{"user": "남은 메모리 알려줘", "spec": {"cmd": "sysinfo", "args": [], "queue_hint": 0, "reason": "report system info (free mem, nproc)"}}
+{"user": "여유 메모리 보여줘", "spec": {"cmd": "sysinfo", "args": [], "queue_hint": 0, "reason": "report system info (free mem, nproc)"}}
+{"user": "시스템 상태", "spec": {"cmd": "sysinfo", "args": [], "queue_hint": 0, "reason": "report system info (free mem, nproc)"}}
+{"user": "시스템 상태 보여줘", "spec": {"cmd": "sysinfo", "args": [], "queue_hint": 0, "reason": "report system info (free mem, nproc)"}}
+{"user": "프로세스 몇 개 떠 있어?", "spec": {"cmd": "sysinfo", "args": [], "queue_hint": 0, "reason": "report system info (free mem, nproc)"}}
+{"user": "메모리 상태 보여줘", "spec": {"cmd": "sysinfo", "args": [], "queue_hint": 0, "reason": "report system info (free mem, nproc)"}}
+{"user": "메모리랑 프로세스 수 알려줘", "spec": {"cmd": "sysinfo", "args": [], "queue_hint": 0, "reason": "report system info (free mem, nproc)"}}
+{"user": "sysinfo", "spec": {"cmd": "sysinfo", "args": [], "queue_hint": 0, "reason": "report system info (free mem, nproc)"}}
+{"user": "sysinfo 보여줘", "spec": {"cmd": "sysinfo", "args": [], "queue_hint": 0, "reason": "report system info (free mem, nproc)"}}
+{"user": "system info", "spec": {"cmd": "sysinfo", "args": [], "queue_hint": 0, "reason": "report system info (free mem, nproc)"}}
+{"user": "show system stats", "spec": {"cmd": "sysinfo", "args": [], "queue_hint": 0, "reason": "report system info (free mem, nproc)"}}
+{"user": "free memory", "spec": {"cmd": "sysinfo", "args": [], "queue_hint": 0, "reason": "report system info (free mem, nproc)"}}
+{"user": "how much memory is free", "spec": {"cmd": "sysinfo", "args": [], "queue_hint": 0, "reason": "report system info (free mem, nproc)"}}
+{"user": "memory usage", "spec": {"cmd": "sysinfo", "args": [], "queue_hint": 0, "reason": "report system info (free mem, nproc)"}}
+{"user": "how many processes are running", "spec": {"cmd": "sysinfo", "args": [], "queue_hint": 0, "reason": "report system info (free mem, nproc)"}}
+{"user": "system status", "spec": {"cmd": "sysinfo", "args": [], "queue_hint": 0, "reason": "report system info (free mem, nproc)"}}
+{"user": "34번 추적 켜줘", "spec": {"cmd": "trace", "args": ["34", "on"], "queue_hint": 0, "reason": "enable syscall trace for pid 34"}}
+{"user": "turn on tracing for pid 34", "spec": {"cmd": "trace", "args": ["34", "on"], "queue_hint": 0, "reason": "enable trace pid 34"}}
+{"user": "34번 추적 꺼", "spec": {"cmd": "trace", "args": ["34", "off"], "queue_hint": 0, "reason": "disable trace for pid 34"}}
+{"user": "stop tracing pid 34", "spec": {"cmd": "trace", "args": ["34", "off"], "queue_hint": 0, "reason": "disable trace pid 34"}}
+{"user": "10번 추적 켜줘", "spec": {"cmd": "trace", "args": ["10", "on"], "queue_hint": 0, "reason": "enable syscall trace for pid 10"}}
+{"user": "turn on tracing for pid 10", "spec": {"cmd": "trace", "args": ["10", "on"], "queue_hint": 0, "reason": "enable trace pid 10"}}
+{"user": "10번 추적 꺼", "spec": {"cmd": "trace", "args": ["10", "off"], "queue_hint": 0, "reason": "disable trace for pid 10"}}
+{"user": "stop tracing pid 10", "spec": {"cmd": "trace", "args": ["10", "off"], "queue_hint": 0, "reason": "disable trace pid 10"}}
+{"user": "36번 추적 켜줘", "spec": {"cmd": "trace", "args": ["36", "on"], "queue_hint": 0, "reason": "enable syscall trace for pid 36"}}
+{"user": "turn on tracing for pid 36", "spec": {"cmd": "trace", "args": ["36", "on"], "queue_hint": 0, "reason": "enable trace pid 36"}}
+{"user": "36번 추적 꺼", "spec": {"cmd": "trace", "args": ["36", "off"], "queue_hint": 0, "reason": "disable trace for pid 36"}}
+{"user": "stop tracing pid 36", "spec": {"cmd": "trace", "args": ["36", "off"], "queue_hint": 0, "reason": "disable trace pid 36"}}
+{"user": "11번 추적 켜줘", "spec": {"cmd": "trace", "args": ["11", "on"], "queue_hint": 0, "reason": "enable syscall trace for pid 11"}}
+{"user": "turn on tracing for pid 11", "spec": {"cmd": "trace", "args": ["11", "on"], "queue_hint": 0, "reason": "enable trace pid 11"}}
+{"user": "11번 추적 꺼", "spec": {"cmd": "trace", "args": ["11", "off"], "queue_hint": 0, "reason": "disable trace for pid 11"}}
+{"user": "stop tracing pid 11", "spec": {"cmd": "trace", "args": ["11", "off"], "queue_hint": 0, "reason": "disable trace pid 11"}}
+{"user": "35번 추적 켜줘", "spec": {"cmd": "trace", "args": ["35", "on"], "queue_hint": 0, "reason": "enable syscall trace for pid 35"}}
+{"user": "turn on tracing for pid 35", "spec": {"cmd": "trace", "args": ["35", "on"], "queue_hint": 0, "reason": "enable trace pid 35"}}
+{"user": "35번 추적 꺼", "spec": {"cmd": "trace", "args": ["35", "off"], "queue_hint": 0, "reason": "disable trace for pid 35"}}
+{"user": "stop tracing pid 35", "spec": {"cmd": "trace", "args": ["35", "off"], "queue_hint": 0, "reason": "disable trace pid 35"}}
+{"user": "40번 추적 켜줘", "spec": {"cmd": "trace", "args": ["40", "on"], "queue_hint": 0, "reason": "enable syscall trace for pid 40"}}
+{"user": "turn on tracing for pid 40", "spec": {"cmd": "trace", "args": ["40", "on"], "queue_hint": 0, "reason": "enable trace pid 40"}}
+{"user": "40번 추적 꺼", "spec": {"cmd": "trace", "args": ["40", "off"], "queue_hint": 0, "reason": "disable trace for pid 40"}}
+{"user": "stop tracing pid 40", "spec": {"cmd": "trace", "args": ["40", "off"], "queue_hint": 0, "reason": "disable trace pid 40"}}
+{"user": "3번 추적 켜줘", "spec": {"cmd": "trace", "args": ["3", "on"], "queue_hint": 0, "reason": "enable syscall trace for pid 3"}}
+{"user": "turn on tracing for pid 3", "spec": {"cmd": "trace", "args": ["3", "on"], "queue_hint": 0, "reason": "enable trace pid 3"}}
+{"user": "3번 추적 꺼", "spec": {"cmd": "trace", "args": ["3", "off"], "queue_hint": 0, "reason": "disable trace for pid 3"}}
+{"user": "stop tracing pid 3", "spec": {"cmd": "trace", "args": ["3", "off"], "queue_hint": 0, "reason": "disable trace pid 3"}}
+{"user": "30번 추적 켜줘", "spec": {"cmd": "trace", "args": ["30", "on"], "queue_hint": 0, "reason": "enable syscall trace for pid 30"}}
+{"user": "turn on tracing for pid 30", "spec": {"cmd": "trace", "args": ["30", "on"], "queue_hint": 0, "reason": "enable trace pid 30"}}
+{"user": "30번 추적 꺼", "spec": {"cmd": "trace", "args": ["30", "off"], "queue_hint": 0, "reason": "disable trace for pid 30"}}
+{"user": "stop tracing pid 30", "spec": {"cmd": "trace", "args": ["30", "off"], "queue_hint": 0, "reason": "disable trace pid 30"}}
+{"user": "MLFQ가 뭐야", "spec": {"cmd": "explain", "args": ["MLFQ"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "MLFQ가 뭔지 설명해줘", "spec": {"cmd": "explain", "args": ["MLFQ"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "MLFQ 설명해줘", "spec": {"cmd": "explain", "args": ["MLFQ"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "MLFQ에 대해 알려줘", "spec": {"cmd": "explain", "args": ["MLFQ"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "MLFQ 개념 알려줘", "spec": {"cmd": "explain", "args": ["MLFQ"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "스케줄러가 뭐야", "spec": {"cmd": "explain", "args": ["스케줄러"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "스케줄러가 뭔지 설명해줘", "spec": {"cmd": "explain", "args": ["스케줄러"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "스케줄러 설명해줘", "spec": {"cmd": "explain", "args": ["스케줄러"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "스케줄러에 대해 알려줘", "spec": {"cmd": "explain", "args": ["스케줄러"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "스케줄러 개념 알려줘", "spec": {"cmd": "explain", "args": ["스케줄러"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "좀비 프로세스가 뭐야", "spec": {"cmd": "explain", "args": ["좀비 프로세스"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "좀비 프로세스가 뭔지 설명해줘", "spec": {"cmd": "explain", "args": ["좀비 프로세스"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "좀비 프로세스 설명해줘", "spec": {"cmd": "explain", "args": ["좀비 프로세스"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "좀비 프로세스에 대해 알려줘", "spec": {"cmd": "explain", "args": ["좀비 프로세스"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "좀비 프로세스 개념 알려줘", "spec": {"cmd": "explain", "args": ["좀비 프로세스"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "라운드 로빈가 뭐야", "spec": {"cmd": "explain", "args": ["라운드 로빈"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "라운드 로빈가 뭔지 설명해줘", "spec": {"cmd": "explain", "args": ["라운드 로빈"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "라운드 로빈 설명해줘", "spec": {"cmd": "explain", "args": ["라운드 로빈"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "라운드 로빈에 대해 알려줘", "spec": {"cmd": "explain", "args": ["라운드 로빈"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "라운드 로빈 개념 알려줘", "spec": {"cmd": "explain", "args": ["라운드 로빈"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "컨텍스트 스위치가 뭐야", "spec": {"cmd": "explain", "args": ["컨텍스트 스위치"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "컨텍스트 스위치가 뭔지 설명해줘", "spec": {"cmd": "explain", "args": ["컨텍스트 스위치"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "컨텍스트 스위치 설명해줘", "spec": {"cmd": "explain", "args": ["컨텍스트 스위치"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "컨텍스트 스위치에 대해 알려줘", "spec": {"cmd": "explain", "args": ["컨텍스트 스위치"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "컨텍스트 스위치 개념 알려줘", "spec": {"cmd": "explain", "args": ["컨텍스트 스위치"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "syscall가 뭐야", "spec": {"cmd": "explain", "args": ["syscall"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "syscall가 뭔지 설명해줘", "spec": {"cmd": "explain", "args": ["syscall"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "syscall 설명해줘", "spec": {"cmd": "explain", "args": ["syscall"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "syscall에 대해 알려줘", "spec": {"cmd": "explain", "args": ["syscall"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "syscall 개념 알려줘", "spec": {"cmd": "explain", "args": ["syscall"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "프로세스가 뭐야", "spec": {"cmd": "explain", "args": ["프로세스"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "프로세스가 뭔지 설명해줘", "spec": {"cmd": "explain", "args": ["프로세스"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "프로세스 설명해줘", "spec": {"cmd": "explain", "args": ["프로세스"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "프로세스에 대해 알려줘", "spec": {"cmd": "explain", "args": ["프로세스"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "프로세스 개념 알려줘", "spec": {"cmd": "explain", "args": ["프로세스"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "우선순위 큐가 뭐야", "spec": {"cmd": "explain", "args": ["우선순위 큐"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "우선순위 큐가 뭔지 설명해줘", "spec": {"cmd": "explain", "args": ["우선순위 큐"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "우선순위 큐 설명해줘", "spec": {"cmd": "explain", "args": ["우선순위 큐"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "우선순위 큐에 대해 알려줘", "spec": {"cmd": "explain", "args": ["우선순위 큐"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "우선순위 큐 개념 알려줘", "spec": {"cmd": "explain", "args": ["우선순위 큐"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "setpri가 뭐야", "spec": {"cmd": "explain", "args": ["setpri"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "setpri가 뭔지 설명해줘", "spec": {"cmd": "explain", "args": ["setpri"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "setpri 설명해줘", "spec": {"cmd": "explain", "args": ["setpri"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "setpri에 대해 알려줘", "spec": {"cmd": "explain", "args": ["setpri"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "setpri 개념 알려줘", "spec": {"cmd": "explain", "args": ["setpri"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "fork와 exec 차이가 뭐야", "spec": {"cmd": "explain", "args": ["fork와 exec 차이"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "fork와 exec 차이가 뭔지 설명해줘", "spec": {"cmd": "explain", "args": ["fork와 exec 차이"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "fork와 exec 차이 설명해줘", "spec": {"cmd": "explain", "args": ["fork와 exec 차이"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "fork와 exec 차이에 대해 알려줘", "spec": {"cmd": "explain", "args": ["fork와 exec 차이"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "fork와 exec 차이 개념 알려줘", "spec": {"cmd": "explain", "args": ["fork와 exec 차이"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "데드락가 뭐야", "spec": {"cmd": "explain", "args": ["데드락"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "데드락가 뭔지 설명해줘", "spec": {"cmd": "explain", "args": ["데드락"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "데드락 설명해줘", "spec": {"cmd": "explain", "args": ["데드락"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "데드락에 대해 알려줘", "spec": {"cmd": "explain", "args": ["데드락"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "데드락 개념 알려줘", "spec": {"cmd": "explain", "args": ["데드락"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "세마포어가 뭐야", "spec": {"cmd": "explain", "args": ["세마포어"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "세마포어가 뭔지 설명해줘", "spec": {"cmd": "explain", "args": ["세마포어"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "세마포어 설명해줘", "spec": {"cmd": "explain", "args": ["세마포어"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "세마포어에 대해 알려줘", "spec": {"cmd": "explain", "args": ["세마포어"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "세마포어 개념 알려줘", "spec": {"cmd": "explain", "args": ["세마포어"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "페이지 테이블가 뭐야", "spec": {"cmd": "explain", "args": ["페이지 테이블"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "페이지 테이블가 뭔지 설명해줘", "spec": {"cmd": "explain", "args": ["페이지 테이블"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "페이지 테이블 설명해줘", "spec": {"cmd": "explain", "args": ["페이지 테이블"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "페이지 테이블에 대해 알려줘", "spec": {"cmd": "explain", "args": ["페이지 테이블"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "페이지 테이블 개념 알려줘", "spec": {"cmd": "explain", "args": ["페이지 테이블"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "인터럽트가 뭐야", "spec": {"cmd": "explain", "args": ["인터럽트"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "인터럽트가 뭔지 설명해줘", "spec": {"cmd": "explain", "args": ["인터럽트"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "인터럽트 설명해줘", "spec": {"cmd": "explain", "args": ["인터럽트"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "인터럽트에 대해 알려줘", "spec": {"cmd": "explain", "args": ["인터럽트"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "인터럽트 개념 알려줘", "spec": {"cmd": "explain", "args": ["인터럽트"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "타임 슬라이스가 뭐야", "spec": {"cmd": "explain", "args": ["타임 슬라이스"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "타임 슬라이스가 뭔지 설명해줘", "spec": {"cmd": "explain", "args": ["타임 슬라이스"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "타임 슬라이스 설명해줘", "spec": {"cmd": "explain", "args": ["타임 슬라이스"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "타임 슬라이스에 대해 알려줘", "spec": {"cmd": "explain", "args": ["타임 슬라이스"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "타임 슬라이스 개념 알려줘", "spec": {"cmd": "explain", "args": ["타임 슬라이스"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "what is MLFQ", "spec": {"cmd": "explain", "args": ["MLFQ"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "explain MLFQ", "spec": {"cmd": "explain", "args": ["MLFQ"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "tell me about MLFQ", "spec": {"cmd": "explain", "args": ["MLFQ"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "how does MLFQ work", "spec": {"cmd": "explain", "args": ["MLFQ"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "what does MLFQ mean", "spec": {"cmd": "explain", "args": ["MLFQ"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "what is the scheduler", "spec": {"cmd": "explain", "args": ["the scheduler"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "explain the scheduler", "spec": {"cmd": "explain", "args": ["the scheduler"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "tell me about the scheduler", "spec": {"cmd": "explain", "args": ["the scheduler"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "how does the scheduler work", "spec": {"cmd": "explain", "args": ["the scheduler"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "what does the scheduler mean", "spec": {"cmd": "explain", "args": ["the scheduler"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "what is a zombie process", "spec": {"cmd": "explain", "args": ["a zombie process"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "explain a zombie process", "spec": {"cmd": "explain", "args": ["a zombie process"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "tell me about a zombie process", "spec": {"cmd": "explain", "args": ["a zombie process"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "how does a zombie process work", "spec": {"cmd": "explain", "args": ["a zombie process"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "what does a zombie process mean", "spec": {"cmd": "explain", "args": ["a zombie process"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "what is round robin", "spec": {"cmd": "explain", "args": ["round robin"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "explain round robin", "spec": {"cmd": "explain", "args": ["round robin"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "tell me about round robin", "spec": {"cmd": "explain", "args": ["round robin"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "how does round robin work", "spec": {"cmd": "explain", "args": ["round robin"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "what does round robin mean", "spec": {"cmd": "explain", "args": ["round robin"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "what is context switching", "spec": {"cmd": "explain", "args": ["context switching"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "explain context switching", "spec": {"cmd": "explain", "args": ["context switching"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "tell me about context switching", "spec": {"cmd": "explain", "args": ["context switching"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "how does context switching work", "spec": {"cmd": "explain", "args": ["context switching"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "what does context switching mean", "spec": {"cmd": "explain", "args": ["context switching"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "what is a syscall", "spec": {"cmd": "explain", "args": ["a syscall"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "explain a syscall", "spec": {"cmd": "explain", "args": ["a syscall"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "tell me about a syscall", "spec": {"cmd": "explain", "args": ["a syscall"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "how does a syscall work", "spec": {"cmd": "explain", "args": ["a syscall"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "what does a syscall mean", "spec": {"cmd": "explain", "args": ["a syscall"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "what is a process", "spec": {"cmd": "explain", "args": ["a process"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "explain a process", "spec": {"cmd": "explain", "args": ["a process"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "tell me about a process", "spec": {"cmd": "explain", "args": ["a process"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "how does a process work", "spec": {"cmd": "explain", "args": ["a process"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "what does a process mean", "spec": {"cmd": "explain", "args": ["a process"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "what is priority queues", "spec": {"cmd": "explain", "args": ["priority queues"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "explain priority queues", "spec": {"cmd": "explain", "args": ["priority queues"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "tell me about priority queues", "spec": {"cmd": "explain", "args": ["priority queues"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "how does priority queues work", "spec": {"cmd": "explain", "args": ["priority queues"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "what does priority queues mean", "spec": {"cmd": "explain", "args": ["priority queues"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "what is what setpri does", "spec": {"cmd": "explain", "args": ["what setpri does"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "explain what setpri does", "spec": {"cmd": "explain", "args": ["what setpri does"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "tell me about what setpri does", "spec": {"cmd": "explain", "args": ["what setpri does"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "how does what setpri does work", "spec": {"cmd": "explain", "args": ["what setpri does"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "what does what setpri does mean", "spec": {"cmd": "explain", "args": ["what setpri does"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "what is deadlock", "spec": {"cmd": "explain", "args": ["deadlock"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "explain deadlock", "spec": {"cmd": "explain", "args": ["deadlock"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "tell me about deadlock", "spec": {"cmd": "explain", "args": ["deadlock"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "how does deadlock work", "spec": {"cmd": "explain", "args": ["deadlock"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "what does deadlock mean", "spec": {"cmd": "explain", "args": ["deadlock"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "what is semaphores", "spec": {"cmd": "explain", "args": ["semaphores"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "explain semaphores", "spec": {"cmd": "explain", "args": ["semaphores"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "tell me about semaphores", "spec": {"cmd": "explain", "args": ["semaphores"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "how does semaphores work", "spec": {"cmd": "explain", "args": ["semaphores"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "what does semaphores mean", "spec": {"cmd": "explain", "args": ["semaphores"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "what is the page table", "spec": {"cmd": "explain", "args": ["the page table"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "explain the page table", "spec": {"cmd": "explain", "args": ["the page table"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "tell me about the page table", "spec": {"cmd": "explain", "args": ["the page table"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "how does the page table work", "spec": {"cmd": "explain", "args": ["the page table"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "what does the page table mean", "spec": {"cmd": "explain", "args": ["the page table"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "what is interrupts", "spec": {"cmd": "explain", "args": ["interrupts"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "explain interrupts", "spec": {"cmd": "explain", "args": ["interrupts"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "tell me about interrupts", "spec": {"cmd": "explain", "args": ["interrupts"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "how does interrupts work", "spec": {"cmd": "explain", "args": ["interrupts"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "what does interrupts mean", "spec": {"cmd": "explain", "args": ["interrupts"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "what is time slicing", "spec": {"cmd": "explain", "args": ["time slicing"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "explain time slicing", "spec": {"cmd": "explain", "args": ["time slicing"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "tell me about time slicing", "spec": {"cmd": "explain", "args": ["time slicing"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "how does time slicing work", "spec": {"cmd": "explain", "args": ["time slicing"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "what does time slicing mean", "spec": {"cmd": "explain", "args": ["time slicing"], "queue_hint": 0, "reason": "informational question; answer without acting"}}
+{"user": "cpu_burner 다 꺼줘", "spec": {"cmd": "killall", "args": ["cpu_burner"], "queue_hint": 0, "reason": "kill all processes named cpu_burner"}}
+{"user": "io_burner 다 꺼줘", "spec": {"cmd": "killall", "args": ["io_burner"], "queue_hint": 0, "reason": "kill all processes named io_burner"}}
+{"user": "mixed_burner 다 꺼줘", "spec": {"cmd": "killall", "args": ["mixed_burner"], "queue_hint": 0, "reason": "kill all processes named mixed_burner"}}
+{"user": "echo 다 꺼줘", "spec": {"cmd": "killall", "args": ["echo"], "queue_hint": 0, "reason": "kill all processes named echo"}}
+{"user": "grep 다 꺼줘", "spec": {"cmd": "killall", "args": ["grep"], "queue_hint": 0, "reason": "kill all processes named grep"}}
+{"user": "wc 다 꺼줘", "spec": {"cmd": "killall", "args": ["wc"], "queue_hint": 0, "reason": "kill all processes named wc"}}
+{"user": "cat 다 꺼줘", "spec": {"cmd": "killall", "args": ["cat"], "queue_hint": 0, "reason": "kill all processes named cat"}}
+{"user": "cpu_burner 전부 종료", "spec": {"cmd": "killall", "args": ["cpu_burner"], "queue_hint": 0, "reason": "kill all processes named cpu_burner"}}
+{"user": "io_burner 전부 종료", "spec": {"cmd": "killall", "args": ["io_burner"], "queue_hint": 0, "reason": "kill all processes named io_burner"}}
+{"user": "mixed_burner 전부 종료", "spec": {"cmd": "killall", "args": ["mixed_burner"], "queue_hint": 0, "reason": "kill all processes named mixed_burner"}}
+{"user": "echo 전부 종료", "spec": {"cmd": "killall", "args": ["echo"], "queue_hint": 0, "reason": "kill all processes named echo"}}
+{"user": "grep 전부 종료", "spec": {"cmd": "killall", "args": ["grep"], "queue_hint": 0, "reason": "kill all processes named grep"}}
+{"user": "wc 전부 종료", "spec": {"cmd": "killall", "args": ["wc"], "queue_hint": 0, "reason": "kill all processes named wc"}}
+{"user": "cat 전부 종료", "spec": {"cmd": "killall", "args": ["cat"], "queue_hint": 0, "reason": "kill all processes named cat"}}
+{"user": "cpu_burner 모두 죽여", "spec": {"cmd": "killall", "args": ["cpu_burner"], "queue_hint": 0, "reason": "kill all processes named cpu_burner"}}
+{"user": "io_burner 모두 죽여", "spec": {"cmd": "killall", "args": ["io_burner"], "queue_hint": 0, "reason": "kill all processes named io_burner"}}
+{"user": "mixed_burner 모두 죽여", "spec": {"cmd": "killall", "args": ["mixed_burner"], "queue_hint": 0, "reason": "kill all processes named mixed_burner"}}
+{"user": "echo 모두 죽여", "spec": {"cmd": "killall", "args": ["echo"], "queue_hint": 0, "reason": "kill all processes named echo"}}
+{"user": "grep 모두 죽여", "spec": {"cmd": "killall", "args": ["grep"], "queue_hint": 0, "reason": "kill all processes named grep"}}
+{"user": "wc 모두 죽여", "spec": {"cmd": "killall", "args": ["wc"], "queue_hint": 0, "reason": "kill all processes named wc"}}
+{"user": "cat 모두 죽여", "spec": {"cmd": "killall", "args": ["cat"], "queue_hint": 0, "reason": "kill all processes named cat"}}
+{"user": "cpu_burner 전부 꺼", "spec": {"cmd": "killall", "args": ["cpu_burner"], "queue_hint": 0, "reason": "kill all processes named cpu_burner"}}
+{"user": "io_burner 전부 꺼", "spec": {"cmd": "killall", "args": ["io_burner"], "queue_hint": 0, "reason": "kill all processes named io_burner"}}
+{"user": "mixed_burner 전부 꺼", "spec": {"cmd": "killall", "args": ["mixed_burner"], "queue_hint": 0, "reason": "kill all processes named mixed_burner"}}
+{"user": "echo 전부 꺼", "spec": {"cmd": "killall", "args": ["echo"], "queue_hint": 0, "reason": "kill all processes named echo"}}
+{"user": "grep 전부 꺼", "spec": {"cmd": "killall", "args": ["grep"], "queue_hint": 0, "reason": "kill all processes named grep"}}
+{"user": "wc 전부 꺼", "spec": {"cmd": "killall", "args": ["wc"], "queue_hint": 0, "reason": "kill all processes named wc"}}
+{"user": "cat 전부 꺼", "spec": {"cmd": "killall", "args": ["cat"], "queue_hint": 0, "reason": "kill all processes named cat"}}
+{"user": "모든 cpu_burner 종료해줘", "spec": {"cmd": "killall", "args": ["cpu_burner"], "queue_hint": 0, "reason": "kill all processes named cpu_burner"}}
+{"user": "모든 io_burner 종료해줘", "spec": {"cmd": "killall", "args": ["io_burner"], "queue_hint": 0, "reason": "kill all processes named io_burner"}}
+{"user": "모든 mixed_burner 종료해줘", "spec": {"cmd": "killall", "args": ["mixed_burner"], "queue_hint": 0, "reason": "kill all processes named mixed_burner"}}
+{"user": "모든 echo 종료해줘", "spec": {"cmd": "killall", "args": ["echo"], "queue_hint": 0, "reason": "kill all processes named echo"}}
+{"user": "모든 grep 종료해줘", "spec": {"cmd": "killall", "args": ["grep"], "queue_hint": 0, "reason": "kill all processes named grep"}}
+{"user": "모든 wc 종료해줘", "spec": {"cmd": "killall", "args": ["wc"], "queue_hint": 0, "reason": "kill all processes named wc"}}
+{"user": "모든 cat 종료해줘", "spec": {"cmd": "killall", "args": ["cat"], "queue_hint": 0, "reason": "kill all processes named cat"}}
+{"user": "cpu_burner 다 종료해", "spec": {"cmd": "killall", "args": ["cpu_burner"], "queue_hint": 0, "reason": "kill all processes named cpu_burner"}}
+{"user": "io_burner 다 종료해", "spec": {"cmd": "killall", "args": ["io_burner"], "queue_hint": 0, "reason": "kill all processes named io_burner"}}
+{"user": "mixed_burner 다 종료해", "spec": {"cmd": "killall", "args": ["mixed_burner"], "queue_hint": 0, "reason": "kill all processes named mixed_burner"}}
+{"user": "echo 다 종료해", "spec": {"cmd": "killall", "args": ["echo"], "queue_hint": 0, "reason": "kill all processes named echo"}}
+{"user": "grep 다 종료해", "spec": {"cmd": "killall", "args": ["grep"], "queue_hint": 0, "reason": "kill all processes named grep"}}
+{"user": "wc 다 종료해", "spec": {"cmd": "killall", "args": ["wc"], "queue_hint": 0, "reason": "kill all processes named wc"}}
+{"user": "cat 다 종료해", "spec": {"cmd": "killall", "args": ["cat"], "queue_hint": 0, "reason": "kill all processes named cat"}}
+{"user": "kill all cpu_burner", "spec": {"cmd": "killall", "args": ["cpu_burner"], "queue_hint": 0, "reason": "kill all processes named cpu_burner"}}
+{"user": "kill all io_burner", "spec": {"cmd": "killall", "args": ["io_burner"], "queue_hint": 0, "reason": "kill all processes named io_burner"}}
+{"user": "kill all mixed_burner", "spec": {"cmd": "killall", "args": ["mixed_burner"], "queue_hint": 0, "reason": "kill all processes named mixed_burner"}}
+{"user": "kill all echo", "spec": {"cmd": "killall", "args": ["echo"], "queue_hint": 0, "reason": "kill all processes named echo"}}
+{"user": "kill all grep", "spec": {"cmd": "killall", "args": ["grep"], "queue_hint": 0, "reason": "kill all processes named grep"}}
+{"user": "kill all wc", "spec": {"cmd": "killall", "args": ["wc"], "queue_hint": 0, "reason": "kill all processes named wc"}}
+{"user": "kill all cat", "spec": {"cmd": "killall", "args": ["cat"], "queue_hint": 0, "reason": "kill all processes named cat"}}
+{"user": "killall cpu_burner", "spec": {"cmd": "killall", "args": ["cpu_burner"], "queue_hint": 0, "reason": "kill all processes named cpu_burner"}}
+{"user": "killall io_burner", "spec": {"cmd": "killall", "args": ["io_burner"], "queue_hint": 0, "reason": "kill all processes named io_burner"}}
+{"user": "killall mixed_burner", "spec": {"cmd": "killall", "args": ["mixed_burner"], "queue_hint": 0, "reason": "kill all processes named mixed_burner"}}
+{"user": "killall echo", "spec": {"cmd": "killall", "args": ["echo"], "queue_hint": 0, "reason": "kill all processes named echo"}}
+{"user": "killall grep", "spec": {"cmd": "killall", "args": ["grep"], "queue_hint": 0, "reason": "kill all processes named grep"}}
+{"user": "killall wc", "spec": {"cmd": "killall", "args": ["wc"], "queue_hint": 0, "reason": "kill all processes named wc"}}
+{"user": "killall cat", "spec": {"cmd": "killall", "args": ["cat"], "queue_hint": 0, "reason": "kill all processes named cat"}}
+{"user": "terminate all cpu_burner", "spec": {"cmd": "killall", "args": ["cpu_burner"], "queue_hint": 0, "reason": "kill all processes named cpu_burner"}}
+{"user": "terminate all io_burner", "spec": {"cmd": "killall", "args": ["io_burner"], "queue_hint": 0, "reason": "kill all processes named io_burner"}}
+{"user": "terminate all mixed_burner", "spec": {"cmd": "killall", "args": ["mixed_burner"], "queue_hint": 0, "reason": "kill all processes named mixed_burner"}}
+{"user": "terminate all echo", "spec": {"cmd": "killall", "args": ["echo"], "queue_hint": 0, "reason": "kill all processes named echo"}}
+{"user": "terminate all grep", "spec": {"cmd": "killall", "args": ["grep"], "queue_hint": 0, "reason": "kill all processes named grep"}}
+{"user": "terminate all wc", "spec": {"cmd": "killall", "args": ["wc"], "queue_hint": 0, "reason": "kill all processes named wc"}}
+{"user": "terminate all cat", "spec": {"cmd": "killall", "args": ["cat"], "queue_hint": 0, "reason": "kill all processes named cat"}}
+{"user": "kill every cpu_burner process", "spec": {"cmd": "killall", "args": ["cpu_burner"], "queue_hint": 0, "reason": "kill all processes named cpu_burner"}}
+{"user": "kill every io_burner process", "spec": {"cmd": "killall", "args": ["io_burner"], "queue_hint": 0, "reason": "kill all processes named io_burner"}}
+{"user": "kill every mixed_burner process", "spec": {"cmd": "killall", "args": ["mixed_burner"], "queue_hint": 0, "reason": "kill all processes named mixed_burner"}}
+{"user": "kill every echo process", "spec": {"cmd": "killall", "args": ["echo"], "queue_hint": 0, "reason": "kill all processes named echo"}}
+{"user": "kill every grep process", "spec": {"cmd": "killall", "args": ["grep"], "queue_hint": 0, "reason": "kill all processes named grep"}}
+{"user": "kill every wc process", "spec": {"cmd": "killall", "args": ["wc"], "queue_hint": 0, "reason": "kill all processes named wc"}}
+{"user": "kill every cat process", "spec": {"cmd": "killall", "args": ["cat"], "queue_hint": 0, "reason": "kill all processes named cat"}}
+{"user": "무거운 거 꺼줘", "spec": {"cmd": "killheavy", "args": [], "queue_hint": 0, "reason": "kill the single heaviest process"}}
+{"user": "제일 무거운 프로세스 종료", "spec": {"cmd": "killheavy", "args": [], "queue_hint": 0, "reason": "kill the single heaviest process"}}
+{"user": "가장 무거운 거 죽여", "spec": {"cmd": "killheavy", "args": [], "queue_hint": 0, "reason": "kill the single heaviest process"}}
+{"user": "느린 거 정리해줘", "spec": {"cmd": "killheavy", "args": [], "queue_hint": 0, "reason": "kill the single heaviest process"}}
+{"user": "CPU 많이 먹는 거 꺼줘", "spec": {"cmd": "killheavy", "args": [], "queue_hint": 0, "reason": "kill the single heaviest process"}}
+{"user": "제일 무거운 거 정리", "spec": {"cmd": "killheavy", "args": [], "queue_hint": 0, "reason": "kill the single heaviest process"}}
+{"user": "시스템 무거운 거 정리해줘", "spec": {"cmd": "killheavy", "args": [], "queue_hint": 0, "reason": "kill the single heaviest process"}}
+{"user": "kill the heaviest process", "spec": {"cmd": "killheavy", "args": [], "queue_hint": 0, "reason": "kill the single heaviest process"}}
+{"user": "killheavy", "spec": {"cmd": "killheavy", "args": [], "queue_hint": 0, "reason": "kill the single heaviest process"}}
+{"user": "kill the most cpu-heavy process", "spec": {"cmd": "killheavy", "args": [], "queue_hint": 0, "reason": "kill the single heaviest process"}}
+{"user": "terminate the heaviest job", "spec": {"cmd": "killheavy", "args": [], "queue_hint": 0, "reason": "kill the single heaviest process"}}
+{"user": "clean up the heaviest process", "spec": {"cmd": "killheavy", "args": [], "queue_hint": 0, "reason": "kill the single heaviest process"}}
+{"user": "무거운 거 2개 정리해줘", "spec": {"cmd": "killheavy", "args": ["2"], "queue_hint": 0, "reason": "kill the 2 heaviest processes"}}
+{"user": "kill the 2 heaviest processes", "spec": {"cmd": "killheavy", "args": ["2"], "queue_hint": 0, "reason": "kill the 2 heaviest processes"}}
+{"user": "무거운 거 3개 정리해줘", "spec": {"cmd": "killheavy", "args": ["3"], "queue_hint": 0, "reason": "kill the 3 heaviest processes"}}
+{"user": "kill the 3 heaviest processes", "spec": {"cmd": "killheavy", "args": ["3"], "queue_hint": 0, "reason": "kill the 3 heaviest processes"}}
+{"user": "무거운 거 5개 정리해줘", "spec": {"cmd": "killheavy", "args": ["5"], "queue_hint": 0, "reason": "kill the 5 heaviest processes"}}
+{"user": "kill the 5 heaviest processes", "spec": {"cmd": "killheavy", "args": ["5"], "queue_hint": 0, "reason": "kill the 5 heaviest processes"}}
+{"user": "좀비 없애줘", "spec": {"cmd": "reap", "args": [], "queue_hint": 0, "reason": "reap abandoned zombie processes"}}
+{"user": "좀비 프로세스 정리", "spec": {"cmd": "reap", "args": [], "queue_hint": 0, "reason": "reap abandoned zombie processes"}}
+{"user": "좀비 청소", "spec": {"cmd": "reap", "args": [], "queue_hint": 0, "reason": "reap abandoned zombie processes"}}
+{"user": "좀비 다 치워", "spec": {"cmd": "reap", "args": [], "queue_hint": 0, "reason": "reap abandoned zombie processes"}}
+{"user": "좀비 정리해줘", "spec": {"cmd": "reap", "args": [], "queue_hint": 0, "reason": "reap abandoned zombie processes"}}
+{"user": "reap zombies", "spec": {"cmd": "reap", "args": [], "queue_hint": 0, "reason": "reap abandoned zombie processes"}}
+{"user": "clean up zombies", "spec": {"cmd": "reap", "args": [], "queue_hint": 0, "reason": "reap abandoned zombie processes"}}
+{"user": "remove zombie processes", "spec": {"cmd": "reap", "args": [], "queue_hint": 0, "reason": "reap abandoned zombie processes"}}
+{"user": "reap", "spec": {"cmd": "reap", "args": [], "queue_hint": 0, "reason": "reap abandoned zombie processes"}}
+{"user": "clear zombies", "spec": {"cmd": "reap", "args": [], "queue_hint": 0, "reason": "reap abandoned zombie processes"}}

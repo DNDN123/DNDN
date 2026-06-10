@@ -1,0 +1,57 @@
+qemu-system-riscv64 -machine virt -bios none -kernel kernel/kernel -m 128M -smp 1 -nographic -global virtio-mmio.force-legacy=false -drive file=fs.img,if=none,format=raw,id=x0 -device virtio-blk-device,drive=x0,bus=virtio-mmio-bus.0
+
+xv6 kernel is booting
+
+init: starting sh
+$ wrunner cpu_heavy.txt hints.txt
+TRACE tick=17 pid=3 pri=0 slice=0
+TRACE tick=18 pid=3 pri=0 slice=1
+TRACE tick=19 pid=3 pri=1 slice=0
+wrunner: loaded 5 items, 1 hints
+wrunner: spawn cpu_buTRACE tick=20 pid=3 pri=1 slice=0
+rner pid=4 priority=1
+wrunner: spawn cpu_burner pid=5 priority=1
+TRACE tick=21 pid=3 pri=1 slice=1
+TRACE tick=21 pid=4 pri=1 slice=0
+wrunner: spawn cpu_burner pid=6 priority=1
+wrunner: spawn cpu_burner pid=7 priority=1
+TRACE tick=22 pid=3 pri=1 slice=0
+TRACE tick=23 pid=3 pri=1 slice=1
+TRACE tick=23 pid=4 pri=1 slice=0
+TRACE tick=23 pid=4 pri=1 slice=0
+TRACE tick=23 pid=4 pri=1 slice=0
+wrunner: spawn cpu_burner pid=8 priority=1
+TRACE tick=24 pid=3 pri=1 slice=0
+TRACE tick=24 pid=4 pri=1 slice=0
+cpu_burner pid=4 done acc=159194625
+EXIT pid=4 name=cpu_burner arrival=20 completion=25 run=1 ioblock=4 final_pri=1
+TRACE tick=25 pid=4 pri=1 slice=1
+TRACE tick=26 pid=4 pri=1 slice=2
+TRACE tick=26 pid=3 pri=1 slice=0
+TRACE tick=26 pid=5 pri=1 slice=0
+cpu_burner pid=5 done acc=1205313TRACE tick=27 pid=5 pri=1 slice=1
+985
+EXIT pid=5 name=cpu_burner arrival=21 completion=28 run=2 ioblock=0 final_pri=1
+TRACE tick=28 pid=5 pri=1 slice=2
+TRACE tick=28 pid=3 pri=1 slice=0
+cpu_burner pid=6 done acc=176962TRACE tick=29 pid=6 pri=1 slice=0
+6177
+EXIT pid=6 name=cpu_burner arrival=22 completion=30 run=1 ioblock=0 final_pri=1
+TRACE tick=30 pid=6 pri=1 slice=1
+TRACE tick=30 pid=3 pri=1 slice=0
+TRACE tick=31 pid=3 pri=1 slice=1
+TRACE tick=31 pid=7 pri=1 slice=0
+cpu_burner pid=7 done acc=1487103969
+EXIT pid=7 name=cpu_burner arrival=22 completion=32 run=1 ioblock=0 final_pri=1
+TRACE tick=32 pid=7 pri=1 slice=1
+TRACE tick=32 pid=3 pri=1 slice=0
+TRACE tick=32 pid=8 pri=1 slice=0
+cpu_burner pid=8 done acc=1659683873
+EXIT pid=8 name=cpu_burner arrival=24 completion=33 run=1 ioblock=0 final_pri=1
+TRACE tick=33 pid=8 pri=1 slice=1
+TRACE tick=34 pid=8 pri=1 slice=2
+ALL_DONE wrunner pid=3
+EXIT pid=3 name=wrunner arrival=17 completion=34 run=5 ioblock=7 final_pri=1
+TRACE tick=34 pid=3 pri=1 slice=0
+$ QEMU: Terminated
+

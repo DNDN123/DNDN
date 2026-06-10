@@ -1,0 +1,36 @@
+# SmartShell LLM training requirements — Windows-native, RTX 50xx (Blackwell, sm_120)
+#
+# IMPORTANT: install a Blackwell-capable torch FIRST (cu124/cu126 wheels do NOT
+# support sm_120 and will crash at kernel launch even though cuda.is_available()
+# is True). Use the cu128 index:
+#
+#   python -m pip uninstall -y torch
+#   python -m pip install torch --index-url https://download.pytorch.org/whl/cu128
+#   python -m pip install -r requirements.txt
+#
+# Verify a real GPU kernel works (not just is_available):
+#   python -c "import torch; x=torch.randn(8,8,device='cuda'); print((x@x).sum().item())"
+#
+# train.py / evaluate.py auto-adapt across trl & transformers versions
+# (eval_strategy rename, tokenizer->processing_class), so these are unpinned.
+
+# Core ML — plain transformers + peft + trl (no unsloth / bitsandbytes needed
+# for the default bf16 path). torch is installed separately (see above).
+transformers>=4.45.0
+peft>=0.13.0
+trl>=0.12.0
+accelerate>=1.0.0
+datasets>=3.0.0
+sentencepiece>=0.2.0
+protobuf>=4.25.0
+
+# Evaluation
+requests>=2.31.0
+
+# OPTIONAL — only if you pass --load-4bit (7B+) or --use-unsloth (Linux/WSL2).
+# On Windows native these are fragile; leave commented for the default bf16 path.
+# bitsandbytes>=0.45.0
+# unsloth>=2025.1.0
+
+# Optional: tensorboard for loss curves
+# tensorboard>=2.15.0
