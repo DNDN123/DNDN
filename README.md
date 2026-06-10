@@ -311,6 +311,10 @@ python3 nl_demo.py  --once "밤새 돌려도 되는 통계 집계"        # → 
 발표 시연 안정화가 목적.
 
 ---
+# 실제 시연 영상 
+
+https://github.com/user-attachments/assets/55636056-6c28-42b1-aecb-9f04d2261b74
+
 
 ## 12. 라이선스 / 크레딧
 
