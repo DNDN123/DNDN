@@ -1,6 +1,6 @@
 
 
-https://github.com/user-attachments/assets/1185b64e-cbe8-466d-87cf-05684524c029
+
 
 # DNDN Project — 우리가 만든 xv6 위에서 자연어로 움직이는 OS
 
@@ -317,7 +317,11 @@ python3 nl_demo.py  --once "밤새 돌려도 되는 통계 집계"        # → 
 ---
 # 실제 시연 영상 
 
-https://github.com/user-attachments/assets/55636056-6c28-42b1-aecb-9f04d2261b74
+
+
+
+https://github.com/user-attachments/assets/539f4a25-7f98-4da0-9d35-b61cf2f8467c
+
 
 
 ## 12. 라이선스 / 크레딧
