@@ -218,11 +218,29 @@ def main() -> int:
             proc.stdin.write(b"\x15" + (line + "\n").encode())
             proc.stdin.flush()
 
-    def handle(text: str, src: str = "ask"):
-        if src == "auto":
-            # The user typed bare language; xv6 printed "exec ... failed" just
+    # Phrases the model consistently misclassifies as OS commands (e.g. echo).
+    # Short greetings / small talk → go straight to chat, skip the model.
+    _CHAT_DIRECT = {
+        “안녕”, “안녕하세요”, “안뇽”, “ㅎㅇ”, “반가워”, “반갑습니다”, “반가워요”,
+        “hello”, “hi”, “hey”, “yo”, “sup”,
+        “고마워”, “감사합니다”, “감사해요”, “고맙습니다”,
+        “잘있어”, “잘가”, “bye”, “goodbye”,
+    }
+
+    def handle(text: str, src: str = “ask”):
+        if src == “auto”:
+            # The user typed bare language; xv6 printed “exec ... failed” just
             # above. Make clear that was expected and we're interpreting it.
-            print(f"\r\n[bridge] (자연어로 해석) “{text}”", flush=True)
+            print(f”\r\n[bridge] (자연어로 해석) “{text}””, flush=True)
+
+        # Short-circuit: pure greetings / small talk that the model mis-routes
+        # to echo/ls/etc. — send straight to conversational reply.
+        if text.strip().lower() in _CHAT_DIRECT:
+            ans = chat_reply(text)
+            print(f”\r\n[assistant] {ans}” if ans
+                  else f”\r\n[bridge] (인사)”, flush=True)
+            return
+
         spec = translate(text)
         d = guard.evaluate(spec)
         if d.verdict == "reject":
@@ -269,7 +287,7 @@ def main() -> int:
                     for byte in data:
                         proc.stdin.write(bytes([byte]))
                         proc.stdin.flush()
-                        time.sleep(0.01)   # 10 ms/byte → 30 ms per Korean char
+                        time.sleep(0.02)   # 20 ms/byte → 60 ms per Korean char
         except Exception:
             pass
 
