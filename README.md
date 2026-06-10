@@ -1,3 +1,7 @@
+
+
+https://github.com/user-attachments/assets/1185b64e-cbe8-466d-87cf-05684524c029
+
 # DNDN Project — 우리가 만든 xv6 위에서 자연어로 움직이는 OS
 
 > 4인 팀이 함께 xv6-riscv 커널의 4개 슬라이스(**Scheduler · Syscall · Thread · Process**)를
