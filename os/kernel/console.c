@@ -159,6 +159,15 @@ consoleintr(int c)
     if(cons.e != cons.w){
       cons.e--;
       consputc(BACKSPACE);
+      // UTF-8 multi-byte fix: continuation bytes are 0x80-0xBF.
+      // Keep removing them so one backspace erases a whole Unicode char
+      // (Korean chars are 3 bytes; without this, only the last byte is
+      // removed and the orphan lead/continuation bytes corrupt the input).
+      while(cons.e != cons.w &&
+            ((unsigned char)cons.buf[(cons.e-1) % INPUT_BUF_SIZE] & 0xC0) == 0x80){
+        cons.e--;
+        consputc(BACKSPACE);
+      }
     }
     break;
   default:
